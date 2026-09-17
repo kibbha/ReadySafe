@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
+
 import '../app/app_scope.dart';
 import '../app/localizations.dart';
-import 'calculator_screen.dart';
 import 'checklist_screen.dart';
 import 'emergency_screen.dart';
-import 'family_screen.dart';
 import 'first_aid_screen.dart';
-import 'guide_list_screen.dart';
-import 'online_maps_screen.dart';
-import 'placeholder_screen.dart';
+import 'guided_emergency_screen.dart';
+import 'prepare_screen.dart';
 import 'settings_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -20,50 +18,85 @@ class HomeScreen extends StatelessWidget {
     final app = AppScope.of(context);
     final country = app.activeCountry!;
     final en = Localizations.localeOf(context).languageCode == 'en';
-    final items = <_DashboardItem>[
-      _DashboardItem(t.get('firstAid'), en ? 'Learn the essential actions' : 'Les gestes essentiels', Icons.health_and_safety_rounded, const FirstAidScreen(), const Color(0xffd92d36)),
-      _DashboardItem(t.get('emergencies'), en ? 'Call the right service' : 'Appeler le bon service', Icons.phone_in_talk_rounded, const EmergencyScreen(), const Color(0xffd92d36)),
-      _DashboardItem(en ? 'Maps' : 'Cartes', en ? 'Online safety map' : 'Carte de sécurité en ligne', Icons.map_rounded, const OnlineMapsScreen(), const Color(0xff087f83)),
-      _DashboardItem(t.get('kit'), en ? 'Prepare the essentials' : 'Préparer l’essentiel', Icons.backpack_rounded, const ChecklistScreen(kit: true), const Color(0xffb7833f)),
-      _DashboardItem(t.get('checklists'), en ? 'Stay ready' : 'Rester prêt', Icons.checklist_rounded, const ChecklistScreen(kit: false), const Color(0xff178a66)),
-      _DashboardItem(t.get('disasters'), en ? 'Know how to react' : 'Savoir comment réagir', Icons.warning_amber_rounded, const GuideListScreen(kind: GuideKind.disasters), const Color(0xffdf7d43)),
-      _DashboardItem(t.get('waterFood'), en ? 'Estimate your needs' : 'Estimer vos besoins', Icons.water_drop_rounded, const CalculatorScreen(), const Color(0xff3186c7)),
-      _DashboardItem(t.get('family'), en ? 'Protect your household' : 'Protéger votre foyer', Icons.family_restroom_rounded, const FamilyScreen(), const Color(0xff8c6bc1)),
-      _DashboardItem(t.get('contacts'), en ? 'People to reach quickly' : 'Vos proches à joindre', Icons.contact_phone_rounded, PlaceholderScreen(title: t.get('contacts'), icon: Icons.contact_phone_outlined, body: t.get('offline')), const Color(0xff087f83)),
-      _DashboardItem(t.get('information'), en ? 'Reliable guidance' : 'Conseils fiables', Icons.menu_book_rounded, PlaceholderScreen(title: t.get('information'), icon: Icons.info_outline, body: t.get('medicalNotice')), const Color(0xff087f83)),
+
+    final actions = <_HomeAction>[
+      _HomeAction(t.get('firstAid'), en ? 'Offline essential guides' : 'Fiches essentielles hors ligne', Icons.health_and_safety_rounded, const FirstAidScreen(), const Color(0xffd92d36)),
+      _HomeAction(en ? 'Prepare' : 'Préparer', en ? 'Plans, kit, checklists' : 'Plans, kit, check-lists', Icons.shield_rounded, const PrepareScreen(), const Color(0xff087f83)),
+      _HomeAction(t.get('kit'), en ? 'Check your essentials' : 'Vérifier les essentiels', Icons.backpack_rounded, const ChecklistScreen(kit: true), const Color(0xffb7833f)),
+      _HomeAction(en ? 'SOS numbers' : 'Contacts SOS', en ? 'Official numbers for this country' : 'Numéros officiels du pays', Icons.phone_in_talk_rounded, const EmergencyScreen(), const Color(0xffd92d36)),
     ];
 
     return Scaffold(
       backgroundColor: const Color(0xfff7faf9),
       body: SafeArea(
         bottom: false,
-        child: LayoutBuilder(builder: (context, constraints) {
-          final wide = constraints.maxWidth >= 700;
-          final horizontal = wide ? 32.0 : 18.0;
-          final maxWidth = wide ? 1080.0 : 620.0;
-          return CustomScrollView(slivers: [
-            SliverToBoxAdapter(child: Center(child: ConstrainedBox(constraints: BoxConstraints(maxWidth: maxWidth), child: Padding(
-              padding: EdgeInsets.fromLTRB(horizontal, 14, horizontal, 0),
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                _Header(title: t.get('title'), onSettings: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen()))),
-                const SizedBox(height: 18),
-                _HeroCard(country: t.get(country.nameKey), flag: _flag(country.isoCode), travelMode: app.travelMode, subtitle: t.get('subtitle'), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen()))),
-                const SizedBox(height: 24),
-                Text(en ? 'Prepare. Protect. Act.' : 'Se préparer, protéger, agir', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w900, color: const Color(0xff172126), letterSpacing: -.5)),
-                const SizedBox(height: 5),
-                Text(en ? 'Everything useful for your safety, at a glance.' : 'Tout ce qui compte pour votre sécurité, en un coup d’œil.', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: const Color(0xff617075), height: 1.35)),
-                const SizedBox(height: 16),
-              ]),
-            )))),
-            SliverPadding(padding: EdgeInsets.fromLTRB(horizontal, 0, horizontal, 28), sliver: SliverToBoxAdapter(child: Center(child: ConstrainedBox(constraints: BoxConstraints(maxWidth: maxWidth), child: GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: items.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: wide ? 3 : 2, childAspectRatio: wide ? 1.55 : 1.08, crossAxisSpacing: 12, mainAxisSpacing: 12),
-              itemBuilder: (context, index) => _DashboardTile(item: items[index]),
-            ))))),
-          ]);
-        }),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final wide = constraints.maxWidth >= 760;
+            final horizontal = wide ? 30.0 : 16.0;
+            final maxWidth = wide ? 1060.0 : 640.0;
+            return Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: maxWidth),
+                child: ListView(
+                  padding: EdgeInsets.fromLTRB(horizontal, 14, horizontal, 28),
+                  children: [
+                    _Header(
+                      title: t.get('title'),
+                      country: t.get(country.nameKey),
+                      flag: _flag(country.isoCode),
+                      travelMode: app.travelMode,
+                      onSettings: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen())),
+                    ),
+                    const SizedBox(height: 16),
+                    _StatusCard(en: en, travelMode: app.travelMode, country: t.get(country.nameKey)),
+                    const SizedBox(height: 14),
+                    _EmergencyHero(
+                      en: en,
+                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GuidedEmergencyScreen())),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(en ? 'Essentials' : 'Essentiels', style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w900)),
+                    const SizedBox(height: 10),
+                    GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: actions.length,
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: wide ? 4 : 2,
+                        childAspectRatio: wide ? 1.2 : 1.02,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                      ),
+                      itemBuilder: (context, index) => _ActionCard(action: actions[index]),
+                    ),
+                    const SizedBox(height: 18),
+                    _PreparednessCard(en: en),
+                    const SizedBox(height: 18),
+                    Text(en ? 'Quick access' : 'Accès rapide', style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w900)),
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 9,
+                      runSpacing: 9,
+                      children: [
+                        _QuickChip(label: en ? 'Adult CPR' : 'RCP adulte', icon: Icons.favorite_rounded, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FirstAidScreen()))),
+                        _QuickChip(label: 'DAE', icon: Icons.electric_bolt_rounded, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FirstAidScreen()))),
+                        _QuickChip(label: en ? 'Severe bleeding' : 'Hémorragie', icon: Icons.bloodtype_rounded, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FirstAidScreen()))),
+                        _QuickChip(label: en ? 'Guide me' : 'Guidez-moi', icon: Icons.sos_rounded, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GuidedEmergencyScreen()))),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(children: [
+                      const Icon(Icons.offline_bolt_rounded, size: 18, color: Color(0xff087f83)),
+                      const SizedBox(width: 8),
+                      Expanded(child: Text(en ? 'Essential first-aid content remains available offline.' : 'Les contenus essentiels de premiers secours restent disponibles hors ligne.', style: const TextStyle(fontSize: 12, color: Color(0xff65747a)))),
+                    ]),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -72,62 +105,159 @@ class HomeScreen extends StatelessWidget {
 }
 
 class _Header extends StatelessWidget {
-  const _Header({required this.title, required this.onSettings});
+  const _Header({required this.title, required this.country, required this.flag, required this.travelMode, required this.onSettings});
   final String title;
+  final String country;
+  final String flag;
+  final bool travelMode;
   final VoidCallback onSettings;
+
   @override
   Widget build(BuildContext context) => Row(children: [
-    Container(width: 46, height: 46, decoration: BoxDecoration(color: const Color(0xff087f83), borderRadius: BorderRadius.circular(15), boxShadow: const [BoxShadow(color: Color(0x22087f83), blurRadius: 12, offset: Offset(0, 5))]), child: const Icon(Icons.health_and_safety_rounded, color: Colors.white, size: 27)),
-    const SizedBox(width: 12),
-    Expanded(child: Text(title, style: const TextStyle(fontSize: 23, fontWeight: FontWeight.w900, letterSpacing: .5))),
+    Container(width: 46, height: 46, decoration: BoxDecoration(color: const Color(0xff087f83), borderRadius: BorderRadius.circular(15)), child: const Icon(Icons.health_and_safety_rounded, color: Colors.white, size: 27)),
+    const SizedBox(width: 11),
+    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Text(title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900)),
+      Text(flag + ' ' + country + (travelMode ? ' · ✈' : ''), style: const TextStyle(fontSize: 12, color: Color(0xff65747a), fontWeight: FontWeight.w700)),
+    ])),
     IconButton.filledTonal(onPressed: onSettings, tooltip: 'Paramètres', icon: const Icon(Icons.settings_outlined)),
   ]);
 }
 
-class _HeroCard extends StatelessWidget {
-  const _HeroCard({required this.country, required this.flag, required this.travelMode, required this.subtitle, required this.onTap});
-  final String country, flag, subtitle;
+class _StatusCard extends StatelessWidget {
+  const _StatusCard({required this.en, required this.travelMode, required this.country});
+  final bool en;
   final bool travelMode;
-  final VoidCallback onTap;
+  final String country;
+
   @override
-  Widget build(BuildContext context) => InkWell(onTap: onTap, borderRadius: BorderRadius.circular(28), child: Ink(
-    padding: const EdgeInsets.all(22),
-    decoration: BoxDecoration(borderRadius: BorderRadius.circular(28), gradient: const LinearGradient(colors: [Color(0xffdff3ef), Color(0xfffff4df)], begin: Alignment.topLeft, end: Alignment.bottomRight), border: Border.all(color: const Color(0xffcfe4df))),
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+    decoration: BoxDecoration(color: const Color(0xffeaf5f2), borderRadius: BorderRadius.circular(18)),
     child: Row(children: [
-      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Text('PETITS GESTES, GRANDS IMPACTS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 1.25, color: Color(0xff087f83))),
-        const SizedBox(height: 10),
-        Text(subtitle, maxLines: 2, style: const TextStyle(fontSize: 22, height: 1.12, fontWeight: FontWeight.w900, color: Color(0xff172126), letterSpacing: -.4)),
-        const SizedBox(height: 16),
-        Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9), decoration: BoxDecoration(color: Colors.white.withValues(alpha: .86), borderRadius: BorderRadius.circular(15)), child: Row(mainAxisSize: MainAxisSize.min, children: [Text(flag, style: const TextStyle(fontSize: 21)), const SizedBox(width: 8), Flexible(child: Text(country, style: const TextStyle(fontWeight: FontWeight.w800))), if (travelMode) ...[const SizedBox(width: 6), const Icon(Icons.flight_rounded, size: 17)]])),
-      ])),
-      const SizedBox(width: 14),
-      Container(width: 104, height: 124, decoration: BoxDecoration(color: Colors.white.withValues(alpha: .72), borderRadius: BorderRadius.circular(26)), child: const Stack(alignment: Alignment.center, children: [Positioned(bottom: 19, child: Icon(Icons.landscape_rounded, size: 76, color: Color(0xff9bc9b7))), Positioned(top: 16, right: 15, child: Icon(Icons.wb_sunny_rounded, size: 27, color: Color(0xffffb64c))), Positioned(bottom: 22, child: Icon(Icons.family_restroom_rounded, size: 43, color: Color(0xff087f83)))])),
+      const Icon(Icons.verified_outlined, color: Color(0xff087f83)),
+      const SizedBox(width: 10),
+      Expanded(child: Text(
+        travelMode
+          ? (en ? 'Travel mode active — ' + country : 'Mode voyage actif — ' + country)
+          : (en ? 'ReadySafe essential mode ready' : 'Mode essentiel ReadySafe prêt'),
+        style: const TextStyle(fontWeight: FontWeight.w800),
+      )),
     ]),
-  ));
+  );
 }
 
-class _DashboardItem {
-  const _DashboardItem(this.label, this.subtitle, this.icon, this.page, this.color);
-  final String label, subtitle;
+class _EmergencyHero extends StatelessWidget {
+  const _EmergencyHero({required this.en, required this.onTap});
+  final bool en;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Material(
+    color: Theme.of(context).colorScheme.error,
+    borderRadius: BorderRadius.circular(26),
+    child: InkWell(
+      borderRadius: BorderRadius.circular(26),
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Row(children: [
+          Container(width: 60, height: 60, decoration: BoxDecoration(color: Colors.white.withValues(alpha: .16), borderRadius: BorderRadius.circular(18)), child: const Icon(Icons.sos_rounded, color: Colors.white, size: 34)),
+          const SizedBox(width: 15),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(en ? 'EMERGENCY — GUIDE ME' : 'URGENCE — GUIDEZ-MOI', style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900)),
+            const SizedBox(height: 4),
+            Text(en ? 'Choose what you see and open the right guidance.' : 'Choisissez ce que vous observez et ouvrez le bon guidage.', style: TextStyle(color: Colors.white.withValues(alpha: .9), height: 1.3)),
+          ])),
+          const Icon(Icons.arrow_forward_rounded, color: Colors.white),
+        ]),
+      ),
+    ),
+  );
+}
+
+class _PreparednessCard extends StatelessWidget {
+  const _PreparednessCard({required this.en});
+  final bool en;
+
+  @override
+  Widget build(BuildContext context) => Card(
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          const Icon(Icons.fact_check_outlined, color: Color(0xff087f83)),
+          const SizedBox(width: 8),
+          Text(en ? 'My preparation' : 'Ma préparation', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900)),
+        ]),
+        const SizedBox(height: 12),
+        _PrepLine(icon: Icons.family_restroom_rounded, text: en ? 'Family profile available offline' : 'Profil familial disponible hors ligne'),
+        _PrepLine(icon: Icons.backpack_rounded, text: en ? '72-hour kit can be checked item by item' : 'Kit 72 h vérifiable élément par élément'),
+        _PrepLine(icon: Icons.offline_bolt_rounded, text: en ? 'First-aid guides available without network' : 'Fiches de secours disponibles sans réseau'),
+      ]),
+    ),
+  );
+}
+
+class _PrepLine extends StatelessWidget {
+  const _PrepLine({required this.icon, required this.text});
+  final IconData icon;
+  final String text;
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 5),
+    child: Row(children: [
+      Icon(icon, size: 19, color: const Color(0xff087f83)),
+      const SizedBox(width: 9),
+      Expanded(child: Text(text, style: const TextStyle(fontWeight: FontWeight.w700))),
+    ]),
+  );
+}
+
+class _HomeAction {
+  const _HomeAction(this.label, this.subtitle, this.icon, this.page, this.color);
+  final String label;
+  final String subtitle;
   final IconData icon;
   final Widget page;
   final Color color;
 }
 
-class _DashboardTile extends StatelessWidget {
-  const _DashboardTile({required this.item});
-  final _DashboardItem item;
+class _ActionCard extends StatelessWidget {
+  const _ActionCard({required this.action});
+  final _HomeAction action;
   @override
-  Widget build(BuildContext context) => Material(color: Colors.white, borderRadius: BorderRadius.circular(24), child: InkWell(
-    borderRadius: BorderRadius.circular(24),
-    onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => item.page)),
-    child: Container(padding: const EdgeInsets.all(15), decoration: BoxDecoration(borderRadius: BorderRadius.circular(24), border: Border.all(color: const Color(0xffdfe8e8)), boxShadow: const [BoxShadow(color: Color(0x0d172126), blurRadius: 14, offset: Offset(0, 5))]), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Row(children: [Container(width: 46, height: 46, decoration: BoxDecoration(color: item.color.withValues(alpha: .11), borderRadius: BorderRadius.circular(15)), child: Icon(item.icon, color: item.color, size: 27)), const Spacer(), const Icon(Icons.arrow_outward_rounded, size: 18, color: Color(0xff9aa7aa))]),
-      const Spacer(),
-      Text(item.label, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 15, height: 1.08, fontWeight: FontWeight.w900, color: Color(0xff172126))),
-      const SizedBox(height: 4),
-      Text(item.subtitle, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11.5, height: 1.15, color: Color(0xff6c797d), fontWeight: FontWeight.w600)),
-    ])),
-  ));
+  Widget build(BuildContext context) => Material(
+    color: Colors.white,
+    borderRadius: BorderRadius.circular(22),
+    child: InkWell(
+      borderRadius: BorderRadius.circular(22),
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => action.page)),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(22), border: Border.all(color: const Color(0xffdde7e5))),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Container(width: 45, height: 45, decoration: BoxDecoration(color: action.color.withValues(alpha: .11), borderRadius: BorderRadius.circular(14)), child: Icon(action.icon, color: action.color)),
+          const Spacer(),
+          Text(action.label, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900)),
+          const SizedBox(height: 4),
+          Text(action.subtitle, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11.5, color: Color(0xff65747a), height: 1.2)),
+        ]),
+      ),
+    ),
+  );
+}
+
+class _QuickChip extends StatelessWidget {
+  const _QuickChip({required this.label, required this.icon, required this.onTap});
+  final String label;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => ActionChip(
+    avatar: Icon(icon, size: 18, color: const Color(0xff087f83)),
+    label: Text(label),
+    onPressed: onTap,
+  );
 }
