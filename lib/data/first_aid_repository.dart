@@ -61,5 +61,5 @@ final firstAidGuides = [
   _guide('hypothermia','aid_hypothermia','aid_hypothermia_summary',['aid_hypothermia_1','aid_hypothermia_2','aid_hypothermia_3']),
   _guide('heatstroke','aid_heatstroke','aid_heatstroke_summary',['aid_heatstroke_1','aid_heatstroke_2','aid_heatstroke_3']),
   _guide('poisoning','aid_poisoning','aid_poisoning_summary',['aid_poisoning_1','aid_poisoning_2','aid_poisoning_3']),
-  _guide('anaphylaxis','aid_anaphylaxis','aid_anaphylaxis_summary',['aid_anaphylaxis_1','aid_anaphylaxis_2','aid_anaphylaxis_3']),
+  _guide('anaphylaxis','aid_anaphylaxis','aid_anaphylaxis_summary',['aid_anaphylaxis_1','aid_anaphylaxis_2','aid_anaphylaxis_3'],sources:[_erc2025,_ercFirstAid2025],illustrations:['assets/illustrations/anaphylaxis_recognise.svg','assets/illustrations/anaphylaxis_adrenaline.svg','assets/illustrations/anaphylaxis_call.svg']),
 ];
