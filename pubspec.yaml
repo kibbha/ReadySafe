@@ -16,7 +16,7 @@ dependencies:
   url_launcher: ^6.3.2
   crypto: ^3.0.6
   flutter_svg: ^2.2.1
-  maplibre_gl: ^0.26.0
+  maplibre_gl: 0.26.2
   path_provider: ^2.1.5
   http: ^1.5.0
   cupertino_icons: ^1.0.8
