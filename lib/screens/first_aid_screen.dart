@@ -7,8 +7,16 @@ import '../data/first_aid_repository.dart';
 import '../models/first_aid_guide.dart';
 import 'emergency_screen.dart';
 
-class FirstAidScreen extends StatelessWidget {
+class FirstAidScreen extends StatefulWidget {
   const FirstAidScreen({super.key});
+
+  @override
+  State<FirstAidScreen> createState() => _FirstAidScreenState();
+}
+
+class _FirstAidScreenState extends State<FirstAidScreen> {
+  String _query = '';
+  String _filter = 'all';
 
   IconData _icon(String id) {
     if (id.contains('cpr')) return Icons.favorite_outline;
@@ -20,19 +28,60 @@ class FirstAidScreen extends StatelessWidget {
     return Icons.health_and_safety_outlined;
   }
 
+  bool _matchesAge(String id) {
+    if (_filter == 'all') return true;
+    if (_filter == 'child') return id.contains('child');
+    if (_filter == 'infant') return id.contains('infant');
+    if (_filter == 'adult') {
+      return !id.contains('child') && !id.contains('infant');
+    }
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
+    final q = _query.trim().toLowerCase();
+    final guides = firstAidGuides.where((g) {
+      if (!_matchesAge(g.id)) return false;
+      if (q.isEmpty) return true;
+      final title = t.get(g.titleKey).toLowerCase();
+      final summary = t.get(g.summaryKey).toLowerCase();
+      return title.contains(q) || summary.contains(q);
+    }).toList();
+
     return Scaffold(
       appBar: AppBar(title: Text(t.get('firstAid'))),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 4, 16, 28),
         children: [
+          TextField(
+            onChanged: (value) => setState(() => _query = value),
+            textInputAction: TextInputAction.search,
+            decoration: const InputDecoration(
+              hintText: 'Rechercher un geste de secours',
+              prefixIcon: Icon(Icons.search),
+              isDense: true,
+            ),
+          ),
+          const SizedBox(height: 12),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _filterChip('all', 'Tous'),
+                _filterChip('adult', 'Adulte'),
+                _filterChip('child', 'Enfant'),
+                _filterChip('infant', 'Nourrisson'),
+              ],
+            ),
+          ),
+          const SizedBox(height: 14),
           Container(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: const Color(0xffffeeee),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(15),
             ),
             child: Row(
               children: [
@@ -48,11 +97,17 @@ class FirstAidScreen extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 14),
-          ...firstAidGuides.map(
+          const SizedBox(height: 12),
+          if (guides.isEmpty)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 36),
+              child: Center(child: Text('Aucun geste correspondant')),
+            ),
+          ...guides.map(
             (g) => Card(
               margin: const EdgeInsets.only(bottom: 8),
               child: ListTile(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 leading: Container(
                   width: 46,
                   height: 46,
@@ -82,6 +137,18 @@ class FirstAidScreen extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _filterChip(String value, String label) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: ChoiceChip(
+        label: Text(label),
+        selected: _filter == value,
+        showCheckmark: false,
+        onSelected: (_) => setState(() => _filter = value),
       ),
     );
   }
@@ -248,7 +315,7 @@ class _StepCard extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 15,
                     height: 1.4,
-                    fontWeight: FontWeight.w650,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
