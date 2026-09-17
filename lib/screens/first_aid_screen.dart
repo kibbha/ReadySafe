@@ -49,25 +49,69 @@ class FirstAidScreen extends StatelessWidget {
 class FirstAidDetailScreen extends StatelessWidget {
   const FirstAidDetailScreen({super.key, required this.guide});
   final FirstAidGuide guide;
+
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
+    final colors = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(title: Text(t.get(guide.titleKey))),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
         children: [
-          Card(
-            color: Theme.of(context).colorScheme.errorContainer,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(t.get('aid_call_now')),
+          // A mobile version of a first-aid teaching sheet: prominent title,
+          // immediate action, then numbered illustrated instructions.
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: colors.primary,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.health_and_safety, color: colors.onPrimary, size: 32),
+                const SizedBox(height: 12),
+                Text(
+                  t.get(guide.titleKey),
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: colors.onPrimary, fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  t.get(guide.summaryKey),
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: colors.onPrimary,
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
+          Card(
+            color: colors.errorContainer,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.warning_amber_rounded, color: colors.onErrorContainer),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(t.get('aid_call_now'),
+                      style: TextStyle(color: colors.onErrorContainer,
+                        fontWeight: FontWeight.w700)),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
           FilledButton.icon(
             style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
+              backgroundColor: colors.error,
+              minimumSize: const Size.fromHeight(52),
             ),
             onPressed: () => Navigator.push(
               context,
@@ -78,17 +122,16 @@ class FirstAidDetailScreen extends StatelessWidget {
               '${t.get('emergencies')} · ${t.get(AppScope.of(context).activeCountry!.nameKey)}',
             ),
           ),
-          const SizedBox(height: 12),
-          Text(
-            t.get(guide.summaryKey),
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 20),
           ...guide.steps.indexed.map(
-            (entry) => _StepCard(number: entry.$1 + 1, step: entry.$2),
+            (entry) => Padding(
+              padding: const EdgeInsets.only(bottom: 14),
+              child: _StepCard(number: entry.$1 + 1, step: entry.$2),
+            ),
           ),
-          const SizedBox(height: 12),
-          Text(t.get('medicalNotice')),
+          const SizedBox(height: 4),
+          Text(t.get('medicalNotice'),
+            style: Theme.of(context).textTheme.bodySmall),
         ],
       ),
     );
@@ -99,45 +142,65 @@ class _StepCard extends StatelessWidget {
   const _StepCard({required this.number, required this.step});
   final int number;
   final FirstAidStep step;
+
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
+    final colors = Theme.of(context).colorScheme;
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              t.get('step', {'number': '$number'}),
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
-            Container(
-              height: 92,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Semantics(
-                image: true,
-                label: t.get('illustration_ready'),
-                child: SvgPicture.asset(
-                  step.illustrationAsset,
-                  fit: BoxFit.contain,
+      clipBehavior: Clip.antiAlias,
+      margin: EdgeInsets.zero,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            color: colors.primaryContainer,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 18,
+                  backgroundColor: const Color(0xFFFFE052),
+                  child: Text('$number',
+                    style: const TextStyle(color: Color(0xFF242424),
+                      fontWeight: FontWeight.w900)),
                 ),
-              ),
+                const SizedBox(width: 12),
+                Expanded(child: Text(t.get('step', {'number': '$number'}),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: colors.onPrimaryContainer,
+                    fontWeight: FontWeight.w800))),
+              ],
             ),
-            const SizedBox(height: 12),
-            Text(
-              t.get(step.textKey),
-              style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Semantics(
+                  image: true,
+                  label: '${t.get('illustration_ready')}: ${t.get(step.textKey)}',
+                  child: Container(
+                    height: 164,
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: colors.surfaceContainerLowest,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: SvgPicture.asset(step.illustrationAsset,
+                      fit: BoxFit.contain),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Text(t.get(step.textKey),
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    height: 1.4, fontWeight: FontWeight.w600)),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
