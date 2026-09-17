@@ -9,10 +9,12 @@ class EmergencyScreen extends StatelessWidget {
   const EmergencyScreen({super.key, this.callService});
   final EmergencyCallService? callService;
 
-  IconData _icon(String key) {
+  IconData _icon(EmergencyService service) {
+    final key = '${service.id} ${service.nameKey}'.toLowerCase();
+    if (key.contains('rega') || key.contains('air_rescue')) return Icons.helicopter_outlined;
     if (key.contains('police')) return Icons.local_police_outlined;
     if (key.contains('fire')) return Icons.local_fire_department_outlined;
-    if (key.contains('ambulance')) return Icons.emergency_outlined;
+    if (key.contains('ambulance') || key.contains('medical')) return Icons.emergency_outlined;
     if (key.contains('poison')) return Icons.science_outlined;
     if (key.contains('youth')) return Icons.child_care_outlined;
     if (key.contains('help')) return Icons.support_agent_outlined;
@@ -42,28 +44,30 @@ class EmergencyScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 4, 16, 28),
         children: [
-          Row(children: [
-            Container(width: 50, height: 38, alignment: Alignment.center,
-              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(11), border: Border.all(color: const Color(0xffdbe5e7))),
-              child: Text(_flag(country.isoCode), style: const TextStyle(fontSize: 25))),
-            const SizedBox(width: 11),
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(t.get(country.nameKey), style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w900)),
-              Text(t.get('emergency_hint'), style: const TextStyle(color: Color(0xff65747a))),
-            ])),
-          ]),
-          if (primary != null) ...[
-            const SizedBox(height: 16),
-            _DangerHero(service: primary, callService: caller),
-          ],
+          Container(
+            padding: const EdgeInsets.all(13),
+            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(17), border: Border.all(color: const Color(0xffdbe5e7))),
+            child: Row(children: [
+              Container(width: 54, height: 42, alignment: Alignment.center, decoration: BoxDecoration(color: const Color(0xfff7fafb), borderRadius: BorderRadius.circular(12)), child: Text(_flag(country.isoCode), style: const TextStyle(fontSize: 28))),
+              const SizedBox(width: 12),
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(t.get(country.nameKey), style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w900)),
+                Text(t.get('emergency_hint'), style: const TextStyle(fontSize: 12, color: Color(0xff65747a))),
+              ])),
+              const Icon(Icons.verified_outlined, color: Color(0xff087f83)),
+            ]),
+          ),
+          if (primary != null) ...[const SizedBox(height: 14), _DangerHero(service: primary, callService: caller)],
           if (others.isNotEmpty) ...[
-            const SizedBox(height: 14),
+            const SizedBox(height: 16),
+            const Text('Numéros utiles', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
+            const SizedBox(height: 9),
             GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: others.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 1.25, crossAxisSpacing: 10, mainAxisSpacing: 10),
-              itemBuilder: (_, i) => _EmergencyTile(service: others[i], icon: _icon(others[i].nameKey), callService: caller),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 1.18, crossAxisSpacing: 10, mainAxisSpacing: 10),
+              itemBuilder: (_, i) => _EmergencyTile(service: others[i], icon: _icon(others[i]), callService: caller),
             ),
           ],
           const SizedBox(height: 16),
@@ -85,23 +89,45 @@ class _DangerHero extends StatelessWidget {
   final EmergencyCallService callService;
   @override Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-    return Container(padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: const Color(0xffffeded), borderRadius: BorderRadius.circular(18), border: Border.all(color: const Color(0xffffcaca))), child: Row(children: [
-      Container(width: 52, height: 52, decoration: BoxDecoration(color: Theme.of(context).colorScheme.error, borderRadius: BorderRadius.circular(15)), child: const Icon(Icons.phone_in_talk, color: Colors.white, size: 29)),
-      const SizedBox(width: 13),
-      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [const Text('Danger immédiat', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xff9d1c24))), Text('Appelez le ${service.number ?? ''}', style: const TextStyle(fontSize: 23, fontWeight: FontWeight.w900)), Text(t.get(service.nameKey), style: const TextStyle(fontSize: 12, color: Color(0xff65747a)))])),
-      IconButton.filled(style: IconButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error), onPressed: () => _call(context, t, service, callService), icon: const Icon(Icons.call, color: Colors.white)),
-    ]));
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(color: const Color(0xffffeded), borderRadius: BorderRadius.circular(20), border: Border.all(color: const Color(0xffffcaca))),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          Container(width: 48, height: 48, decoration: BoxDecoration(color: Theme.of(context).colorScheme.error, borderRadius: BorderRadius.circular(14)), child: const Icon(Icons.phone_in_talk, color: Colors.white, size: 27)),
+          const SizedBox(width: 12),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Text('DANGER IMMÉDIAT', style: TextStyle(fontSize: 12, letterSpacing: .4, fontWeight: FontWeight.w900, color: Color(0xff9d1c24))),
+            Text('Appelez le ${service.number ?? ''}', style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w900)),
+            Text(t.get(service.nameKey), style: const TextStyle(fontSize: 13, color: Color(0xff65747a))),
+          ])),
+        ]),
+        const SizedBox(height: 13),
+        SizedBox(width: double.infinity, child: FilledButton.icon(
+          style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error, minimumSize: const Size.fromHeight(48)),
+          onPressed: () => _call(context, t, service, callService), icon: const Icon(Icons.call), label: Text('Appeler ${service.number ?? ''}', style: const TextStyle(fontWeight: FontWeight.w900)),
+        )),
+      ]),
+    );
   }
 }
 
 class _EmergencyTile extends StatelessWidget {
   const _EmergencyTile({required this.service, required this.icon, required this.callService});
   final EmergencyService service; final IconData icon; final EmergencyCallService callService;
-  @override Widget build(BuildContext context) {final t=AppLocalizations.of(context); return Card(margin: EdgeInsets.zero, child: InkWell(borderRadius: BorderRadius.circular(18), onTap: () => _call(context,t,service,callService), child: Padding(padding: const EdgeInsets.all(12), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-    Container(width: 38,height:38,decoration:BoxDecoration(color:const Color(0xffffe9e9),borderRadius:BorderRadius.circular(11)),child:Icon(icon,color:Theme.of(context).colorScheme.error,size:22)),
-    const Spacer(), Text(service.number ?? '—',style:TextStyle(fontSize:23,fontWeight:FontWeight.w900,color:Theme.of(context).colorScheme.error)),
-    Text(t.get(service.nameKey),maxLines:1,overflow:TextOverflow.ellipsis,style:const TextStyle(fontSize:13,fontWeight:FontWeight.w800)),
-  ]))));}
+  @override Widget build(BuildContext context) {
+    final t=AppLocalizations.of(context);
+    final isRega = service.id == 'rega';
+    return Card(margin: EdgeInsets.zero, child: InkWell(borderRadius: BorderRadius.circular(18), onTap: () => _call(context,t,service,callService), child: Padding(padding: const EdgeInsets.all(12), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Row(children: [
+        Container(width: 40,height:40,decoration:BoxDecoration(color:isRega?const Color(0xffe8f5f5):const Color(0xffffe9e9),borderRadius:BorderRadius.circular(12)),child:Icon(icon,color:isRega?const Color(0xff087f83):Theme.of(context).colorScheme.error,size:23)),
+        const Spacer(), const Icon(Icons.call_outlined, size: 18, color: Color(0xff87969a)),
+      ]),
+      const Spacer(),
+      Text(service.number ?? '—',style:TextStyle(fontSize:24,fontWeight:FontWeight.w900,color:isRega?const Color(0xff087f83):Theme.of(context).colorScheme.error)),
+      Text(t.get(service.nameKey),maxLines:2,overflow:TextOverflow.ellipsis,style:const TextStyle(fontSize:13,fontWeight:FontWeight.w800,height:1.1)),
+    ]))));
+  }
 }
 
 Future<void> _call(BuildContext context, AppLocalizations t, EmergencyService service, EmergencyCallService caller) async {
