@@ -33,7 +33,7 @@ void main() {
     expect(find.text('READYSAFE'), findsOneWidget);
     expect(find.text('Home'), findsWidgets);
     expect(find.text('Emergencies'), findsWidgets);
-    expect(find.text('Maps offline'), findsWidgets);
+    expect(find.text('Maps'), findsWidgets);
     expect(find.text('First aid'), findsWidgets);
   });
 }
