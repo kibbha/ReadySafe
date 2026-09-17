@@ -56,7 +56,7 @@ final firstAidGuides = [
   _guide('bleeding','aid_bleeding','aid_bleeding_summary',['aid_bleeding_1','aid_bleeding_2','aid_bleeding_3'],sources:[_erc2025,_ercFirstAid2025],illustrations:['assets/illustrations/bleeding_pressure.svg','assets/illustrations/bleeding_dressing.svg','assets/illustrations/bleeding_tourniquet.svg']),
   _guide('burn','aid_burn','aid_burn_summary',['aid_burn_1','aid_burn_2','aid_burn_3'],sources:[_erc2025,_ercFirstAid2025],illustrations:['assets/illustrations/burn_cool.svg','assets/illustrations/burn_cover.svg','assets/illustrations/burn_help.svg']),
   _guide('trauma','aid_trauma','aid_trauma_summary',['aid_trauma_1','aid_trauma_2','aid_trauma_3']),
-  _guide('seizure','aid_seizure','aid_seizure_summary',['aid_seizure_1','aid_seizure_2','aid_seizure_3']),
+  _guide('seizure','aid_seizure','aid_seizure_summary',['aid_seizure_1','aid_seizure_2','aid_seizure_3'],sources:[_erc2025,_ercFirstAid2025],illustrations:['assets/illustrations/seizure_protect.svg','assets/illustrations/seizure_recovery.svg','assets/illustrations/seizure_call.svg']),
   _guide('drowning','aid_drowning','aid_drowning_summary',['aid_drowning_1','aid_drowning_2','aid_drowning_3'],sources:[_erc2025,_ercFirstAid2025],illustrations:['assets/illustrations/drowning_rescue.svg','assets/illustrations/drowning_breaths.svg','assets/illustrations/drowning_cpr.svg']),
   _guide('hypothermia','aid_hypothermia','aid_hypothermia_summary',['aid_hypothermia_1','aid_hypothermia_2','aid_hypothermia_3']),
   _guide('heatstroke','aid_heatstroke','aid_heatstroke_summary',['aid_heatstroke_1','aid_heatstroke_2','aid_heatstroke_3']),
