@@ -18,7 +18,7 @@ String _aidText(BuildContext context, String key) {
     'first_aid_child': 'Enfant',
     'first_aid_infant': 'Nourrisson',
     'first_aid_header': 'Les bons gestes, au bon moment',
-    'first_aid_header_body': 'Des instructions visuelles, simples et rapides à suivre.',
+    'first_aid_header_body': 'Des gestes visuels, lisibles et rapides à retrouver en situation d’urgence.',
     'aid_child_cpr_1': 'Vérifiez la réaction et la respiration. Appelez les secours sans délai et utilisez le haut-parleur.',
     'aid_child_cpr_2': 'Si l’enfant ne respire pas normalement, donnez 5 insufflations initiales.',
     'aid_child_cpr_3': 'Commencez immédiatement les compressions. Faites 30 compressions pour 2 insufflations, ou 15:2 si vous êtes spécifiquement formé à la RCP pédiatrique PBLS.',
@@ -36,7 +36,7 @@ String _aidText(BuildContext context, String key) {
     'first_aid_child': 'Child',
     'first_aid_infant': 'Infant',
     'first_aid_header': 'The right action, at the right time',
-    'first_aid_header_body': 'Visual instructions designed to be quick and easy to follow.',
+    'first_aid_header_body': 'Clear visual guidance designed to be found quickly in an emergency.',
     'aid_child_cpr_1': 'Check responsiveness and breathing. Call emergency services without delay and use speakerphone.',
     'aid_child_cpr_2': 'If the child is not breathing normally, give 5 initial rescue breaths.',
     'aid_child_cpr_3': 'Immediately start compressions. Use 30 compressions to 2 breaths, or 15:2 if you are specifically trained in paediatric PBLS.',
@@ -81,31 +81,28 @@ class _FirstAidScreenState extends State<FirstAidScreen> {
       appBar: AppBar(title: Text(t.get('firstAid'))),
       body: LayoutBuilder(builder: (context, constraints) {
         final wide = constraints.maxWidth >= 760;
+        final horizontal = wide ? 28.0 : 16.0;
         return ListView(
-          padding: EdgeInsets.fromLTRB(wide ? 28 : 16, 4, wide ? 28 : 16, 28),
+          padding: EdgeInsets.fromLTRB(horizontal, 4, horizontal, 28),
           children: [
             Container(
-              padding: const EdgeInsets.all(18),
+              padding: EdgeInsets.all(wide ? 24 : 18),
               decoration: BoxDecoration(
-                gradient: const LinearGradient(colors: [Color(0xffe9f7f4), Color(0xfff5fbf9)]),
-                borderRadius: BorderRadius.circular(24),
+                gradient: const LinearGradient(colors: [Color(0xffdff4ef), Color(0xfff7fbf9)]),
+                borderRadius: BorderRadius.circular(28),
               ),
               child: Row(children: [
-                Container(width: 58, height: 58, decoration: BoxDecoration(color: const Color(0xff087f83), borderRadius: BorderRadius.circular(18)), child: const Icon(Icons.health_and_safety_rounded, color: Colors.white, size: 32)),
-                const SizedBox(width: 14),
+                Container(width: wide ? 72 : 60, height: wide ? 72 : 60, decoration: BoxDecoration(color: const Color(0xff087f83), borderRadius: BorderRadius.circular(22)), child: const Icon(Icons.volunteer_activism_rounded, color: Colors.white, size: 34)),
+                const SizedBox(width: 16),
                 Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(_aidText(context, 'first_aid_header'), style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w900)),
-                  const SizedBox(height: 4),
-                  Text(_aidText(context, 'first_aid_header_body'), style: const TextStyle(color: Color(0xff65747a), height: 1.3)),
+                  Text(_aidText(context, 'first_aid_header'), style: TextStyle(fontSize: wide ? 23 : 19, fontWeight: FontWeight.w900)),
+                  const SizedBox(height: 5),
+                  Text(_aidText(context, 'first_aid_header_body'), style: const TextStyle(color: Color(0xff52676d), height: 1.35)),
                 ])),
               ]),
             ),
             const SizedBox(height: 14),
-            TextField(
-              onChanged: (value) => setState(() => _query = value),
-              textInputAction: TextInputAction.search,
-              decoration: InputDecoration(hintText: _aidText(context, 'first_aid_search'), prefixIcon: const Icon(Icons.search), isDense: true),
-            ),
+            TextField(onChanged: (value) => setState(() => _query = value), textInputAction: TextInputAction.search, decoration: InputDecoration(hintText: _aidText(context, 'first_aid_search'), prefixIcon: const Icon(Icons.search), isDense: true)),
             const SizedBox(height: 12),
             SingleChildScrollView(scrollDirection: Axis.horizontal, child: Row(children: [
               _filterChip('all', _aidText(context, 'first_aid_all')),
@@ -114,12 +111,8 @@ class _FirstAidScreenState extends State<FirstAidScreen> {
               _filterChip('infant', _aidText(context, 'first_aid_infant')),
             ])),
             const SizedBox(height: 14),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: const Color(0xffffeeee), borderRadius: BorderRadius.circular(15)),
-              child: Row(children: [Icon(Icons.emergency_outlined, color: Theme.of(context).colorScheme.error), const SizedBox(width: 10), Expanded(child: Text(t.get('medicalNotice'), style: const TextStyle(fontWeight: FontWeight.w700)))]),
-            ),
-            const SizedBox(height: 12),
+            Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: const Color(0xffffeeee), borderRadius: BorderRadius.circular(16)), child: Row(children: [Icon(Icons.emergency_outlined, color: Theme.of(context).colorScheme.error), const SizedBox(width: 10), Expanded(child: Text(t.get('medicalNotice'), style: const TextStyle(fontWeight: FontWeight.w700)))])),
+            const SizedBox(height: 14),
             if (guides.isEmpty)
               Padding(padding: const EdgeInsets.symmetric(vertical: 36), child: Center(child: Text(_aidText(context, 'first_aid_empty'))))
             else
@@ -127,7 +120,7 @@ class _FirstAidScreenState extends State<FirstAidScreen> {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: guides.length,
-                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: wide ? 430 : 700, mainAxisExtent: 102, crossAxisSpacing: 12, mainAxisSpacing: 10),
+                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: wide ? 420 : 700, mainAxisExtent: wide ? 154 : 132, crossAxisSpacing: 14, mainAxisSpacing: 12),
                 itemBuilder: (context, index) {
                   final g = guides[index];
                   return _GuideCard(guide: g, title: t.get(g.titleKey), summary: t.get(g.summaryKey), onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => FirstAidDetailScreen(guide: g))));
@@ -152,15 +145,30 @@ class _GuideCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final illustration = guide.steps.isNotEmpty ? guide.steps.first.illustrationAsset : null;
-    return Card(
-      margin: EdgeInsets.zero,
+    return Material(
+      color: Colors.white,
+      elevation: 1.5,
+      shadowColor: const Color(0x1f17383b),
+      borderRadius: BorderRadius.circular(22),
       clipBehavior: Clip.antiAlias,
-      child: InkWell(onTap: onTap, child: Padding(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9), child: Row(children: [
-        Container(width: 82, height: 76, padding: const EdgeInsets.all(3), decoration: BoxDecoration(color: const Color(0xfff2f8f8), borderRadius: BorderRadius.circular(16)), child: illustration == null ? const Icon(Icons.health_and_safety_outlined, color: Color(0xff087f83)) : SvgPicture.asset(illustration, fit: BoxFit.contain)),
-        const SizedBox(width: 12),
-        Expanded(child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900)), const SizedBox(height: 4), Text(summary, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(height: 1.25, color: Color(0xff65747a)))])),
-        const Icon(Icons.chevron_right, color: Color(0xff65747a)),
-      ]))),
+      child: InkWell(
+        onTap: onTap,
+        child: Row(children: [
+          Container(
+            width: 116,
+            height: double.infinity,
+            padding: const EdgeInsets.fromLTRB(6, 10, 6, 6),
+            decoration: const BoxDecoration(color: Color(0xffeaf6f4)),
+            child: illustration == null ? const Icon(Icons.volunteer_activism_outlined, color: Color(0xff087f83), size: 42) : SvgPicture.asset(illustration, fit: BoxFit.contain),
+          ),
+          Expanded(child: Padding(padding: const EdgeInsets.fromLTRB(14, 12, 8, 12), child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(title, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, height: 1.15)),
+            const SizedBox(height: 6),
+            Text(summary, maxLines: 3, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13, height: 1.28, color: Color(0xff5c7075))),
+          ]))),
+          const Padding(padding: EdgeInsets.only(right: 8), child: Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Color(0xff087f83))),
+        ]),
+      ),
     );
   }
 }
@@ -176,18 +184,30 @@ class FirstAidDetailScreen extends StatelessWidget {
       appBar: AppBar(title: Text(t.get(guide.titleKey))),
       body: LayoutBuilder(builder: (context, constraints) {
         final wide = constraints.maxWidth >= 760;
-        return ListView(padding: EdgeInsets.fromLTRB(wide ? 28 : 16, 4, wide ? 28 : 16, 30), children: [
-          Text(t.get(guide.summaryKey), style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
-          const SizedBox(height: 12),
-          Container(padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10), decoration: BoxDecoration(color: const Color(0xffffeeee), borderRadius: BorderRadius.circular(15), border: Border.all(color: const Color(0xffffcccc))), child: Row(children: [
-            Icon(Icons.phone_in_talk, color: Theme.of(context).colorScheme.error), const SizedBox(width: 10), Expanded(child: Text(t.get('aid_call_now'), style: const TextStyle(fontWeight: FontWeight.w800))),
-            FilledButton(style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error, minimumSize: const Size(72, 40)), onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EmergencyScreen())), child: Text(AppScope.of(context).activeCountry!.isoCode)),
-          ])),
-          const SizedBox(height: 14),
-          ...guide.steps.indexed.map((e) => _StepCard(number: e.$1 + 1, step: e.$2, wide: wide)),
-          const SizedBox(height: 6),
-          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [const Icon(Icons.verified_outlined, size: 18, color: Color(0xff087f83)), const SizedBox(width: 7), Expanded(child: Text(t.get('medicalNotice'), style: const TextStyle(fontSize: 12, color: Color(0xff65747a))))]),
-        ]);
+        final maxWidth = wide ? 1080.0 : 680.0;
+        return Align(
+          alignment: Alignment.topCenter,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: maxWidth),
+            child: ListView(padding: EdgeInsets.fromLTRB(wide ? 26 : 14, 4, wide ? 26 : 14, 30), children: [
+              Container(
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+                decoration: BoxDecoration(color: const Color(0xffeaf6f4), borderRadius: BorderRadius.circular(20)),
+                child: Text(t.get(guide.summaryKey), style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800, height: 1.3)),
+              ),
+              const SizedBox(height: 12),
+              Container(padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11), decoration: BoxDecoration(color: const Color(0xffffeeee), borderRadius: BorderRadius.circular(18), border: Border.all(color: const Color(0xffffcccc))), child: Row(children: [
+                Icon(Icons.phone_in_talk, color: Theme.of(context).colorScheme.error), const SizedBox(width: 10), Expanded(child: Text(t.get('aid_call_now'), style: const TextStyle(fontWeight: FontWeight.w800, height: 1.3))),
+                const SizedBox(width: 8),
+                FilledButton(style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error, minimumSize: const Size(64, 42), padding: const EdgeInsets.symmetric(horizontal: 12)), onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EmergencyScreen())), child: Text(AppScope.of(context).activeCountry!.isoCode)),
+              ])),
+              const SizedBox(height: 16),
+              ...guide.steps.indexed.map((e) => _StepCard(number: e.$1 + 1, step: e.$2, wide: wide)),
+              const SizedBox(height: 8),
+              Row(crossAxisAlignment: CrossAxisAlignment.start, children: [const Icon(Icons.verified_outlined, size: 18, color: Color(0xff087f83)), const SizedBox(width: 7), Expanded(child: Text(t.get('medicalNotice'), style: const TextStyle(fontSize: 12, color: Color(0xff65747a))))]),
+            ]),
+          ),
+        );
       }),
     );
   }
@@ -202,21 +222,32 @@ class _StepCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-    final image = Container(
-      height: wide ? 210 : 170,
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(color: const Color(0xfff2f8f8), borderRadius: BorderRadius.circular(18)),
+    final visual = Container(
+      height: wide ? 270 : 235,
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(10, 10, 10, 2),
+      decoration: BoxDecoration(color: const Color(0xffeaf6f4), borderRadius: BorderRadius.circular(22)),
       child: Semantics(image: true, label: t.get('illustration_ready'), child: SvgPicture.asset(step.illustrationAsset, fit: BoxFit.contain)),
     );
-    final text = Text(_aidText(context, step.textKey), style: const TextStyle(fontSize: 16, height: 1.45, fontWeight: FontWeight.w600));
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      clipBehavior: Clip.antiAlias,
-      child: Padding(padding: const EdgeInsets.all(14), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [Container(width: 30, height: 30, alignment: Alignment.center, decoration: const BoxDecoration(color: Color(0xff087f83), shape: BoxShape.circle), child: Text('$number', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900))), const SizedBox(width: 9), Text(t.get('step', {'number': '$number'}), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900))]),
+    final copy = Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(20), border: Border.all(color: const Color(0xffdbe8e8))),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
+        Row(children: [
+          Container(width: 34, height: 34, alignment: Alignment.center, decoration: const BoxDecoration(color: Color(0xff087f83), shape: BoxShape.circle), child: Text('$number', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 16))),
+          const SizedBox(width: 10),
+          Text(t.get('step', {'number': '$number'}), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Color(0xff075e68))),
+        ]),
         const SizedBox(height: 12),
-        if (wide) Row(crossAxisAlignment: CrossAxisAlignment.center, children: [Expanded(flex: 5, child: image), const SizedBox(width: 20), Expanded(flex: 6, child: text)]) else ...[image, const SizedBox(height: 12), text],
-      ])),
+        Text(_aidText(context, step.textKey), style: const TextStyle(fontSize: 16, height: 1.42, fontWeight: FontWeight.w600, color: Color(0xff24363a))),
+      ]),
+    );
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: wide
+          ? Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [Expanded(flex: 6, child: visual), const SizedBox(width: 16), Expanded(flex: 5, child: copy)])
+          : Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [visual, Transform.translate(offset: const Offset(0, -8), child: copy)]),
     );
   }
 }
