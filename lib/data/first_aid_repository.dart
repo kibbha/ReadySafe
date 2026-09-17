@@ -6,6 +6,9 @@ import '../models/first_aid_guide.dart';
 final _erc2025 = Uri.parse(
   'https://www.erc.edu/science-research/guidelines/guidelines-2025/',
 );
+final _ercPaediatric2025 = Uri.parse(
+  'https://www.erc.edu/media/03xnpjmj/gl2025-09-pls-e.pdf',
+);
 final _ercFirstAid2025 = Uri.parse(
   'https://www.erc.edu/media/i2vllpae/gl2025-12-faid-e.pdf',
 );
@@ -41,7 +44,24 @@ FirstAidGuide _guide(
 final firstAidGuides = [
   _guide('cpr_adult', 'aid_cpr_adult', 'aid_cpr_summary', ['aid_cpr_1', 'aid_cpr_2', 'aid_cpr_3']),
   _guide('aed', 'aid_aed', 'aid_aed_summary', ['aid_aed_1', 'aid_aed_2', 'aid_aed_3']),
-  _guide('cpr_child', 'aid_cpr_child', 'aid_cpr_child_summary', ['aid_child_cpr_1', 'aid_child_cpr_2', 'aid_child_cpr_3']),
+  _guide(
+    'cpr_child',
+    'aid_cpr_child',
+    'aid_cpr_child_summary',
+    [
+      'aid_child_cpr_1',
+      'aid_child_cpr_2',
+      'aid_child_cpr_3',
+      'aid_child_cpr_4',
+    ],
+    sources: [_erc2025, _ercPaediatric2025],
+    illustrations: [
+      'assets/illustrations/cpr_child_assess.svg',
+      'assets/illustrations/cpr_child_breaths.svg',
+      'assets/illustrations/cpr_child_compressions.svg',
+      'assets/illustrations/cpr_child_aed.svg',
+    ],
+  ),
   _guide('cpr_infant', 'aid_cpr_infant', 'aid_cpr_infant_summary', ['aid_infant_cpr_1', 'aid_infant_cpr_2', 'aid_infant_cpr_3']),
   _guide(
     'choking_adult',
