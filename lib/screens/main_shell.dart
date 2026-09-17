@@ -27,10 +27,11 @@ class _MainShellState extends State<MainShell> {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
+    final en = Localizations.localeOf(context).languageCode == 'en';
     final destinations = [
       (Icons.home_outlined, Icons.home, t.get('home')),
       (Icons.phone_in_talk_outlined, Icons.phone_in_talk, t.get('emergencies')),
-      (Icons.map_outlined, Icons.map, t.get('maps')),
+      (Icons.map_outlined, Icons.map, en ? 'Maps' : 'Cartes'),
       (Icons.health_and_safety_outlined, Icons.health_and_safety, t.get('firstAid')),
       (Icons.more_horiz, Icons.more_horiz, t.get('more')),
     ];
