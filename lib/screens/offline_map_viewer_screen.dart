@@ -17,6 +17,7 @@ class _OfflineMapViewerScreenState extends State<OfflineMapViewerScreen> {
   bool _searchOpen = false;
   bool _showEmergency = true;
   bool _showAssembly = true;
+  bool _styleReady = false;
   final _searchController = TextEditingController();
 
   MapPack get pack => widget.pack;
@@ -65,6 +66,25 @@ class _OfflineMapViewerScreenState extends State<OfflineMapViewerScreen> {
     return _genevaPlaces.where((p) => '${p.name} ${p.type}'.toLowerCase().contains(q)).toList();
   }
 
+  Future<void> _syncPoiAnnotations() async {
+    final controller = _controller;
+    if (controller == null || !_styleReady || pack.countryCode != 'CH') return;
+    await controller.clearCircles();
+    final places = _genevaPlaces.where((p) => (p.emergency && _showEmergency) || (p.assembly && _showAssembly));
+    for (final place in places) {
+      await controller.addCircle(
+        CircleOptions(
+          geometry: LatLng(place.lat, place.lng),
+          circleRadius: 9.5,
+          circleColor: place.emergency ? '#d92d36' : '#087f83',
+          circleStrokeColor: '#ffffff',
+          circleStrokeWidth: 3,
+        ),
+        {'name': place.name, 'type': place.type},
+      );
+    }
+  }
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -75,7 +95,6 @@ class _OfflineMapViewerScreenState extends State<OfflineMapViewerScreen> {
   Widget build(BuildContext context) {
     if (pack.localPath == null) return const Scaffold(body: Center(child: Text('Carte hors-ligne absente')));
     final title = pack.countryCode == 'CH' ? 'Suisse' : pack.countryCode;
-    final emergencyPlaces = _genevaPlaces.where((p) => (p.emergency && _showEmergency) || (p.assembly && _showAssembly)).toList();
 
     return Scaffold(
       appBar: AppBar(title: Text('Carte hors-ligne — $title')),
@@ -84,13 +103,16 @@ class _OfflineMapViewerScreenState extends State<OfflineMapViewerScreen> {
           styleString: _style,
           initialCameraPosition: CameraPosition(target: _initialTarget, zoom: _initialZoom),
           onMapCreated: (controller) => _controller = controller,
+          onStyleLoadedCallback: () async {
+            _styleReady = true;
+            await _syncPoiAnnotations();
+          },
           compassEnabled: true,
           rotateGesturesEnabled: true,
           tiltGesturesEnabled: false,
           myLocationEnabled: false,
           attributionButtonMargins: const Point(8, 88),
         ),
-        if (pack.countryCode == 'CH') ...emergencyPlaces.map((place) => _PoiBadge(place: place, onTap: () => _goTo(place))),
         Positioned(
           left: 12, right: 12, top: 12,
           child: Column(children: [
@@ -157,29 +179,10 @@ class _OfflineMapViewerScreenState extends State<OfflineMapViewerScreen> {
       child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
         const Text('Couches de carte', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
         const SizedBox(height: 8),
-        SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.local_hospital_outlined, color: Color(0xffd92d36)), title: const Text('Urgences médicales'), value: _showEmergency, onChanged: (v) { setState(() => _showEmergency = v); modalSetState(() {}); }),
-        SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.groups_outlined, color: Color(0xff087f83)), title: const Text('Points de rassemblement'), value: _showAssembly, onChanged: (v) { setState(() => _showAssembly = v); modalSetState(() {}); }),
+        SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.local_hospital_outlined, color: Color(0xffd92d36)), title: const Text('Urgences médicales'), value: _showEmergency, onChanged: (v) async { setState(() => _showEmergency = v); modalSetState(() {}); await _syncPoiAnnotations(); }),
+        SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.groups_outlined, color: Color(0xff087f83)), title: const Text('Points de rassemblement'), value: _showAssembly, onChanged: (v) async { setState(() => _showAssembly = v); modalSetState(() {}); await _syncPoiAnnotations(); }),
       ]),
     )));
-  }
-}
-
-class _PoiBadge extends StatelessWidget {
-  const _PoiBadge({required this.place, required this.onTap});
-  final _MapPlace place;
-  final VoidCallback onTap;
-  @override
-  Widget build(BuildContext context) {
-    // Storyboard-style emergency overlay. Geographic symbols are added as native
-    // annotations once the production POI dataset is bundled with each pack.
-    final top = place.emergency ? 250.0 : (place.name.contains('Plainpalais') ? 330.0 : 390.0);
-    final left = place.emergency ? 120.0 : (place.name.contains('Plainpalais') ? 55.0 : 190.0);
-    return Positioned(top: top, left: left, child: Material(
-      color: place.emergency ? const Color(0xffd92d36) : const Color(0xff087f83),
-      elevation: 4,
-      shape: const CircleBorder(),
-      child: InkWell(customBorder: const CircleBorder(), onTap: onTap, child: Padding(padding: const EdgeInsets.all(9), child: Icon(place.icon, size: 21, color: Colors.white))),
-    ));
   }
 }
 
