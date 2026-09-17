@@ -19,7 +19,6 @@ void main() {
     expect(find.text('READYSAFE'), findsOneWidget);
     expect(find.text('France'), findsOneWidget);
     expect(find.text('Urgences'), findsWidgets);
-    expect(find.text('Cartes hors-ligne'), findsWidgets);
   });
 
   testWidgets('saved English locale renders the shell in English', (tester) async {
@@ -33,7 +32,8 @@ void main() {
     expect(find.text('READYSAFE'), findsOneWidget);
     expect(find.text('Home'), findsWidgets);
     expect(find.text('Emergencies'), findsWidgets);
-    expect(find.text('Maps'), findsWidgets);
     expect(find.text('First aid'), findsWidgets);
+    expect(find.text('Accueil'), findsNothing);
+    expect(find.text('Urgences'), findsNothing);
   });
 }
