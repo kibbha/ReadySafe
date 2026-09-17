@@ -6,13 +6,106 @@ import '../models/country_profile.dart';
 import '../services/emergency_call_service.dart';
 
 class EmergencyScreen extends StatelessWidget {
-  const EmergencyScreen({super.key,this.callService});
+  const EmergencyScreen({super.key, this.callService});
   final EmergencyCallService? callService;
-  IconData _icon(String key){if(key.contains('police'))return Icons.local_police_outlined;if(key.contains('fire'))return Icons.local_fire_department_outlined;if(key.contains('ambulance'))return Icons.emergency_outlined;if(key.contains('poison'))return Icons.science_outlined;if(key.contains('youth'))return Icons.child_care_outlined;if(key.contains('help'))return Icons.support_agent_outlined;return Icons.sos_outlined;}
-  @override Widget build(BuildContext context){final t=AppLocalizations.of(context),country=AppScope.of(context).activeCountry!;return Scaffold(appBar:AppBar(title:Text(t.get('emergencies'))),body:ListView(padding:const EdgeInsets.fromLTRB(16,4,16,28),children:[Row(children:[Container(width:44,height:32,alignment:Alignment.center,decoration:BoxDecoration(color:const Color(0xffeef4f5),borderRadius:BorderRadius.circular(10)),child:Text(country.isoCode,style:const TextStyle(fontWeight:FontWeight.w900))),const SizedBox(width:10),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(t.get(country.nameKey),style:const TextStyle(fontSize:20,fontWeight:FontWeight.w900)),Text(t.get('emergency_hint'),style:const TextStyle(color:Color(0xff65747a))) ]))]),const SizedBox(height:16),...country.services.map((s)=>_EmergencyCard(service:s,icon:_icon(s.nameKey),callService:callService??DeviceEmergencyCallService())),const SizedBox(height:12),Card(child:Padding(padding:const EdgeInsets.all(16),child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Row(children:[const Icon(Icons.verified_user_outlined,color:Color(0xff087f83)),const SizedBox(width:8),Text(t.get('official_sources'),style:const TextStyle(fontWeight:FontWeight.w900,fontSize:16))]),const SizedBox(height:8),...country.sources.map((source)=>ListTile(dense:true,contentPadding:EdgeInsets.zero,title:Text(source.host,style:const TextStyle(fontWeight:FontWeight.w700)),trailing:const Icon(Icons.open_in_new,size:18),onTap:()=>launchUrl(source,mode:LaunchMode.externalApplication))),Text(country.verifiedOn!=null?t.get('verified_on',{'date':country.verifiedOn!.toIso8601String().substring(0,10)}):t.get('numbers_unverified'),style:const TextStyle(fontSize:12,color:Color(0xff65747a))) ])))]));}
+
+  IconData _icon(String key) {
+    if (key.contains('police')) return Icons.local_police_outlined;
+    if (key.contains('fire')) return Icons.local_fire_department_outlined;
+    if (key.contains('ambulance')) return Icons.emergency_outlined;
+    if (key.contains('poison')) return Icons.science_outlined;
+    if (key.contains('youth')) return Icons.child_care_outlined;
+    if (key.contains('help')) return Icons.support_agent_outlined;
+    return Icons.sos_outlined;
+  }
+
+  String _flag(String iso) {
+    if (iso.length != 2) return '🌐';
+    return String.fromCharCodes(iso.toUpperCase().codeUnits.map((c) => 0x1F1E6 + c - 65));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    final country = AppScope.of(context).activeCountry!;
+    final caller = callService ?? DeviceEmergencyCallService();
+    final callable = country.services.where((s) => s.isCallable).toList();
+    EmergencyService? primary;
+    for (final s in callable) {
+      if (s.nameKey.contains('ambulance')) { primary = s; break; }
+    }
+    primary ??= callable.isEmpty ? null : callable.first;
+    final others = primary == null ? callable : callable.where((s) => s != primary).toList();
+
+    return Scaffold(
+      appBar: AppBar(title: Text(t.get('emergencies'))),
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 28),
+        children: [
+          Row(children: [
+            Container(width: 50, height: 38, alignment: Alignment.center,
+              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(11), border: Border.all(color: const Color(0xffdbe5e7))),
+              child: Text(_flag(country.isoCode), style: const TextStyle(fontSize: 25))),
+            const SizedBox(width: 11),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(t.get(country.nameKey), style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w900)),
+              Text(t.get('emergency_hint'), style: const TextStyle(color: Color(0xff65747a))),
+            ])),
+          ]),
+          if (primary != null) ...[
+            const SizedBox(height: 16),
+            _DangerHero(service: primary, callService: caller),
+          ],
+          if (others.isNotEmpty) ...[
+            const SizedBox(height: 14),
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: others.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 1.25, crossAxisSpacing: 10, mainAxisSpacing: 10),
+              itemBuilder: (_, i) => _EmergencyTile(service: others[i], icon: _icon(others[i].nameKey), callService: caller),
+            ),
+          ],
+          const SizedBox(height: 16),
+          Card(child: Padding(padding: const EdgeInsets.all(14), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Row(children: [const Icon(Icons.verified_user_outlined, color: Color(0xff087f83)), const SizedBox(width: 8), Text(t.get('official_sources'), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15))]),
+            const SizedBox(height: 5),
+            ...country.sources.map((source) => ListTile(dense: true, visualDensity: VisualDensity.compact, contentPadding: EdgeInsets.zero, title: Text(source.host, style: const TextStyle(fontWeight: FontWeight.w700)), trailing: const Icon(Icons.open_in_new, size: 17), onTap: () => launchUrl(source, mode: LaunchMode.externalApplication))),
+            Text(country.verifiedOn != null ? t.get('verified_on', {'date': country.verifiedOn!.toIso8601String().substring(0, 10)}) : t.get('numbers_unverified'), style: const TextStyle(fontSize: 12, color: Color(0xff65747a))),
+          ]))),
+        ],
+      ),
+    );
+  }
 }
 
-class _EmergencyCard extends StatelessWidget {const _EmergencyCard({required this.service,required this.icon,required this.callService});final EmergencyService service;final IconData icon;final EmergencyCallService callService;
-  @override Widget build(BuildContext context){final t=AppLocalizations.of(context);return Card(margin:const EdgeInsets.only(bottom:9),child:InkWell(borderRadius:BorderRadius.circular(18),onTap:service.isCallable?()=>_confirm(context,t):null,child:Padding(padding:const EdgeInsets.all(12),child:Row(children:[Container(width:48,height:48,decoration:BoxDecoration(color:const Color(0xffffe9e9),borderRadius:BorderRadius.circular(14)),child:Icon(icon,color:Theme.of(context).colorScheme.error,size:27)),const SizedBox(width:12),Expanded(child:Column(crossAxisAlignment:CrossAxisAlignment.start,children:[Text(t.get(service.nameKey),style:const TextStyle(fontSize:16,fontWeight:FontWeight.w900)),Text(t.get(service.descriptionKey),maxLines:2,overflow:TextOverflow.ellipsis,style:const TextStyle(fontSize:12,color:Color(0xff65747a)))])),const SizedBox(width:8),Column(crossAxisAlignment:CrossAxisAlignment.end,children:[Text(service.number??'—',style:TextStyle(fontSize:26,fontWeight:FontWeight.w900,color:service.isCallable?Theme.of(context).colorScheme.error:Colors.grey)),if(service.isCallable)const Row(children:[Icon(Icons.phone,size:13,color:Color(0xff65747a)),SizedBox(width:3),Text('Appeler',style:TextStyle(fontSize:11,fontWeight:FontWeight.w700,color:Color(0xff65747a)))])])]))));}
-  Future<void> _confirm(BuildContext context,AppLocalizations t)async{final number=service.number;if(number==null||!service.isCallable)return;final ok=await showDialog<bool>(context:context,builder:(c)=>AlertDialog(icon:Icon(Icons.phone_in_talk,color:Theme.of(context).colorScheme.error,size:34),title:Text(t.get('call_confirm_title')),content:Text(t.get('call_confirm_body',{'number':number,'service':t.get(service.nameKey)})),actions:[TextButton(onPressed:()=>Navigator.pop(c,false),child:Text(t.get('cancel'))),FilledButton(style:FilledButton.styleFrom(backgroundColor:Theme.of(context).colorScheme.error),onPressed:()=>Navigator.pop(c,true),child:Text(t.get('call')))]))??false;if(!ok||!context.mounted)return;final launched=await callService.call(number);if(!launched&&context.mounted)ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(t.get('call_failed'))));}
+class _DangerHero extends StatelessWidget {
+  const _DangerHero({required this.service, required this.callService});
+  final EmergencyService service;
+  final EmergencyCallService callService;
+  @override Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    return Container(padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: const Color(0xffffeded), borderRadius: BorderRadius.circular(18), border: Border.all(color: const Color(0xffffcaca))), child: Row(children: [
+      Container(width: 52, height: 52, decoration: BoxDecoration(color: Theme.of(context).colorScheme.error, borderRadius: BorderRadius.circular(15)), child: const Icon(Icons.phone_in_talk, color: Colors.white, size: 29)),
+      const SizedBox(width: 13),
+      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [const Text('Danger immédiat', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: Color(0xff9d1c24))), Text('Appelez le ${service.number ?? ''}', style: const TextStyle(fontSize: 23, fontWeight: FontWeight.w900)), Text(t.get(service.nameKey), style: const TextStyle(fontSize: 12, color: Color(0xff65747a)))])),
+      IconButton.filled(style: IconButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error), onPressed: () => _call(context, t, service, callService), icon: const Icon(Icons.call, color: Colors.white)),
+    ]));
+  }
+}
+
+class _EmergencyTile extends StatelessWidget {
+  const _EmergencyTile({required this.service, required this.icon, required this.callService});
+  final EmergencyService service; final IconData icon; final EmergencyCallService callService;
+  @override Widget build(BuildContext context) {final t=AppLocalizations.of(context); return Card(margin: EdgeInsets.zero, child: InkWell(borderRadius: BorderRadius.circular(18), onTap: () => _call(context,t,service,callService), child: Padding(padding: const EdgeInsets.all(12), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    Container(width: 38,height:38,decoration:BoxDecoration(color:const Color(0xffffe9e9),borderRadius:BorderRadius.circular(11)),child:Icon(icon,color:Theme.of(context).colorScheme.error,size:22)),
+    const Spacer(), Text(service.number ?? '—',style:TextStyle(fontSize:23,fontWeight:FontWeight.w900,color:Theme.of(context).colorScheme.error)),
+    Text(t.get(service.nameKey),maxLines:1,overflow:TextOverflow.ellipsis,style:const TextStyle(fontSize:13,fontWeight:FontWeight.w800)),
+  ]))));}
+}
+
+Future<void> _call(BuildContext context, AppLocalizations t, EmergencyService service, EmergencyCallService caller) async {
+  final number=service.number; if(number==null||!service.isCallable)return;
+  final ok=await showDialog<bool>(context:context,builder:(c)=>AlertDialog(icon:Icon(Icons.phone_in_talk,color:Theme.of(context).colorScheme.error,size:34),title:Text(t.get('call_confirm_title')),content:Text(t.get('call_confirm_body',{'number':number,'service':t.get(service.nameKey)})),actions:[TextButton(onPressed:()=>Navigator.pop(c,false),child:Text(t.get('cancel'))),FilledButton(style:FilledButton.styleFrom(backgroundColor:Theme.of(context).colorScheme.error),onPressed:()=>Navigator.pop(c,true),child:Text(t.get('call')))]))??false;
+  if(!ok||!context.mounted)return; final launched=await caller.call(number); if(!launched&&context.mounted)ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text(t.get('call_failed'))));
 }
