@@ -46,7 +46,7 @@ FirstAidGuide _guide(
 
 final firstAidGuides = [
   _guide('cpr_adult','aid_cpr_adult','aid_cpr_summary',['aid_cpr_1','aid_cpr_2','aid_cpr_3','aid_cpr_4'],sources:[_erc2025,_ercAdultBls2025],illustrations:['assets/illustrations/cpr_adult_1.svg','assets/illustrations/cpr_adult_2.svg','assets/illustrations/cpr_adult_3.svg','assets/illustrations/cpr_adult_4.svg']),
-  _guide('aed','aid_aed','aid_aed_summary',['aid_aed_1','aid_aed_2','aid_aed_3']),
+  _guide('aed','aid_aed','aid_aed_summary',['aid_aed_1','aid_aed_2','aid_aed_3'],sources:[_erc2025,_ercAdultBls2025],illustrations:['assets/illustrations/aed_open.svg','assets/illustrations/aed_pads.svg','assets/illustrations/aed_shock.svg']),
   _guide('cpr_child','aid_cpr_child','aid_cpr_child_summary',['aid_child_cpr_1','aid_child_cpr_2','aid_child_cpr_3','aid_child_cpr_4'],sources:[_erc2025,_ercPaediatric2025],illustrations:['assets/illustrations/cpr_child_assess.svg','assets/illustrations/cpr_child_breaths.svg','assets/illustrations/cpr_child_compressions.svg','assets/illustrations/cpr_child_aed.svg']),
   _guide('cpr_infant','aid_cpr_infant','aid_cpr_infant_summary',['aid_infant_cpr_1','aid_infant_cpr_2','aid_infant_cpr_3','aid_infant_cpr_4'],sources:[_erc2025,_ercPaediatric2025],illustrations:['assets/illustrations/cpr_infant_assess.svg','assets/illustrations/cpr_infant_breaths.svg','assets/illustrations/cpr_infant_compressions.svg','assets/illustrations/cpr_infant_aed.svg']),
   _guide('choking_adult','aid_choking_adult','aid_choking_summary',['aid_choking_1','aid_choking_2','aid_choking_3'],illustrations:['assets/illustrations/choking_adult_1.svg','assets/illustrations/choking_adult_2.svg','assets/illustrations/choking_adult_3.svg']),
