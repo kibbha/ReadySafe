@@ -103,7 +103,7 @@ final firstAidGuides = [
     ['aid_choking_1', 'aid_choking_2', 'aid_choking_3'],
     sources: [_erc2025, _ercPaediatric2025],
     illustrations: [
-      'assets/illustrations/assess.svg',
+      'assets/illustrations/choking_child_assess.svg',
       'assets/illustrations/choking_child_back.svg',
       'assets/illustrations/choking_child_abdominal.svg',
     ],
@@ -115,7 +115,7 @@ final firstAidGuides = [
     ['aid_infant_1', 'aid_infant_2', 'aid_infant_3'],
     sources: [_erc2025, _ercPaediatric2025],
     illustrations: [
-      'assets/illustrations/assess.svg',
+      'assets/illustrations/choking_infant_assess.svg',
       'assets/illustrations/choking_infant_back.svg',
       'assets/illustrations/choking_infant_chest.svg',
     ],
