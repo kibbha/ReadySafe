@@ -21,6 +21,6 @@ void main() {
     expect(find.text('READYSAFE'), findsOneWidget);
     expect(find.text('France'), findsOneWidget);
     expect(find.text('Urgences'), findsWidgets);
-    expect(find.text('Cartes hors-ligne'), findsWidgets);
+    expect(find.text('Cartes'), findsWidgets);
   });
 }
