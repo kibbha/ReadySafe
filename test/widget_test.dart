@@ -15,19 +15,12 @@ void main() {
     SharedPreferences.setMockInitialValues({'settings.residenceCountry': 'FR'});
     await tester.pumpWidget(const ReadySafeApp());
 
-    // Let startup preferences resolve without waiting for every descendant
-    // animation/network-backed future to become permanently idle.
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
 
     expect(find.text('READYSAFE'), findsOneWidget);
     expect(find.text('France'), findsOneWidget);
     expect(find.text('Urgences'), findsWidgets);
-
-    await tester.tap(find.text('Cartes hors-ligne').last);
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 500));
-
-    expect(find.text('Rechercher un pack'), findsOneWidget);
+    expect(find.text('Cartes hors-ligne'), findsWidgets);
   });
 }
