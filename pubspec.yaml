@@ -1,7 +1,7 @@
 name: readysafe
 description: ReadySafe is an offline-first emergency preparedness companion.
 publish_to: none
-version: 2.1.0+3
+version: 2.2.0+4
 
 environment:
   sdk: ^3.11.3
@@ -16,6 +16,9 @@ dependencies:
   url_launcher: ^6.3.2
   crypto: ^3.0.6
   flutter_svg: ^2.2.1
+  maplibre_gl: ^0.26.0
+  path_provider: ^2.1.5
+  http: ^1.5.0
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
@@ -28,3 +31,4 @@ flutter:
   assets:
     - assets/data/
     - assets/illustrations/
+    - assets/maps/
