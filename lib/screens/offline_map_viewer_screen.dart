@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui' show Point;
 import 'package:flutter/material.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 import '../models/map_pack.dart';
@@ -14,8 +15,20 @@ class OfflineMapViewerScreen extends StatefulWidget {
 class _OfflineMapViewerScreenState extends State<OfflineMapViewerScreen> {
   MapLibreMapController? _controller;
   bool _searchOpen = false;
+  bool _showEmergency = true;
+  bool _showAssembly = true;
+  final _searchController = TextEditingController();
 
   MapPack get pack => widget.pack;
+
+  static const _genevaPlaces = <_MapPlace>[
+    _MapPlace('Genève', 'Centre-ville', 46.2044, 6.1432, Icons.location_city),
+    _MapPlace('Gare Cornavin', 'Transport', 46.2102, 6.1425, Icons.train_outlined),
+    _MapPlace('HUG — Hôpital', 'Urgence médicale', 46.1933, 6.1484, Icons.local_hospital_outlined, emergency: true),
+    _MapPlace('Aéroport de Genève', 'Transport', 46.2381, 6.1090, Icons.flight_outlined),
+    _MapPlace('Plainpalais', 'Point de rassemblement', 46.1985, 6.1427, Icons.groups_outlined, assembly: true),
+    _MapPlace('Parc des Bastions', 'Point de rassemblement', 46.2003, 6.1459, Icons.groups_outlined, assembly: true),
+  ];
 
   String get _style {
     final path = pack.localPath!;
@@ -23,11 +36,7 @@ class _OfflineMapViewerScreenState extends State<OfflineMapViewerScreen> {
       'version': 8,
       'name': 'ReadySafe Offline',
       'sources': {
-        'offline': {
-          'type': 'vector',
-          'url': 'pmtiles://file://$path',
-          'attribution': '© OpenStreetMap contributors',
-        }
+        'offline': {'type': 'vector', 'url': 'pmtiles://file://$path', 'attribution': '© OpenStreetMap contributors'}
       },
       'layers': [
         {'id': 'background', 'type': 'background', 'paint': {'background-color': '#f2f4ef'}},
@@ -42,18 +51,32 @@ class _OfflineMapViewerScreenState extends State<OfflineMapViewerScreen> {
   LatLng get _initialTarget => pack.countryCode == 'CH' ? const LatLng(46.2044, 6.1432) : const LatLng(46.8, 8.2);
   double get _initialZoom => pack.countryCode == 'CH' ? 11.5 : 7.0;
 
-  Future<void> _zoom(double delta) async {
-    final controller = _controller;
-    if (controller == null) return;
-    await controller.animateCamera(CameraUpdate.zoomBy(delta));
+  Future<void> _zoom(double delta) async => _controller?.animateCamera(CameraUpdate.zoomBy(delta));
+
+  Future<void> _goTo(_MapPlace place) async {
+    FocusScope.of(context).unfocus();
+    await _controller?.animateCamera(CameraUpdate.newLatLngZoom(LatLng(place.lat, place.lng), 14.5));
+    if (mounted) setState(() => _searchOpen = false);
+  }
+
+  List<_MapPlace> get _results {
+    final q = _searchController.text.trim().toLowerCase();
+    if (q.isEmpty) return _genevaPlaces;
+    return _genevaPlaces.where((p) => '${p.name} ${p.type}'.toLowerCase().contains(q)).toList();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (pack.localPath == null) {
-      return const Scaffold(body: Center(child: Text('Carte hors-ligne absente')));
-    }
+    if (pack.localPath == null) return const Scaffold(body: Center(child: Text('Carte hors-ligne absente')));
     final title = pack.countryCode == 'CH' ? 'Suisse' : pack.countryCode;
+    final emergencyPlaces = _genevaPlaces.where((p) => (p.emergency && _showEmergency) || (p.assembly && _showAssembly)).toList();
+
     return Scaffold(
       appBar: AppBar(title: Text('Carte hors-ligne — $title')),
       body: Stack(children: [
@@ -67,84 +90,105 @@ class _OfflineMapViewerScreenState extends State<OfflineMapViewerScreen> {
           myLocationEnabled: false,
           attributionButtonMargins: const Point(8, 88),
         ),
+        if (pack.countryCode == 'CH') ...emergencyPlaces.map((place) => _PoiBadge(place: place, onTap: () => _goTo(place))),
         Positioned(
           left: 12, right: 12, top: 12,
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 180),
-            child: _searchOpen
-                ? Material(
-                    key: const ValueKey('search'),
-                    elevation: 3,
-                    borderRadius: BorderRadius.circular(16),
-                    child: TextField(
-                      autofocus: true,
-                      decoration: InputDecoration(
-                        hintText: 'Rechercher sur la carte',
-                        prefixIcon: const Icon(Icons.search),
-                        suffixIcon: IconButton(onPressed: () => setState(() => _searchOpen = false), icon: const Icon(Icons.close)),
-                        border: InputBorder.none,
-                      ),
-                    ),
-                  )
-                : Align(
-                    key: const ValueKey('button'),
-                    alignment: Alignment.centerLeft,
-                    child: FloatingActionButton.small(
-                      heroTag: 'mapSearch',
-                      backgroundColor: Colors.white,
-                      foregroundColor: const Color(0xff172126),
-                      onPressed: () => setState(() => _searchOpen = true),
-                      child: const Icon(Icons.search),
-                    ),
-                  ),
-          ),
+          child: Column(children: [
+            Material(
+              elevation: 3,
+              borderRadius: BorderRadius.circular(16),
+              child: TextField(
+                controller: _searchController,
+                onTap: () => setState(() => _searchOpen = true),
+                onChanged: (_) => setState(() => _searchOpen = true),
+                decoration: InputDecoration(
+                  hintText: 'Rechercher sur la carte',
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon: _searchController.text.isEmpty ? null : IconButton(onPressed: () { _searchController.clear(); setState(() {}); }, icon: const Icon(Icons.close)),
+                  border: InputBorder.none,
+                ),
+              ),
+            ),
+            if (_searchOpen && pack.countryCode == 'CH')
+              Container(
+                margin: const EdgeInsets.only(top: 6),
+                constraints: const BoxConstraints(maxHeight: 245),
+                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), boxShadow: const [BoxShadow(blurRadius: 12, color: Color(0x22000000))]),
+                child: _results.isEmpty
+                    ? const Padding(padding: EdgeInsets.all(18), child: Text('Aucun lieu hors-ligne correspondant'))
+                    : ListView(shrinkWrap: true, padding: const EdgeInsets.symmetric(vertical: 6), children: _results.map((p) => ListTile(
+                        dense: true,
+                        leading: Icon(p.icon, color: p.emergency ? const Color(0xffd92d36) : const Color(0xff087f83)),
+                        title: Text(p.name, style: const TextStyle(fontWeight: FontWeight.w800)),
+                        subtitle: Text(p.type),
+                        onTap: () => _goTo(p),
+                      )).toList()),
+              ),
+          ]),
         ),
         Positioned(
           right: 12, top: 72,
           child: Column(children: [
-            _MapButton(icon: Icons.layers_outlined, tooltip: 'Couches de carte', onTap: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Couches hors-ligne ReadySafe')))),
+            _MapButton(icon: Icons.layers_outlined, tooltip: 'Couches de carte', onTap: () => _showLayers(context)),
             const SizedBox(height: 8),
             _MapButton(icon: Icons.add, tooltip: 'Zoom avant', onTap: () => _zoom(1)),
             const SizedBox(height: 6),
             _MapButton(icon: Icons.remove, tooltip: 'Zoom arrière', onTap: () => _zoom(-1)),
           ]),
         ),
-        Positioned(
-          right: 12, bottom: 112,
-          child: _MapButton(icon: Icons.my_location, tooltip: 'Recentrer', onTap: () async {
-            final controller = _controller;
-            if (controller != null) await controller.animateCamera(CameraUpdate.newLatLngZoom(_initialTarget, _initialZoom));
-          }),
-        ),
-        Positioned(
-          left: 12, bottom: 106,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(color: Colors.white.withValues(alpha: .92), borderRadius: BorderRadius.circular(7)),
-            child: const Text('© OpenStreetMap contributors', style: TextStyle(fontSize: 10, color: Color(0xff65747a))),
-          ),
-        ),
+        Positioned(right: 12, bottom: 112, child: _MapButton(icon: Icons.my_location, tooltip: 'Recentrer', onTap: () => _controller?.animateCamera(CameraUpdate.newLatLngZoom(_initialTarget, _initialZoom)))),
+        Positioned(left: 12, bottom: 106, child: Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), decoration: BoxDecoration(color: Colors.white.withValues(alpha: .92), borderRadius: BorderRadius.circular(7)), child: const Text('© OpenStreetMap contributors', style: TextStyle(fontSize: 10, color: Color(0xff65747a))))),
         Positioned(
           left: 12, right: 12, bottom: 14,
-          child: Card(
-            elevation: 3,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-              child: Row(children: [
-                Container(width: 42, height: 42, decoration: BoxDecoration(color: const Color(0xffe8f5f5), borderRadius: BorderRadius.circular(12)), child: const Icon(Icons.offline_pin, color: Color(0xff087f83))),
-                const SizedBox(width: 11),
-                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
-                  const Text('Carte disponible hors ligne', style: TextStyle(fontSize: 12, color: Color(0xff65747a))),
-                ])),
-                const Icon(Icons.check_circle, color: Color(0xff087f83)),
-              ]),
-            ),
-          ),
+          child: Card(elevation: 3, child: Padding(padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12), child: Row(children: [
+            Container(width: 42, height: 42, decoration: BoxDecoration(color: const Color(0xffe8f5f5), borderRadius: BorderRadius.circular(12)), child: const Icon(Icons.offline_pin, color: Color(0xff087f83))),
+            const SizedBox(width: 11),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900)), const Text('Carte disponible hors ligne', style: TextStyle(fontSize: 12, color: Color(0xff65747a)))])),
+            const Icon(Icons.check_circle, color: Color(0xff087f83)),
+          ])))),
         ),
       ]),
     );
   }
+
+  Future<void> _showLayers(BuildContext context) async {
+    await showModalBottomSheet<void>(context: context, showDragHandle: true, builder: (context) => StatefulBuilder(builder: (context, modalSetState) => Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 28),
+      child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const Text('Couches de carte', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
+        const SizedBox(height: 8),
+        SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.local_hospital_outlined, color: Color(0xffd92d36)), title: const Text('Urgences médicales'), value: _showEmergency, onChanged: (v) { setState(() => _showEmergency = v); modalSetState(() {}); }),
+        SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.groups_outlined, color: Color(0xff087f83)), title: const Text('Points de rassemblement'), value: _showAssembly, onChanged: (v) { setState(() => _showAssembly = v); modalSetState(() {}); }),
+      ]),
+    )));
+  }
+}
+
+class _PoiBadge extends StatelessWidget {
+  const _PoiBadge({required this.place, required this.onTap});
+  final _MapPlace place;
+  final VoidCallback onTap;
+  @override
+  Widget build(BuildContext context) {
+    // Storyboard-style emergency overlay. Geographic symbols are added as native
+    // annotations once the production POI dataset is bundled with each pack.
+    final top = place.emergency ? 250.0 : (place.name.contains('Plainpalais') ? 330.0 : 390.0);
+    final left = place.emergency ? 120.0 : (place.name.contains('Plainpalais') ? 55.0 : 190.0);
+    return Positioned(top: top, left: left, child: Material(
+      color: place.emergency ? const Color(0xffd92d36) : const Color(0xff087f83),
+      elevation: 4,
+      shape: const CircleBorder(),
+      child: InkWell(customBorder: const CircleBorder(), onTap: onTap, child: Padding(padding: const EdgeInsets.all(9), child: Icon(place.icon, size: 21, color: Colors.white))),
+    ));
+  }
+}
+
+class _MapPlace {
+  const _MapPlace(this.name, this.type, this.lat, this.lng, this.icon, {this.emergency = false, this.assembly = false});
+  final String name, type;
+  final double lat, lng;
+  final IconData icon;
+  final bool emergency, assembly;
 }
 
 class _MapButton extends StatelessWidget {
@@ -152,12 +196,6 @@ class _MapButton extends StatelessWidget {
   final IconData icon;
   final String tooltip;
   final VoidCallback onTap;
-
   @override
-  Widget build(BuildContext context) => Material(
-    color: Colors.white,
-    elevation: 3,
-    borderRadius: BorderRadius.circular(12),
-    child: IconButton(tooltip: tooltip, onPressed: onTap, icon: Icon(icon), color: const Color(0xff172126)),
-  );
+  Widget build(BuildContext context) => Material(color: Colors.white, elevation: 3, borderRadius: BorderRadius.circular(12), child: IconButton(tooltip: tooltip, onPressed: onTap, icon: Icon(icon), color: const Color(0xff172126)));
 }
