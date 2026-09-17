@@ -4,7 +4,7 @@ import '../app/localizations.dart';
 import '../data/content.dart';
 import '../models/guide.dart';
 
-enum GuideKind { emergencies, disasters, firstAid }
+enum GuideKind { emergencies, disasters }
 
 class GuideListScreen extends StatelessWidget {
   const GuideListScreen({super.key, required this.kind});
@@ -13,7 +13,6 @@ class GuideListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
-    if (kind == GuideKind.firstAid) return _firstAid(context, t);
     final guides = kind == GuideKind.disasters
         ? disasterGuides
         : emergencyGuides;
@@ -43,84 +42,40 @@ class GuideListScreen extends StatelessWidget {
       ),
     );
   }
-
-  Widget _firstAid(BuildContext context, AppLocalizations t) => Scaffold(
-    appBar: AppBar(title: Text(t.get('firstAid'))),
-    body: ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        Card(
-          color: Theme.of(context).colorScheme.errorContainer,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(t.get('medicalNotice')),
-          ),
-        ),
-        const SizedBox(height: 10),
-        ...firstAid.map(
-          (name) => Card(
-            child: ListTile(
-              leading: const Icon(Icons.medical_services_outlined),
-              title: Text(name),
-              subtitle: const Text(
-                'Évaluer, protéger, alerter et suivre les consignes des secours.',
-              ),
-              onTap: () => showDialog<void>(
-                context: context,
-                builder: (_) => AlertDialog(
-                  title: Text(name),
-                  content: Text(
-                    '${t.get('medicalNotice')}\n\nEn cas de danger vital, appelez les secours. Ne donnez pas de médicament ni de nourriture à une personne inconsciente.',
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('OK'),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    ),
-  );
 }
 
 class GuideDetail extends StatelessWidget {
   const GuideDetail({super.key, required this.guide});
   final Guide guide;
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(guide.title)),
-    body: ListView(
-      padding: const EdgeInsets.all(18),
-      children: [
-        _Block('À faire immédiatement', guide.immediate, Icons.flash_on),
-        _Block('À éviter', guide.avoid, Icons.block),
-        const SizedBox(height: 12),
-        Text(
-          'Étapes',
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-        ),
-        ...guide.steps.indexed.map(
-          (entry) => ListTile(
-            leading: CircleAvatar(child: Text('${entry.$1 + 1}')),
-            title: Text(entry.$2),
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    return Scaffold(
+      appBar: AppBar(title: Text(guide.title)),
+      body: ListView(
+        padding: const EdgeInsets.all(18),
+        children: [
+          _Block(t.get('do_now'), guide.immediate, Icons.flash_on),
+          _Block(t.get('avoid'), guide.avoid, Icons.block),
+          const SizedBox(height: 12),
+          Text(
+            t.get('steps'),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
-        ),
-        _Block(
-          'Quand appeler les secours',
-          guide.callHelp,
-          Icons.phone_in_talk,
-        ),
-        _Block('Quand évacuer', guide.evacuate, Icons.directions_run),
-      ],
-    ),
-  );
+          ...guide.steps.indexed.map(
+            (entry) => ListTile(
+              leading: CircleAvatar(child: Text('${entry.$1 + 1}')),
+              title: Text(entry.$2),
+            ),
+          ),
+          _Block(t.get('when_call'), guide.callHelp, Icons.phone_in_talk),
+          _Block(t.get('when_evacuate'), guide.evacuate, Icons.directions_run),
+        ],
+      ),
+    );
+  }
 }
 
 class _Block extends StatelessWidget {

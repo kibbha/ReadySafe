@@ -1,70 +1,92 @@
 import 'package:flutter/material.dart';
+import '../app/app_scope.dart';
 import '../app/localizations.dart';
 import '../widgets/section_card.dart';
-import 'guide_list_screen.dart';
-import 'checklist_screen.dart';
 import 'calculator_screen.dart';
+import 'checklist_screen.dart';
+import 'emergency_screen.dart';
 import 'family_screen.dart';
+import 'first_aid_screen.dart';
+import 'guide_list_screen.dart';
+import 'offline_maps_screen.dart';
 import 'placeholder_screen.dart';
+import 'settings_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context);
+    final t = AppLocalizations.of(context),
+        app = AppScope.of(context),
+        country = app.activeCountry!;
     final items = [
       (
         t.get('emergencies'),
-        Icons.warning_amber_rounded,
-        const GuideListScreen(kind: GuideKind.emergencies),
+        Icons.phone_in_talk,
+        const EmergencyScreen(),
+        Colors.red.shade700,
       ),
       (
         t.get('firstAid'),
         Icons.health_and_safety_outlined,
-        const GuideListScreen(kind: GuideKind.firstAid),
+        const FirstAidScreen(),
+        Colors.red.shade700,
       ),
       (
         t.get('disasters'),
         Icons.thunderstorm_outlined,
         const GuideListScreen(kind: GuideKind.disasters),
+        Theme.of(context).colorScheme.primary,
       ),
-      (t.get('kit'), Icons.backpack_outlined, const ChecklistScreen(kit: true)),
+      (
+        t.get('kit'),
+        Icons.backpack_outlined,
+        const ChecklistScreen(kit: true),
+        Theme.of(context).colorScheme.primary,
+      ),
       (
         t.get('checklists'),
         Icons.checklist_rounded,
         const ChecklistScreen(kit: false),
+        Theme.of(context).colorScheme.primary,
       ),
-      (t.get('waterFood'), Icons.water_drop_outlined, const CalculatorScreen()),
-      (t.get('family'), Icons.family_restroom_outlined, const FamilyScreen()),
+      (
+        t.get('waterFood'),
+        Icons.water_drop_outlined,
+        const CalculatorScreen(),
+        Theme.of(context).colorScheme.primary,
+      ),
+      (
+        t.get('family'),
+        Icons.family_restroom_outlined,
+        const FamilyScreen(),
+        Theme.of(context).colorScheme.primary,
+      ),
       (
         t.get('contacts'),
         Icons.contact_phone_outlined,
-        const PlaceholderScreen(
-          title: 'Contacts d’urgence',
+        PlaceholderScreen(
+          title: t.get('contacts'),
           icon: Icons.contact_phone_outlined,
-          body:
-              'Enregistrez ici les numéros locaux des secours, police, pompiers, ambulance et vos contacts familiaux. Cette base locale pourra être adaptée par pays dans une prochaine version.',
+          body: t.get('offline'),
         ),
+        Theme.of(context).colorScheme.primary,
       ),
       (
         t.get('maps'),
         Icons.map_outlined,
-        const PlaceholderScreen(
-          title: 'Cartes hors-ligne',
-          icon: Icons.map_outlined,
-          body:
-              'ReadySafe prépare l’intégration de cartes téléchargeables par zone. Aucune carte lourde n’est téléchargée automatiquement dans cette version.',
-        ),
+        const OfflineMapsScreen(),
+        Theme.of(context).colorScheme.primary,
       ),
       (
         t.get('information'),
         Icons.info_outline,
-        const PlaceholderScreen(
-          title: 'Informations',
+        PlaceholderScreen(
+          title: t.get('information'),
           icon: Icons.info_outline,
-          body:
-              'ReadySafe fonctionne hors ligne pour les données enregistrées et les guides inclus. Vérifiez toujours les consignes des autorités locales.',
+          body: t.get('medicalNotice'),
         ),
+        Theme.of(context).colorScheme.primary,
       ),
     ];
     return Scaffold(
@@ -77,9 +99,13 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
         actions: [
-          const Padding(
-            padding: EdgeInsets.only(right: 16),
-            child: Icon(Icons.offline_bolt),
+          IconButton(
+            tooltip: t.get('settings'),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SettingsScreen()),
+            ),
+            icon: const Icon(Icons.settings_outlined),
           ),
         ],
       ),
@@ -95,6 +121,32 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
+            Card(
+              color: app.travelMode
+                  ? Theme.of(context).colorScheme.tertiaryContainer
+                  : null,
+              child: ListTile(
+                leading: Text(
+                  _flag(country.isoCode),
+                  style: const TextStyle(fontSize: 28),
+                ),
+                title: Text(
+                  t.get(country.nameKey),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(
+                  app.travelMode
+                      ? t.get('travel_mode')
+                      : t.get('residence_country'),
+                ),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
             Text(t.get('offline')),
             const SizedBox(height: 16),
             ...items.map(
@@ -103,7 +155,7 @@ class HomeScreen extends StatelessWidget {
                 child: SectionCard(
                   title: i.$1,
                   icon: i.$2,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: i.$4,
                   onTap: () => Navigator.of(
                     context,
                   ).push(MaterialPageRoute(builder: (_) => i.$3)),
@@ -115,4 +167,7 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
+
+  String _flag(String code) =>
+      String.fromCharCodes(code.codeUnits.map((c) => c + 127397));
 }

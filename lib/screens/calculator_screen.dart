@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../app/localizations.dart';
 
 class CalculatorScreen extends StatefulWidget {
   const CalculatorScreen({super.key});
@@ -10,34 +11,33 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   int adults = 1, children = 0, days = 3;
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     final people = adults + children;
     final water = (adults * 3 + children * 2) * days;
     final meals = people * 3 * days;
     return Scaffold(
-      appBar: AppBar(title: const Text('Eau & nourriture')),
+      appBar: AppBar(title: Text(t.get('waterFood'))),
       body: ListView(
         padding: const EdgeInsets.all(18),
         children: [
-          const Text(
-            'Estimation de préparation',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          Text(
+            t.get('calculator_estimate'),
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Ces estimations doivent être adaptées à la santé, au climat et aux consignes locales.',
-          ),
+          Text(t.get('calculator_note')),
           _Counter(
-            label: 'Adultes',
+            label: t.get('adults'),
             value: adults,
             onChange: (v) => setState(() => adults = v),
           ),
           _Counter(
-            label: 'Enfants',
+            label: t.get('children'),
             value: children,
             onChange: (v) => setState(() => children = v),
           ),
           _Counter(
-            label: 'Jours',
+            label: t.get('days'),
             value: days,
             min: 1,
             onChange: (v) => setState(() => days = v),
@@ -46,19 +46,21 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
           Card(
             child: ListTile(
               leading: const Icon(Icons.water_drop),
-              title: const Text('Eau recommandée'),
+              title: Text(t.get('water_result')),
               subtitle: Text(
-                '$water litres pour $people personne(s) pendant $days jour(s)',
+                t.get('litres_for', {
+                  'litres': '$water',
+                  'people': '$people',
+                  'days': '$days',
+                }),
               ),
             ),
           ),
           Card(
             child: ListTile(
               leading: const Icon(Icons.restaurant),
-              title: const Text('Repas recommandés'),
-              subtitle: Text(
-                '$meals repas à prévoir (3 par personne et par jour)',
-              ),
+              title: Text(t.get('meal_result')),
+              subtitle: Text(t.get('meals_for', {'meals': '$meals'})),
             ),
           ),
         ],

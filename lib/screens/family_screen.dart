@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../app/localizations.dart';
 import '../services/local_storage_service.dart';
 
 class FamilyScreen extends StatefulWidget {
@@ -26,28 +27,29 @@ class _FamilyScreenState extends State<FamilyScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Famille')),
+      appBar: AppBar(title: Text(t.get('family'))),
       body: ListView(
         padding: const EdgeInsets.all(18),
         children: [
-          const Text(
-            'Profil familial local',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          Text(
+            t.get('family_profile'),
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'N’enregistrez que ce qui vous aide à préparer votre foyer. Aucune donnée n’est envoyée à un serveur.',
-          ),
+          Text(t.get('family_privacy')),
           ...['adults', 'children', 'care', 'pets'].map(
             (key) => ListTile(
               title: Text(
-                {
-                  'adults': 'Adultes',
-                  'children': 'Enfants',
-                  'care': 'Personnes nécessitant une attention particulière',
-                  'pets': 'Animaux domestiques',
-                }[key]!,
+                t.get(
+                  {
+                    'adults': 'adults',
+                    'children': 'children',
+                    'care': 'care_people',
+                    'pets': 'pets',
+                  }[key]!,
+                ),
               ),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -72,12 +74,12 @@ class _FamilyScreenState extends State<FamilyScreen> {
           FilledButton.icon(
             onPressed: _save,
             icon: const Icon(Icons.save_outlined),
-            label: const Text('Enregistrer localement'),
+            label: Text(t.get('save_local')),
           ),
           if (saved)
-            const Padding(
-              padding: EdgeInsets.only(top: 10),
-              child: Text('Profil enregistré hors ligne.'),
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: Text(t.get('saved_offline')),
             ),
         ],
       ),

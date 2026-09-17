@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../app/localizations.dart';
 import '../data/content.dart';
 import '../models/checklist_item.dart';
 import '../services/local_storage_service.dart';
@@ -25,6 +26,7 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
     final items = widget.kit
         ? kitItems
         : scenarioLists.entries
@@ -40,7 +42,7 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
               .toList();
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.kit ? 'Kit d’urgence 72 h' : 'Check-lists'),
+        title: Text(widget.kit ? t.get('kit') : t.get('checklists')),
       ),
       body: Column(
         children: [
@@ -49,7 +51,12 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
           ),
           Padding(
             padding: const EdgeInsets.all(12),
-            child: Text('${done.length} / ${items.length} éléments prêts'),
+            child: Text(
+              t.get('items_ready', {
+                'done': '${done.length}',
+                'total': '${items.length}',
+              }),
+            ),
           ),
           Expanded(
             child: ListView.builder(
