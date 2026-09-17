@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import '../app/localizations.dart';
-import 'emergency_screen.dart';
 import 'first_aid_screen.dart';
+import 'guided_emergency_screen.dart';
 import 'home_screen.dart';
 import 'more_screen.dart';
-import 'online_maps_screen.dart';
+import 'prepare_screen.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -18,8 +18,8 @@ class _MainShellState extends State<MainShell> {
 
   final pages = const [
     HomeScreen(),
-    EmergencyScreen(),
-    OnlineMapsScreen(),
+    GuidedEmergencyScreen(),
+    PrepareScreen(),
     FirstAidScreen(),
     MoreScreen(),
   ];
@@ -30,8 +30,8 @@ class _MainShellState extends State<MainShell> {
     final en = Localizations.localeOf(context).languageCode == 'en';
     final destinations = [
       (Icons.home_outlined, Icons.home, t.get('home')),
-      (Icons.phone_in_talk_outlined, Icons.phone_in_talk, t.get('emergencies')),
-      (Icons.map_outlined, Icons.map, en ? 'Maps' : 'Cartes'),
+      (Icons.sos_outlined, Icons.sos_rounded, en ? 'Emergency' : 'Urgence'),
+      (Icons.shield_outlined, Icons.shield_rounded, en ? 'Prepare' : 'Préparer'),
       (Icons.health_and_safety_outlined, Icons.health_and_safety, t.get('firstAid')),
       (Icons.more_horiz, Icons.more_horiz, t.get('more')),
     ];
