@@ -6,6 +6,7 @@ class CountryRepository {
   static final Uri _eu112 = Uri.parse('https://digital-strategy.ec.europa.eu/en/policies/112');
   static final Uri _uk999 = Uri.parse('https://www.gov.uk/guidance/999-and-112-the-uks-national-emergency-numbers');
   static final Uri _chOfcom = Uri.parse('https://www.bakom.admin.ch/en/other-numbers-free-of-charge-or-not');
+  static final Uri _chRega = Uri.parse('https://www.rega.ch/en/emergency-number-1414');
 
   static const Set<String> _euMemberStates = {
     'AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE',
@@ -35,7 +36,7 @@ class CountryRepository {
     'BE':[Uri.parse('https://112.be/fr'),_eu112],
     'DE':[Uri.parse('https://www.bbk.bund.de/EN/Prepare-for-disasters/Personal-Preparedness/Emergency-call/emergency-call_node.html'),_eu112],
     'IT':[Uri.parse('https://www.interno.gov.it/it/temi/sicurezza/numero-unico-emergenza-112'),_eu112],
-    'GB':[_uk999], 'CH':[_chOfcom,_eu112],
+    'GB':[_uk999], 'CH':[_chOfcom,_chRega,_eu112],
   };
 
   static final Map<String,List<EmergencyService>> _verifiedServices = {
@@ -46,9 +47,10 @@ class CountryRepository {
     'GB':[_service('general','service_emergency','999','service_112_desc'),_service('eu','service_emergency','112','service_112_desc')],
     'CH':[
       _service('eu','service_emergency','112','service_112_desc'),
+      _service('medical','service_ambulance','144','service_samu_desc'),
       _service('police','service_police','117','service_police_desc'),
       _service('fire','service_fire','118','service_fire_desc'),
-      _service('medical','service_ambulance','144','service_samu_desc'),
+      _service('rega','service_rega','1414','service_rega_desc'),
       _service('poison','service_poison','145','service_poison_desc'),
       _service('adult_help','service_adult_help','143','service_adult_help_desc'),
       _service('youth_help','service_youth_help','147','service_youth_help_desc'),
