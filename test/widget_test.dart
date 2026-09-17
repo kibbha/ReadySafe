@@ -14,30 +14,26 @@ void main() {
   testWidgets('saved residence opens localized home', (tester) async {
     SharedPreferences.setMockInitialValues({'settings.residenceCountry': 'FR'});
     await tester.pumpWidget(const ReadySafeApp());
-
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pumpAndSettle();
 
     expect(find.text('READYSAFE'), findsOneWidget);
     expect(find.text('France'), findsOneWidget);
     expect(find.text('Urgences'), findsWidgets);
-    expect(find.text('Cartes'), findsWidgets);
+    expect(find.text('Cartes hors-ligne'), findsWidgets);
   });
 
   testWidgets('saved English locale renders the shell in English', (tester) async {
     SharedPreferences.setMockInitialValues({
       'settings.residenceCountry': 'FR',
-      'settings.localeCode': 'en',
+      'settings.locale': 'en',
     });
     await tester.pumpWidget(const ReadySafeApp());
-
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pumpAndSettle();
 
     expect(find.text('READYSAFE'), findsOneWidget);
     expect(find.text('Home'), findsWidgets);
     expect(find.text('Emergencies'), findsWidgets);
-    expect(find.text('Maps'), findsWidgets);
+    expect(find.text('Maps offline'), findsWidgets);
     expect(find.text('First aid'), findsWidgets);
   });
 }
