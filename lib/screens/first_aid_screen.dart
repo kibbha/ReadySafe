@@ -7,6 +7,44 @@ import '../data/first_aid_repository.dart';
 import '../models/first_aid_guide.dart';
 import 'emergency_screen.dart';
 
+String _aidText(BuildContext context, String key) {
+  final t = AppLocalizations.of(context);
+  final en = Localizations.localeOf(context).languageCode == 'en';
+  const fr = <String, String>{
+    'first_aid_search': 'Rechercher un geste de secours',
+    'first_aid_empty': 'Aucun geste correspondant',
+    'first_aid_all': 'Tous',
+    'first_aid_adult': 'Adulte',
+    'first_aid_child': 'Enfant',
+    'first_aid_infant': 'Nourrisson',
+    'aid_child_cpr_1': 'Vérifiez la réaction et la respiration. Appelez les secours sans délai et utilisez le haut-parleur.',
+    'aid_child_cpr_2': 'Si l’enfant ne respire pas normalement, donnez 5 insufflations initiales.',
+    'aid_child_cpr_3': 'Commencez immédiatement les compressions. Faites 30 compressions pour 2 insufflations, ou 15:2 si vous êtes spécifiquement formé à la RCP pédiatrique PBLS.',
+    'aid_child_cpr_4': 'Faites apporter et connecter un DAE dès que possible. Suivez ses instructions sans interrompre inutilement la RCP.',
+    'aid_infant_cpr_1': 'Vérifiez la réaction et la respiration. Appelez les secours sans délai et utilisez le haut-parleur.',
+    'aid_infant_cpr_2': 'Si le nourrisson ne respire pas normalement, donnez 5 insufflations initiales.',
+    'aid_infant_cpr_3': 'Commencez immédiatement les compressions. Faites 30 compressions pour 2 insufflations, ou 15:2 si vous êtes spécifiquement formé à la RCP pédiatrique PBLS.',
+    'aid_infant_cpr_4': 'Faites apporter et connecter un DAE dès que possible. Suivez ses instructions sans interrompre inutilement la RCP.',
+  };
+  const english = <String, String>{
+    'first_aid_search': 'Search first-aid guidance',
+    'first_aid_empty': 'No matching first-aid guidance',
+    'first_aid_all': 'All',
+    'first_aid_adult': 'Adult',
+    'first_aid_child': 'Child',
+    'first_aid_infant': 'Infant',
+    'aid_child_cpr_1': 'Check responsiveness and breathing. Call emergency services without delay and use speakerphone.',
+    'aid_child_cpr_2': 'If the child is not breathing normally, give 5 initial rescue breaths.',
+    'aid_child_cpr_3': 'Immediately start compressions. Use 30 compressions to 2 breaths, or 15:2 if you are specifically trained in paediatric PBLS.',
+    'aid_child_cpr_4': 'Have an AED brought and attached as soon as possible. Follow its prompts and minimise interruptions to CPR.',
+    'aid_infant_cpr_1': 'Check responsiveness and breathing. Call emergency services without delay and use speakerphone.',
+    'aid_infant_cpr_2': 'If the infant is not breathing normally, give 5 initial rescue breaths.',
+    'aid_infant_cpr_3': 'Immediately start compressions. Use 30 compressions to 2 breaths, or 15:2 if you are specifically trained in paediatric PBLS.',
+    'aid_infant_cpr_4': 'Have an AED brought and attached as soon as possible. Follow its prompts and minimise interruptions to CPR.',
+  };
+  return (en ? english : fr)[key] ?? t.get(key);
+}
+
 class FirstAidScreen extends StatefulWidget {
   const FirstAidScreen({super.key});
 
@@ -58,9 +96,9 @@ class _FirstAidScreenState extends State<FirstAidScreen> {
           TextField(
             onChanged: (value) => setState(() => _query = value),
             textInputAction: TextInputAction.search,
-            decoration: const InputDecoration(
-              hintText: 'Rechercher un geste de secours',
-              prefixIcon: Icon(Icons.search),
+            decoration: InputDecoration(
+              hintText: _aidText(context, 'first_aid_search'),
+              prefixIcon: const Icon(Icons.search),
               isDense: true,
             ),
           ),
@@ -69,10 +107,10 @@ class _FirstAidScreenState extends State<FirstAidScreen> {
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                _filterChip('all', 'Tous'),
-                _filterChip('adult', 'Adulte'),
-                _filterChip('child', 'Enfant'),
-                _filterChip('infant', 'Nourrisson'),
+                _filterChip('all', _aidText(context, 'first_aid_all')),
+                _filterChip('adult', _aidText(context, 'first_aid_adult')),
+                _filterChip('child', _aidText(context, 'first_aid_child')),
+                _filterChip('infant', _aidText(context, 'first_aid_infant')),
               ],
             ),
           ),
@@ -99,15 +137,16 @@ class _FirstAidScreenState extends State<FirstAidScreen> {
           ),
           const SizedBox(height: 12),
           if (guides.isEmpty)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 36),
-              child: Center(child: Text('Aucun geste correspondant')),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 36),
+              child: Center(child: Text(_aidText(context, 'first_aid_empty'))),
             ),
           ...guides.map(
             (g) => Card(
               margin: const EdgeInsets.only(bottom: 8),
               child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 leading: Container(
                   width: 46,
                   height: 46,
@@ -311,7 +350,7 @@ class _StepCard extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.only(top: 3),
                 child: Text(
-                  t.get(step.textKey),
+                  _aidText(context, step.textKey),
                   style: const TextStyle(
                     fontSize: 15,
                     height: 1.4,
