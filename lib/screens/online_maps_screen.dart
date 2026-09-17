@@ -56,11 +56,19 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
   Future<void> _syncPois() async {
     final map = _map;
     if (map == null) return;
-    for (final circle in List<Circle>.from(_poiCircles)) { await map.removeCircle(circle); }
+    for (final circle in List<Circle>.from(_poiCircles)) {
+      await map.removeCircle(circle);
+    }
     _poiCircles.clear();
     for (final p in _places) {
       if (!((p.emergency && _showEmergency) || (p.assembly && _showAssembly))) continue;
-      final circle = await map.addCircle(CircleOptions(geometry: LatLng(p.lat, p.lng), circleRadius: 9, circleColor: p.emergency ? '#d92d36' : '#087f83', circleStrokeColor: '#ffffff', circleStrokeWidth: 3));
+      final circle = await map.addCircle(CircleOptions(
+        geometry: LatLng(p.lat, p.lng),
+        circleRadius: 9,
+        circleColor: p.emergency ? '#d92d36' : '#087f83',
+        circleStrokeColor: '#ffffff',
+        circleStrokeWidth: 3,
+      ));
       _poiCircles.add(circle);
     }
   }
@@ -75,54 +83,157 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
 
   void _setStyle(String name) {
     if (_styleName == name) return;
-    setState(() { _styleName = name; _poiCircles.clear(); });
+    setState(() {
+      _styleName = name;
+      _poiCircles.clear();
+    });
   }
 
   @override
-  void dispose() { _search.dispose(); super.dispose(); }
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Carte')),
-    body: Stack(children: [
-      MapLibreMap(
-        key: ValueKey(_styleName), styleString: _styles[_styleName]!, initialCameraPosition: _camera,
-        onMapCreated: (c) => _map = c, onStyleLoadedCallback: _syncPois,
-        onCameraIdle: () { final map = _map; if (map != null) _camera = map.cameraPosition; },
-        compassEnabled: true, rotateGesturesEnabled: true, tiltGesturesEnabled: false,
-        attributionButtonMargins: const Point<double>(8, 82),
-      ),
-      Positioned(left: 12, right: 12, top: 12, child: Column(children: [
-        Material(elevation: 3, borderRadius: BorderRadius.circular(16), child: TextField(controller: _search, onTap: () => setState(() => _searchOpen = true), onChanged: (_) => setState(() => _searchOpen = true), decoration: InputDecoration(hintText: 'Rechercher une ville ou un lieu', prefixIcon: const Icon(Icons.search), suffixIcon: _search.text.isEmpty ? null : IconButton(onPressed: () { _search.clear(); setState(() {}); }, icon: const Icon(Icons.close)), border: InputBorder.none))),
-        if (_searchOpen) Container(margin: const EdgeInsets.only(top: 6), constraints: const BoxConstraints(maxHeight: 280), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), boxShadow: const [BoxShadow(blurRadius: 12, color: Color(0x22000000))]), child: _results.isEmpty ? const Padding(padding: EdgeInsets.all(18), child: Text('Aucun lieu correspondant')) : ListView(shrinkWrap: true, padding: const EdgeInsets.symmetric(vertical: 6), children: _results.map((p) => ListTile(dense: true, leading: Icon(p.icon, color: p.emergency ? const Color(0xffd92d36) : const Color(0xff087f83)), title: Text(p.name, style: const TextStyle(fontWeight: FontWeight.w800)), subtitle: Text(p.type), onTap: () => _goTo(p))).toList())),
-      ])),
-      Positioned(right: 12, top: 74, child: Column(children: [
-        _MapButton(icon: Icons.layers_outlined, tooltip: 'Couches', onTap: _layers), const SizedBox(height: 8),
-        _MapButton(icon: Icons.add, tooltip: 'Zoom avant', onTap: () => _map?.animateCamera(CameraUpdate.zoomBy(1))), const SizedBox(height: 6),
-        _MapButton(icon: Icons.remove, tooltip: 'Zoom arrière', onTap: () => _map?.animateCamera(CameraUpdate.zoomBy(-1))),
-      ])),
-      Positioned(right: 12, bottom: 24, child: _MapButton(icon: Icons.center_focus_strong, tooltip: 'Recentrer sur Genève', onTap: () { _camera = const CameraPosition(target: _geneva, zoom: 11.5); _map?.animateCamera(CameraUpdate.newCameraPosition(_camera)); })),
-      Positioned(left: 12, bottom: 24, child: Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7), decoration: BoxDecoration(color: Colors.white.withValues(alpha: .94), borderRadius: BorderRadius.circular(10)), child: Row(mainAxisSize: MainAxisSize.min, children: [const Icon(Icons.wifi, size: 16, color: Color(0xff087f83)), const SizedBox(width: 6), Text('Carte en ligne · $_styleName', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800))]))),
-    ]),
-  );
+        appBar: AppBar(title: const Text('Carte')),
+        body: Stack(children: [
+          MapLibreMap(
+            key: ValueKey(_styleName),
+            styleString: _styles[_styleName]!,
+            initialCameraPosition: _camera,
+            onMapCreated: (c) => _map = c,
+            onStyleLoadedCallback: _syncPois,
+            onCameraIdle: () {
+              final position = _map?.cameraPosition;
+              if (position != null) _camera = position;
+            },
+            compassEnabled: true,
+            rotateGesturesEnabled: true,
+            tiltGesturesEnabled: false,
+            attributionButtonMargins: const Point<double>(8, 82),
+          ),
+          Positioned(
+            left: 12,
+            right: 12,
+            top: 12,
+            child: Column(children: [
+              Material(
+                elevation: 3,
+                borderRadius: BorderRadius.circular(16),
+                child: TextField(
+                  controller: _search,
+                  onTap: () => setState(() => _searchOpen = true),
+                  onChanged: (_) => setState(() => _searchOpen = true),
+                  decoration: InputDecoration(
+                    hintText: 'Rechercher une ville ou un lieu',
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: _search.text.isEmpty
+                        ? null
+                        : IconButton(onPressed: () { _search.clear(); setState(() {}); }, icon: const Icon(Icons.close)),
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+              if (_searchOpen)
+                Container(
+                  margin: const EdgeInsets.only(top: 6),
+                  constraints: const BoxConstraints(maxHeight: 280),
+                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), boxShadow: const [BoxShadow(blurRadius: 12, color: Color(0x22000000))]),
+                  child: _results.isEmpty
+                      ? const Padding(padding: EdgeInsets.all(18), child: Text('Aucun lieu correspondant'))
+                      : ListView(
+                          shrinkWrap: true,
+                          padding: const EdgeInsets.symmetric(vertical: 6),
+                          children: _results.map((p) => ListTile(
+                            dense: true,
+                            leading: Icon(p.icon, color: p.emergency ? const Color(0xffd92d36) : const Color(0xff087f83)),
+                            title: Text(p.name, style: const TextStyle(fontWeight: FontWeight.w800)),
+                            subtitle: Text(p.type),
+                            onTap: () => _goTo(p),
+                          )).toList(),
+                        ),
+                ),
+            ]),
+          ),
+          Positioned(right: 12, top: 74, child: Column(children: [
+            _MapButton(icon: Icons.layers_outlined, tooltip: 'Couches', onTap: _layers),
+            const SizedBox(height: 8),
+            _MapButton(icon: Icons.add, tooltip: 'Zoom avant', onTap: () => _map?.animateCamera(CameraUpdate.zoomBy(1))),
+            const SizedBox(height: 6),
+            _MapButton(icon: Icons.remove, tooltip: 'Zoom arrière', onTap: () => _map?.animateCamera(CameraUpdate.zoomBy(-1))),
+          ])),
+          Positioned(
+            right: 12,
+            bottom: 24,
+            child: _MapButton(
+              icon: Icons.center_focus_strong,
+              tooltip: 'Recentrer sur Genève',
+              onTap: () {
+                _camera = const CameraPosition(target: _geneva, zoom: 11.5);
+                _map?.animateCamera(CameraUpdate.newCameraPosition(_camera));
+              },
+            ),
+          ),
+          Positioned(
+            left: 12,
+            bottom: 24,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+              decoration: BoxDecoration(color: Colors.white.withValues(alpha: .94), borderRadius: BorderRadius.circular(10)),
+              child: Row(mainAxisSize: MainAxisSize.min, children: [
+                const Icon(Icons.wifi, size: 16, color: Color(0xff087f83)),
+                const SizedBox(width: 6),
+                Text('Carte en ligne · $_styleName', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
+              ]),
+            ),
+          ),
+        ]),
+      );
 
   Future<void> _layers() async {
-    await showModalBottomSheet<void>(context: context, showDragHandle: true, builder: (ctx) => StatefulBuilder(builder: (ctx, modalSetState) => Padding(padding: const EdgeInsets.fromLTRB(20, 0, 20, 28), child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const Text('Couches de carte', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900)), const SizedBox(height: 8), const Text('Style', style: TextStyle(fontWeight: FontWeight.w800)), const SizedBox(height: 8),
-      Wrap(spacing: 8, children: _styles.keys.map((name) => ChoiceChip(label: Text(name), selected: _styleName == name, onSelected: (_) { _setStyle(name); modalSetState(() {}); })).toList()), const Divider(height: 28),
-      SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.local_hospital_outlined, color: Color(0xffd92d36)), title: const Text('Urgences médicales'), value: _showEmergency, onChanged: (v) { setState(() => _showEmergency = v); modalSetState(() {}); _syncPois(); }),
-      SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.place_outlined, color: Color(0xff087f83)), title: const Text('Repères ReadySafe'), subtitle: const Text('Repères indicatifs, pas des points officiels d’évacuation'), value: _showAssembly, onChanged: (v) { setState(() => _showAssembly = v); modalSetState(() {}); _syncPois(); }),
-    ]))));
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, modalSetState) => Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 28),
+          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Text('Couches de carte', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
+            const SizedBox(height: 8),
+            const Text('Style', style: TextStyle(fontWeight: FontWeight.w800)),
+            const SizedBox(height: 8),
+            Wrap(spacing: 8, children: _styles.keys.map((name) => ChoiceChip(label: Text(name), selected: _styleName == name, onSelected: (_) { _setStyle(name); modalSetState(() {}); })).toList()),
+            const Divider(height: 28),
+            SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.local_hospital_outlined, color: Color(0xffd92d36)), title: const Text('Urgences médicales'), value: _showEmergency, onChanged: (v) { setState(() => _showEmergency = v); modalSetState(() {}); _syncPois(); }),
+            SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.place_outlined, color: Color(0xff087f83)), title: const Text('Repères ReadySafe'), subtitle: const Text('Repères indicatifs, pas des points officiels d’évacuation'), value: _showAssembly, onChanged: (v) { setState(() => _showAssembly = v); modalSetState(() {}); _syncPois(); }),
+          ]),
+        ),
+      ),
+    );
   }
 }
 
 class _Place {
   const _Place(this.name, this.type, this.lat, this.lng, this.icon, {this.emergency = false, this.assembly = false});
-  final String name, type; final double lat, lng; final IconData icon; final bool emergency, assembly;
+  final String name, type;
+  final double lat, lng;
+  final IconData icon;
+  final bool emergency, assembly;
 }
 
 class _MapButton extends StatelessWidget {
   const _MapButton({required this.icon, required this.tooltip, required this.onTap});
-  final IconData icon; final String tooltip; final VoidCallback onTap;
-  @override Widget build(BuildContext context) => Material(color: Colors.white, elevation: 3, borderRadius: BorderRadius.circular(12), child: IconButton(tooltip: tooltip, onPressed: onTap, icon: Icon(icon), color: const Color(0xff172126)));
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Material(
+        color: Colors.white,
+        elevation: 3,
+        borderRadius: BorderRadius.circular(12),
+        child: IconButton(tooltip: tooltip, onPressed: onTap, icon: Icon(icon), color: const Color(0xff172126)),
+      );
 }
