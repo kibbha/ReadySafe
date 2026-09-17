@@ -27,12 +27,18 @@ class KitStockEntry {
     this.quantityOwned = 0,
     this.expiryDate,
     this.updatedAt,
+    this.notes = '',
+    this.reminderEnabled = false,
+    this.reminderDays = 30,
   });
 
   final String itemId;
   final num quantityOwned;
   final DateTime? expiryDate;
   final DateTime? updatedAt;
+  final String notes;
+  final bool reminderEnabled;
+  final int reminderDays;
 
   bool get isExpired =>
       expiryDate != null && expiryDate!.isBefore(DateTime.now());
@@ -49,6 +55,9 @@ class KitStockEntry {
         'quantityOwned': quantityOwned,
         'expiryDate': expiryDate?.toIso8601String(),
         'updatedAt': updatedAt?.toIso8601String(),
+        'notes': notes,
+        'reminderEnabled': reminderEnabled,
+        'reminderDays': reminderDays,
       };
 
   factory KitStockEntry.fromJson(Map<String, dynamic> json) => KitStockEntry(
@@ -60,5 +69,8 @@ class KitStockEntry {
         updatedAt: json['updatedAt'] == null
             ? null
             : DateTime.tryParse(json['updatedAt'] as String),
+        notes: (json['notes'] as String?) ?? '',
+        reminderEnabled: (json['reminderEnabled'] as bool?) ?? false,
+        reminderDays: (json['reminderDays'] as num?)?.toInt() ?? 30,
       );
 }
