@@ -70,3 +70,21 @@ ReadySafe V2 demande au premier lancement un pays de résidence, stocké uniquem
 Pays actuellement activés : France, Belgique, Allemagne et Italie. Les numéros publiés proviennent exclusivement des sources officielles enregistrées dans `lib/data/country_repository.dart`; tout nouveau pays doit fournir les mêmes métadonnées et faire l’objet d’une revue.
 
 Les cartes utilisent une interface fournisseur indépendante conçue pour des packs PMTiles/MBTiles. La V2 n’embarque ni fournisseur commercial ni carte et ne contacte jamais le serveur public OpenStreetMap pour du téléchargement massif. L’interface indique donc explicitement qu’aucun pack n’est disponible tant qu’un catalogue licencié n’a pas été configuré.
+
+## Architecture cartographique V2 Europe
+
+Le catalogue expose un pack national pour chacun des pays du registre. Tant qu'aucun fournisseur légal n'est configuré, ces packs restent explicitement `Indisponible` et aucun téléchargement réseau n'est démarré. Le serveur public `tile.openstreetmap.org` n'est jamais utilisé.
+
+L'architecture sépare :
+- le catalogue et les états dans `MapPack` / `OfflineMapProvider` ;
+- la source de téléchargement segmentable (`MapDownloadSource`) ;
+- le stockage `.part` puis `.pmtiles` (`MapPackStore`) ;
+- la validation stricte taille + SHA-256 (`MapIntegrityVerifier`) ;
+- la promotion d'un fichier seulement après validation (`VerifiedMapDownloader`) ;
+- le moteur d'affichage local (`OfflineMapRenderer`).
+
+À connecter avant d'activer les boutons de production : un catalogue signé/licencié avec URL, taille, version et SHA-256 par pays, une source HTTP supportant les requêtes Range, un répertoire applicatif via `path_provider`, et un adaptateur MapLibre/PMTiles entièrement local. Aucune clé API ne doit être commitée. L'attribution © OpenStreetMap contributors doit rester visible.
+
+## Données d'urgence européennes
+
+Tous les pays européens demandés sont sélectionnables. Seuls France, Belgique, Allemagne et Italie ont actuellement des numéros activés car leurs sources officielles sont enregistrées. Pour tous les autres pays, ReadySafe affiche clairement « numéros non vérifiés » et désactive les appels plutôt que de publier une donnée incertaine.

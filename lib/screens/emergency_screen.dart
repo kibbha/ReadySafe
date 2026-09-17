@@ -61,11 +61,14 @@ class EmergencyScreen extends StatelessWidget {
                   launchUrl(source, mode: LaunchMode.externalApplication),
             ),
           ),
-          Text(
-            t.get('verified_on', {
-              'date': country.verifiedOn.toIso8601String().substring(0, 10),
-            }),
-          ),
+          if (country.verifiedOn != null)
+            Text(
+              t.get('verified_on', {
+                'date': country.verifiedOn!.toIso8601String().substring(0, 10),
+              }),
+            )
+          else
+            Text(t.get('numbers_unverified')),
         ],
       ),
     );
@@ -83,9 +86,11 @@ class _EmergencyButton extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12),
       child: Semantics(
         button: true,
-        label: '${t.get('call')} ${t.get(service.nameKey)} ${service.number}',
+        label: service.isCallable
+            ? '${t.get('call')} ${t.get(service.nameKey)} ${service.number}'
+            : '${t.get(service.nameKey)} ${t.get('numbers_unverified')}',
         child: FilledButton.tonal(
-          onPressed: () => _confirm(context, t),
+          onPressed: service.isCallable ? () => _confirm(context, t) : null,
           style: FilledButton.styleFrom(padding: const EdgeInsets.all(18)),
           child: Row(
             children: [
@@ -107,7 +112,7 @@ class _EmergencyButton extends StatelessWidget {
                 ),
               ),
               Text(
-                service.number,
+                service.number ?? '—',
                 style: const TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.w900,
@@ -121,6 +126,8 @@ class _EmergencyButton extends StatelessWidget {
   }
 
   Future<void> _confirm(BuildContext context, AppLocalizations t) async {
+    final number = service.number;
+    if (number == null || !service.isCallable) return;
     final ok =
         await showDialog<bool>(
           context: context,
@@ -128,7 +135,7 @@ class _EmergencyButton extends StatelessWidget {
             title: Text(t.get('call_confirm_title')),
             content: Text(
               t.get('call_confirm_body', {
-                'number': service.number,
+                'number': number,
                 'service': t.get(service.nameKey),
               }),
             ),
@@ -147,7 +154,7 @@ class _EmergencyButton extends StatelessWidget {
         ) ??
         false;
     if (!ok || !context.mounted) return;
-    final launched = await callService.call(service.number);
+    final launched = await callService.call(number);
     if (!launched && context.mounted) {
       ScaffoldMessenger.of(
         context,

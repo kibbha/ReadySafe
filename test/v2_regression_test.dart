@@ -23,7 +23,10 @@ void main() {
 
   test('essential step-by-step first-aid guides remain available', () {
     const expectedIds = {
-      'cpr',
+      'cpr_adult',
+      'aed',
+      'cpr_child',
+      'cpr_infant',
       'choking_adult',
       'choking_child',
       'choking_infant',
@@ -37,5 +40,13 @@ void main() {
     };
     expect(firstAidGuides.map((guide) => guide.id), containsAll(expectedIds));
     expect(firstAidGuides.every((guide) => guide.steps.length >= 3), isTrue);
+    expect(
+      firstAidGuides.every(
+        (guide) => guide.steps.every(
+          (step) => step.illustrationAsset.endsWith('.svg'),
+        ),
+      ),
+      isTrue,
+    );
   });
 }

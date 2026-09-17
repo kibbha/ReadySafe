@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../app/localizations.dart';
+import '../app/app_scope.dart';
+import 'emergency_screen.dart';
 import '../data/first_aid_repository.dart';
 import '../models/first_aid_guide.dart';
 
@@ -62,6 +65,20 @@ class FirstAidDetailScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
+          FilledButton.icon(
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const EmergencyScreen()),
+            ),
+            icon: const Icon(Icons.phone_in_talk),
+            label: Text(
+              '${t.get('emergencies')} · ${t.get(AppScope.of(context).activeCountry!.nameKey)}',
+            ),
+          ),
+          const SizedBox(height: 12),
           Text(
             t.get(guide.summaryKey),
             style: Theme.of(context).textTheme.titleMedium,
@@ -105,22 +122,14 @@ class _StepCard extends StatelessWidget {
                 color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: step.illustrationAsset == null
-                  ? Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.draw_outlined),
-                        Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: Text(
-                            t.get('illustration_pending'),
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                        ),
-                      ],
-                    )
-                  : Image.asset(step.illustrationAsset!),
+              child: Semantics(
+                image: true,
+                label: t.get('illustration_ready'),
+                child: SvgPicture.asset(
+                  step.illustrationAsset,
+                  fit: BoxFit.contain,
+                ),
+              ),
             ),
             const SizedBox(height: 12),
             Text(

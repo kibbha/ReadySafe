@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import '../screens/home_screen.dart';
+import '../screens/main_shell.dart';
 import '../screens/onboarding_screen.dart';
 import '../services/app_settings_service.dart';
 import 'app_controller.dart';
@@ -58,7 +58,7 @@ class _ReadySafeAppState extends State<ReadySafeApp> {
         home: !controller.ready
             ? const Scaffold(body: Center(child: CircularProgressIndicator()))
             : controller.settings.onboardingComplete
-            ? const HomeScreen()
+            ? const MainShell()
             : const OnboardingScreen(),
       ),
     ),

@@ -1,7 +1,7 @@
 class FirstAidStep {
-  const FirstAidStep({required this.textKey, this.illustrationAsset});
+  const FirstAidStep({required this.textKey, required this.illustrationAsset});
   final String textKey;
-  final String? illustrationAsset;
+  final String illustrationAsset;
 }
 
 class FirstAidGuide {
@@ -10,9 +10,9 @@ class FirstAidGuide {
     required this.titleKey,
     required this.summaryKey,
     required this.steps,
+    required this.sourceUris,
   });
-  final String id;
-  final String titleKey;
-  final String summaryKey;
+  final String id, titleKey, summaryKey;
   final List<FirstAidStep> steps;
+  final List<Uri> sourceUris;
 }

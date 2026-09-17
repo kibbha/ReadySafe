@@ -17,6 +17,10 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('READYSAFE'), findsOneWidget);
     expect(find.text('France'), findsOneWidget);
-    expect(find.text('Urgences'), findsOneWidget);
+    expect(find.text('Urgences'), findsWidgets);
+    await tester.tap(find.text('Cartes hors-ligne').last);
+    await tester.pumpAndSettle();
+    expect(find.text('Rechercher un pack'), findsOneWidget);
+    expect(find.text('Albanie'), findsOneWidget);
   });
 }

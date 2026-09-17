@@ -1,8 +1,15 @@
+import '../data/country_repository.dart';
 import '../models/map_pack.dart';
 
 abstract interface class OfflineMapProvider {
-  Future<List<MapPack>> catalog(String countryCode);
-  Future<void> download(
+  Future<List<MapPack>> catalog(String? countryCode);
+  Future<MapPack> download(
+    String packId,
+    void Function(double progress) onProgress,
+  );
+  Future<MapPack> verify(String packId);
+  Future<void> pause(String packId);
+  Future<MapPack> resume(
     String packId,
     void Function(double progress) onProgress,
   );
@@ -10,24 +17,41 @@ abstract interface class OfflineMapProvider {
   Future<String?> localStyleUri(String packId);
 }
 
-/// Safe default until a licensed regional provider or externally supplied
-/// PMTiles/MBTiles catalog is configured. It never contacts public OSM tiles.
+/// Catalog used until a legally licensed PMTiles provider is configured.
+/// Every European country is visible, but no pack is downloadable and no
+/// request is ever made to public OpenStreetMap tile servers.
 class UnconfiguredOfflineMapProvider implements OfflineMapProvider {
   @override
-  Future<List<MapPack>> catalog(String countryCode) async => [
-    MapPack(
-      id: '$countryCode-national',
-      countryCode: countryCode,
-      name: countryCode,
-      estimatedBytes: null,
-      state: MapPackState.unavailable,
-    ),
-  ];
+  Future<List<MapPack>> catalog(String? countryCode) async => CountryRepository
+      .supported
+      .where((country) => countryCode == null || country.isoCode == countryCode)
+      .map(
+        (country) => MapPack(
+          id: '${country.isoCode}-national',
+          countryCode: country.isoCode,
+          nameKey: country.nameKey,
+          version: 'unconfigured',
+          state: MapPackState.unavailable,
+        ),
+      )
+      .toList();
+
+  Never _notConfigured() =>
+      throw StateError('No licensed offline map provider configured');
   @override
-  Future<void> download(
+  Future<MapPack> download(
     String packId,
     void Function(double progress) onProgress,
-  ) => throw StateError('No offline map provider configured');
+  ) async => _notConfigured();
+  @override
+  Future<MapPack> verify(String packId) async => _notConfigured();
+  @override
+  Future<void> pause(String packId) async => _notConfigured();
+  @override
+  Future<MapPack> resume(
+    String packId,
+    void Function(double progress) onProgress,
+  ) async => _notConfigured();
   @override
   Future<void> delete(String packId) async {}
   @override

@@ -2,90 +2,115 @@ import 'package:flutter/material.dart';
 import '../app/app_scope.dart';
 import '../app/localizations.dart';
 import '../data/country_repository.dart';
+import '../widgets/country_picker.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context), app = AppScope.of(context);
+    final strings = AppLocalizations.of(context);
+    final app = AppScope.of(context);
+    final residence = app.residenceCountry;
+    final active = app.activeCountry;
     return Scaffold(
-      appBar: AppBar(title: Text(t.get('settings'))),
+      appBar: AppBar(title: Text(strings.get('settings'))),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           Text(
-            t.get('residence_country'),
+            strings.get('residence_country'),
             style: Theme.of(
               context,
             ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 8),
-          DropdownButtonFormField<String>(
-            initialValue: app.settings.residenceCountryCode,
-            decoration: const InputDecoration(border: OutlineInputBorder()),
-            items: _countries(t),
-            onChanged: (v) {
-              if (v != null) app.setResidence(v);
-            },
+          Card(
+            child: ListTile(
+              minTileHeight: 64,
+              leading: Text(
+                residence == null ? '🌍' : countryFlag(residence.isoCode),
+                style: const TextStyle(fontSize: 28),
+              ),
+              title: Text(
+                residence == null
+                    ? strings.get('choose_residence')
+                    : strings.get(residence.nameKey),
+              ),
+              trailing: const Icon(Icons.search),
+              onTap: () async {
+                final code = await showCountryPicker(
+                  context,
+                  selectedCode: residence?.isoCode,
+                );
+                if (code != null) await app.setResidence(code);
+              },
+            ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
-            title: Text(t.get('travel_mode')),
-            subtitle: Text(t.get('travel_explanation')),
+            title: Text(strings.get('travel_mode')),
+            subtitle: Text(strings.get('travel_explanation')),
             value: app.travelMode,
-            onChanged: (enabled) {
+            onChanged: (enabled) async {
               if (!enabled) {
-                app.setTravel(null);
+                await app.setTravel(null);
               } else {
-                final other = CountryRepository.supported.firstWhere(
-                  (c) => c.isoCode != app.settings.residenceCountryCode,
+                final code = await showCountryPicker(
+                  context,
+                  selectedCode: active?.isoCode,
                 );
-                app.setTravel(other.isoCode);
+                if (code != null) await app.setTravel(code);
               }
             },
           ),
           if (app.travelMode)
-            DropdownButtonFormField<String>(
-              initialValue: app.settings.travelCountryCode,
-              decoration: InputDecoration(
-                labelText: t.get('active_country'),
-                border: const OutlineInputBorder(),
+            Card(
+              child: ListTile(
+                leading: Text(
+                  active == null ? '🌍' : countryFlag(active.isoCode),
+                  style: const TextStyle(fontSize: 28),
+                ),
+                title: Text(
+                  active == null
+                      ? strings.get('active_country')
+                      : strings.get(active.nameKey),
+                ),
+                trailing: const Icon(Icons.search),
+                onTap: () async {
+                  final code = await showCountryPicker(
+                    context,
+                    selectedCode: active?.isoCode,
+                  );
+                  if (code != null) await app.setTravel(code);
+                },
               ),
-              items: _countries(t),
-              onChanged: app.setTravel,
             ),
           const SizedBox(height: 24),
           Text(
-            t.get('language'),
+            strings.get('language'),
             style: Theme.of(
               context,
             ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
           RadioGroup<String>(
             groupValue: app.settings.localeCode,
-            onChanged: (v) {
-              if (v != null) app.setLocale(v);
+            onChanged: (value) {
+              if (value != null) app.setLocale(value);
             },
             child: Column(
               children: [
-                RadioListTile(value: 'fr', title: Text(t.get('french'))),
-                RadioListTile(value: 'en', title: Text(t.get('english'))),
+                RadioListTile(value: 'fr', title: Text(strings.get('french'))),
+                RadioListTile(value: 'en', title: Text(strings.get('english'))),
               ],
             ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            '${CountryRepository.supported.length} ${strings.get('europe_filter')}',
+            textAlign: TextAlign.center,
           ),
         ],
       ),
     );
   }
-
-  List<DropdownMenuItem<String>> _countries(AppLocalizations t) =>
-      CountryRepository.supported
-          .map(
-            (c) => DropdownMenuItem(
-              value: c.isoCode,
-              child: Text(t.get(c.nameKey)),
-            ),
-          )
-          .toList();
 }
