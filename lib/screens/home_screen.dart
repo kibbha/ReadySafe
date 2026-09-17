@@ -14,6 +14,7 @@ import 'settings_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context),
@@ -31,10 +32,17 @@ class HomeScreen extends StatelessWidget {
       (t.get('maps'), Icons.map_outlined, const OnlineMapsScreen(), Theme.of(context).colorScheme.primary),
       (t.get('information'), Icons.info_outline, PlaceholderScreen(title: t.get('information'), icon: Icons.info_outline, body: t.get('medicalNotice')), Theme.of(context).colorScheme.primary),
     ];
+
     return Scaffold(
       appBar: AppBar(
         title: Text(t.get('title'), style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1.2)),
-        actions: [IconButton(tooltip: t.get('settings'), onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen())), icon: const Icon(Icons.settings_outlined))],
+        actions: [
+          IconButton(
+            tooltip: t.get('settings'),
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen())),
+            icon: const Icon(Icons.settings_outlined),
+          ),
+        ],
       ),
       body: SafeArea(
         child: ListView(
@@ -55,7 +63,19 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text(t.get('offline')),
             const SizedBox(height: 16),
-            ...items.map((i) => Padding(padding: const EdgeInsets.only(bottom: 10), child: SectionCard(title: i.$1, icon: i.$2, color: i.$4, onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => i.$3)))),
+            ...items.map(
+              (i) => Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: SectionCard(
+                  title: i.$1,
+                  icon: i.$2,
+                  color: i.$4,
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => i.$3),
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
