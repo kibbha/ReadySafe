@@ -118,7 +118,7 @@ class _Header extends StatelessWidget {
     const SizedBox(width: 11),
     Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(title, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900)),
-      Text(flag + ' ' + country + (travelMode ? ' · ✈' : ''), style: const TextStyle(fontSize: 12, color: Color(0xff65747a), fontWeight: FontWeight.w700)),
+      Text('$flag $country${travelMode ? ' · ✈' : ''}', style: const TextStyle(fontSize: 12, color: Color(0xff65747a), fontWeight: FontWeight.w700)),
     ])),
     IconButton.filledTonal(onPressed: onSettings, tooltip: 'Paramètres', icon: const Icon(Icons.settings_outlined)),
   ]);
@@ -139,7 +139,7 @@ class _StatusCard extends StatelessWidget {
       const SizedBox(width: 10),
       Expanded(child: Text(
         travelMode
-          ? (en ? 'Travel mode active — ' + country : 'Mode voyage actif — ' + country)
+          ? (en ? 'Travel mode active — $country' : 'Mode voyage actif — $country')
           : (en ? 'ReadySafe essential mode ready' : 'Mode essentiel ReadySafe prêt'),
         style: const TextStyle(fontWeight: FontWeight.w800),
       )),
