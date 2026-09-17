@@ -4,7 +4,7 @@ import 'emergency_screen.dart';
 import 'first_aid_screen.dart';
 import 'home_screen.dart';
 import 'more_screen.dart';
-import 'offline_maps_screen.dart';
+import 'online_maps_screen.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -17,7 +17,7 @@ class _MainShellState extends State<MainShell> {
   final pages = const [
     HomeScreen(),
     EmergencyScreen(),
-    OfflineMapsScreen(),
+    OnlineMapsScreen(),
     FirstAidScreen(),
     MoreScreen(),
   ];
