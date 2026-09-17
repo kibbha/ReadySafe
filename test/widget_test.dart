@@ -23,4 +23,21 @@ void main() {
     expect(find.text('Urgences'), findsWidgets);
     expect(find.text('Cartes'), findsWidgets);
   });
+
+  testWidgets('saved English locale renders the shell in English', (tester) async {
+    SharedPreferences.setMockInitialValues({
+      'settings.residenceCountry': 'FR',
+      'settings.localeCode': 'en',
+    });
+    await tester.pumpWidget(const ReadySafeApp());
+
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(find.text('READYSAFE'), findsOneWidget);
+    expect(find.text('Home'), findsWidgets);
+    expect(find.text('Emergencies'), findsWidgets);
+    expect(find.text('Maps'), findsWidgets);
+    expect(find.text('First aid'), findsWidgets);
+  });
 }
