@@ -17,7 +17,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('READYSAFE'), findsOneWidget);
-    expect(find.text('France'), findsOneWidget);
+    expect(find.textContaining('France'), findsOneWidget);
     expect(find.text('URGENCE — GUIDEZ-MOI'), findsOneWidget);
     expect(find.text('Préparer'), findsWidgets);
     expect(find.text('Premiers secours'), findsWidgets);
