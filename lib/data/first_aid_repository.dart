@@ -6,6 +6,9 @@ import '../models/first_aid_guide.dart';
 final _erc2025 = Uri.parse(
   'https://www.erc.edu/science-research/guidelines/guidelines-2025/',
 );
+final _ercAdultBls2025 = Uri.parse(
+  'https://www.erc.edu/media/wrhj5sye/gl2025-04-bls-e.pdf',
+);
 final _ercPaediatric2025 = Uri.parse(
   'https://www.erc.edu/media/03xnpjmj/gl2025-09-pls-e.pdf',
 );
@@ -42,7 +45,19 @@ FirstAidGuide _guide(
 );
 
 final firstAidGuides = [
-  _guide('cpr_adult', 'aid_cpr_adult', 'aid_cpr_summary', ['aid_cpr_1', 'aid_cpr_2', 'aid_cpr_3']),
+  _guide(
+    'cpr_adult',
+    'aid_cpr_adult',
+    'aid_cpr_summary',
+    ['aid_cpr_1', 'aid_cpr_2', 'aid_cpr_3', 'aid_cpr_4'],
+    sources: [_erc2025, _ercAdultBls2025],
+    illustrations: [
+      'assets/illustrations/cpr_adult_1.svg',
+      'assets/illustrations/cpr_adult_2.svg',
+      'assets/illustrations/cpr_adult_3.svg',
+      'assets/illustrations/cpr_adult_4.svg',
+    ],
+  ),
   _guide('aed', 'aid_aed', 'aid_aed_summary', ['aid_aed_1', 'aid_aed_2', 'aid_aed_3']),
   _guide(
     'cpr_child',
