@@ -2,40 +2,54 @@ import '../models/country_profile.dart';
 
 /// Central European country registry.
 ///
-/// A country may be selectable before its emergency numbers are verified. In
-/// that case the UI shows a warning and never exposes an unverified call action.
-/// XK is the user-assigned code commonly used for Kosovo because no ISO 3166-1
-/// code has been officially assigned.
+/// Only verified numbers are exposed as callable actions. EU member states
+/// receive the officially documented single European emergency number 112.
+/// Other European countries remain selectable but unverified until an official
+/// national source is recorded here.
 class CountryRepository {
   static final Uri _eu112 = Uri.parse(
     'https://digital-strategy.ec.europa.eu/en/policies/112',
   );
+  static final Uri _uk999 = Uri.parse(
+    'https://www.gov.uk/guidance/999-and-112-the-uks-national-emergency-numbers',
+  );
+  static final Uri _chEmergency = Uri.parse(
+    'https://www.ch.ch/en/safety-and-justice/emergencies-and-danger/',
+  );
+
+  static const Set<String> _euMemberStates = {
+    'AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT',
+    'LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE',
+  };
 
   static final List<CountryProfile> supported = _seeds.map(_build).toList()
     ..sort((a, b) => a.nameKey.compareTo(b.nameKey));
 
   static CountryProfile _build(_CountrySeed seed) {
     final detailed = _verifiedServices[seed.code];
+    final eu112Only = detailed == null && _euMemberStates.contains(seed.code);
+    final services = detailed ??
+        (eu112Only
+            ? [_service('eu', 'service_emergency', '112', 'service_112_desc')]
+            : [
+                const EmergencyService(
+                  id: 'general',
+                  nameKey: 'service_emergency',
+                  number: null,
+                  descriptionKey: 'service_unverified_desc',
+                  verification: DataVerification.needsVerification,
+                ),
+              ]);
     return CountryProfile(
       isoCode: seed.code,
       nameKey: seed.nameKey,
       languages: seed.languages,
-      services:
-          detailed ??
-          [
-            EmergencyService(
-              id: 'general',
-              nameKey: 'service_emergency',
-              number: null,
-              descriptionKey: 'service_unverified_desc',
-              verification: DataVerification.needsVerification,
-            ),
-          ],
-      informationKeys: detailed == null
-          ? const ['info_numbers_pending']
-          : const ['info_eu_112'],
-      sources: _sources[seed.code] ?? const [],
-      verifiedOn: detailed == null ? null : DateTime.utc(2026, 9, 16),
+      services: services,
+      informationKeys: detailed != null || eu112Only
+          ? const ['info_eu_112']
+          : const ['info_numbers_pending'],
+      sources: _sources[seed.code] ?? (eu112Only ? [_eu112] : const []),
+      verifiedOn: detailed != null || eu112Only ? DateTime.utc(2026, 9, 17) : null,
     );
   }
 
@@ -49,116 +63,79 @@ class CountryRepository {
   static List<CountryProfile> search(String query) {
     final normalized = query.trim().toLowerCase();
     if (normalized.isEmpty) return List.unmodifiable(supported);
-    return supported
-        .where(
-          (country) =>
-              country.isoCode.toLowerCase().contains(normalized) ||
-              country.nameKey.toLowerCase().contains(normalized),
-        )
-        .toList();
+    return supported.where((country) =>
+      country.isoCode.toLowerCase().contains(normalized) ||
+      country.nameKey.toLowerCase().contains(normalized)).toList();
   }
 
   static final Map<String, List<Uri>> _sources = {
-    'FR': [
-      Uri.parse('https://www.service-public.fr/particuliers/actualites/A15841'),
-      _eu112,
-    ],
+    'FR': [Uri.parse('https://www.service-public.fr/particuliers/actualites/A15841'), _eu112],
     'BE': [Uri.parse('https://112.be/fr'), _eu112],
-    'DE': [
-      Uri.parse(
-        'https://www.bbk.bund.de/EN/Prepare-for-disasters/Personal-Preparedness/Emergency-call/emergency-call_node.html',
-      ),
-      _eu112,
-    ],
-    'IT': [
-      Uri.parse(
-        'https://www.interno.gov.it/it/temi/sicurezza/numero-unico-emergenza-112',
-      ),
-      _eu112,
-    ],
+    'DE': [Uri.parse('https://www.bbk.bund.de/EN/Prepare-for-disasters/Personal-Preparedness/Emergency-call/emergency-call_node.html'), _eu112],
+    'IT': [Uri.parse('https://www.interno.gov.it/it/temi/sicurezza/numero-unico-emergenza-112'), _eu112],
+    'GB': [_uk999],
+    'CH': [_chEmergency, _eu112],
   };
 
   static final Map<String, List<EmergencyService>> _verifiedServices = {
     'FR': [
-      _service('eu', 'service_emergency', '112', 'service_112_desc'),
-      _service('medical', 'service_ambulance', '15', 'service_samu_desc'),
-      _service('police', 'service_police', '17', 'service_police_desc'),
-      _service('fire', 'service_fire', '18', 'service_fire_desc'),
-      _service('accessible', 'service_accessible', '114', 'service_114_desc'),
+      _service('eu','service_emergency','112','service_112_desc'),
+      _service('medical','service_ambulance','15','service_samu_desc'),
+      _service('police','service_police','17','service_police_desc'),
+      _service('fire','service_fire','18','service_fire_desc'),
+      _service('accessible','service_accessible','114','service_114_desc'),
     ],
     'BE': [
-      _service('eu', 'service_emergency', '112', 'service_be_112_desc'),
-      _service('police', 'service_police', '101', 'service_be_police_desc'),
+      _service('eu','service_emergency','112','service_be_112_desc'),
+      _service('police','service_police','101','service_be_police_desc'),
     ],
     'DE': [
-      _service('eu', 'service_emergency', '112', 'service_de_112_desc'),
-      _service('police', 'service_police', '110', 'service_de_police_desc'),
+      _service('eu','service_emergency','112','service_de_112_desc'),
+      _service('police','service_police','110','service_de_police_desc'),
     ],
-    'IT': [_service('eu', 'service_emergency', '112', 'service_it_112_desc')],
+    'IT': [_service('eu','service_emergency','112','service_it_112_desc')],
+    'GB': [
+      _service('general','service_emergency','999','service_112_desc'),
+      _service('eu','service_emergency','112','service_112_desc'),
+    ],
+    'CH': [
+      _service('eu','service_emergency','112','service_112_desc'),
+      _service('police','service_police','117','service_police_desc'),
+      _service('fire','service_fire','118','service_fire_desc'),
+      _service('medical','service_ambulance','144','service_samu_desc'),
+      _service('poison','service_poison','145','service_poison_desc'),
+    ],
   };
 
-  static EmergencyService _service(
-    String id,
-    String nameKey,
-    String number,
-    String descriptionKey,
-  ) => EmergencyService(
-    id: id,
-    nameKey: nameKey,
-    number: number,
-    descriptionKey: descriptionKey,
-  );
+  static EmergencyService _service(String id, String nameKey, String number, String descriptionKey) =>
+      EmergencyService(id: id, nameKey: nameKey, number: number, descriptionKey: descriptionKey);
 
   static const List<_CountrySeed> _seeds = [
-    _CountrySeed('AL', 'country_albania', ['sq']),
-    _CountrySeed('DE', 'country_germany', ['de']),
-    _CountrySeed('AD', 'country_andorra', ['ca']),
-    _CountrySeed('AM', 'country_armenia', ['hy']),
-    _CountrySeed('AT', 'country_austria', ['de']),
-    _CountrySeed('AZ', 'country_azerbaijan', ['az']),
-    _CountrySeed('BE', 'country_belgium', ['fr', 'nl', 'de']),
-    _CountrySeed('BY', 'country_belarus', ['be', 'ru']),
-    _CountrySeed('BA', 'country_bosnia', ['bs', 'hr', 'sr']),
-    _CountrySeed('BG', 'country_bulgaria', ['bg']),
-    _CountrySeed('CY', 'country_cyprus', ['el', 'tr']),
-    _CountrySeed('HR', 'country_croatia', ['hr']),
-    _CountrySeed('DK', 'country_denmark', ['da']),
-    _CountrySeed('ES', 'country_spain', ['es']),
-    _CountrySeed('EE', 'country_estonia', ['et']),
-    _CountrySeed('FI', 'country_finland', ['fi', 'sv']),
-    _CountrySeed('FR', 'country_france', ['fr']),
-    _CountrySeed('GE', 'country_georgia', ['ka']),
-    _CountrySeed('GR', 'country_greece', ['el']),
-    _CountrySeed('HU', 'country_hungary', ['hu']),
-    _CountrySeed('IE', 'country_ireland', ['en', 'ga']),
-    _CountrySeed('IS', 'country_iceland', ['is']),
-    _CountrySeed('IT', 'country_italy', ['it']),
-    _CountrySeed('XK', 'country_kosovo', ['sq', 'sr']),
-    _CountrySeed('LV', 'country_latvia', ['lv']),
-    _CountrySeed('LI', 'country_liechtenstein', ['de']),
-    _CountrySeed('LT', 'country_lithuania', ['lt']),
-    _CountrySeed('LU', 'country_luxembourg', ['lb', 'fr', 'de']),
-    _CountrySeed('MK', 'country_north_macedonia', ['mk', 'sq']),
-    _CountrySeed('MT', 'country_malta', ['mt', 'en']),
-    _CountrySeed('MD', 'country_moldova', ['ro']),
-    _CountrySeed('MC', 'country_monaco', ['fr']),
-    _CountrySeed('ME', 'country_montenegro', ['cnr']),
-    _CountrySeed('NO', 'country_norway', ['no']),
-    _CountrySeed('NL', 'country_netherlands', ['nl']),
-    _CountrySeed('PL', 'country_poland', ['pl']),
-    _CountrySeed('PT', 'country_portugal', ['pt']),
-    _CountrySeed('CZ', 'country_czechia', ['cs']),
-    _CountrySeed('RO', 'country_romania', ['ro']),
-    _CountrySeed('GB', 'country_united_kingdom', ['en']),
-    _CountrySeed('SM', 'country_san_marino', ['it']),
-    _CountrySeed('RS', 'country_serbia', ['sr']),
-    _CountrySeed('SK', 'country_slovakia', ['sk']),
-    _CountrySeed('SI', 'country_slovenia', ['sl']),
-    _CountrySeed('SE', 'country_sweden', ['sv']),
-    _CountrySeed('CH', 'country_switzerland', ['de', 'fr', 'it', 'rm']),
-    _CountrySeed('TR', 'country_turkiye', ['tr']),
-    _CountrySeed('UA', 'country_ukraine', ['uk']),
-    _CountrySeed('VA', 'country_vatican', ['it', 'la']),
+    _CountrySeed('AL','country_albania',['sq']), _CountrySeed('DE','country_germany',['de']),
+    _CountrySeed('AD','country_andorra',['ca']), _CountrySeed('AM','country_armenia',['hy']),
+    _CountrySeed('AT','country_austria',['de']), _CountrySeed('AZ','country_azerbaijan',['az']),
+    _CountrySeed('BE','country_belgium',['fr','nl','de']), _CountrySeed('BY','country_belarus',['be','ru']),
+    _CountrySeed('BA','country_bosnia',['bs','hr','sr']), _CountrySeed('BG','country_bulgaria',['bg']),
+    _CountrySeed('CY','country_cyprus',['el','tr']), _CountrySeed('HR','country_croatia',['hr']),
+    _CountrySeed('DK','country_denmark',['da']), _CountrySeed('ES','country_spain',['es']),
+    _CountrySeed('EE','country_estonia',['et']), _CountrySeed('FI','country_finland',['fi','sv']),
+    _CountrySeed('FR','country_france',['fr']), _CountrySeed('GE','country_georgia',['ka']),
+    _CountrySeed('GR','country_greece',['el']), _CountrySeed('HU','country_hungary',['hu']),
+    _CountrySeed('IE','country_ireland',['en','ga']), _CountrySeed('IS','country_iceland',['is']),
+    _CountrySeed('IT','country_italy',['it']), _CountrySeed('XK','country_kosovo',['sq','sr']),
+    _CountrySeed('LV','country_latvia',['lv']), _CountrySeed('LI','country_liechtenstein',['de']),
+    _CountrySeed('LT','country_lithuania',['lt']), _CountrySeed('LU','country_luxembourg',['lb','fr','de']),
+    _CountrySeed('MK','country_north_macedonia',['mk','sq']), _CountrySeed('MT','country_malta',['mt','en']),
+    _CountrySeed('MD','country_moldova',['ro']), _CountrySeed('MC','country_monaco',['fr']),
+    _CountrySeed('ME','country_montenegro',['cnr']), _CountrySeed('NO','country_norway',['no']),
+    _CountrySeed('NL','country_netherlands',['nl']), _CountrySeed('PL','country_poland',['pl']),
+    _CountrySeed('PT','country_portugal',['pt']), _CountrySeed('CZ','country_czechia',['cs']),
+    _CountrySeed('RO','country_romania',['ro']), _CountrySeed('GB','country_united_kingdom',['en']),
+    _CountrySeed('SM','country_san_marino',['it']), _CountrySeed('RS','country_serbia',['sr']),
+    _CountrySeed('SK','country_slovakia',['sk']), _CountrySeed('SI','country_slovenia',['sl']),
+    _CountrySeed('SE','country_sweden',['sv']), _CountrySeed('CH','country_switzerland',['de','fr','it','rm']),
+    _CountrySeed('TR','country_turkiye',['tr']), _CountrySeed('UA','country_ukraine',['uk']),
+    _CountrySeed('VA','country_vatican',['it','la']),
   ];
 }
 
