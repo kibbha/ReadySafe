@@ -96,7 +96,7 @@ class _KitItemDetailScreenState extends State<KitItemDetailScreen> {
             _panel(child: Column(children: [
               SwitchListTile(contentPadding: EdgeInsets.zero, title: const Text('Rappel avant expiration', style: TextStyle(fontWeight: FontWeight.w800)), value: reminder, onChanged: (v) => setState(() => reminder = v)),
               if (reminder) DropdownButtonFormField<int>(
-                value: reminderDays,
+                initialValue: reminderDays,
                 decoration: const InputDecoration(labelText: 'Me prévenir'),
                 items: const [7,14,30,60,90].map((d) => DropdownMenuItem(value: d, child: Text('$d jours avant'))).toList(),
                 onChanged: (v) { if (v != null) setState(() => reminderDays = v); },
