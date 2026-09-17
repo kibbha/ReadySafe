@@ -16,6 +16,7 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
   };
   static const _geneva = LatLng(46.2044, 6.1432);
   String _styleName = 'Liberty';
+  CameraPosition _camera = const CameraPosition(target: _geneva, zoom: 11.5);
   MapLibreMapController? _map;
   bool _searchOpen = false;
   bool _showEmergency = true;
@@ -28,8 +29,8 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
     _Place('Gare Cornavin', 'Genève · Transport', 46.2102, 6.1425, Icons.train_outlined),
     _Place('HUG — Hôpital', 'Genève · Urgence médicale', 46.1933, 6.1484, Icons.local_hospital_outlined, emergency: true),
     _Place('Aéroport de Genève', 'Genève · Transport', 46.2381, 6.1090, Icons.flight_outlined),
-    _Place('Plainpalais', 'Genève · Point de rassemblement', 46.1985, 6.1427, Icons.groups_outlined, assembly: true),
-    _Place('Parc des Bastions', 'Genève · Point de rassemblement', 46.2003, 6.1459, Icons.groups_outlined, assembly: true),
+    _Place('Plainpalais', 'Genève · Repère ReadySafe', 46.1985, 6.1427, Icons.place_outlined, assembly: true),
+    _Place('Parc des Bastions', 'Genève · Repère ReadySafe', 46.2003, 6.1459, Icons.place_outlined, assembly: true),
     _Place('Lausanne', 'Suisse · Ville', 46.5197, 6.6323, Icons.location_city),
     _Place('Berne', 'Suisse · Ville', 46.9480, 7.4474, Icons.location_city),
     _Place('Zurich', 'Suisse · Ville', 47.3769, 8.5417, Icons.location_city),
@@ -70,7 +71,9 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
 
   Future<void> _goTo(_Place p) async {
     FocusScope.of(context).unfocus();
-    await _map?.animateCamera(CameraUpdate.newLatLngZoom(LatLng(p.lat, p.lng), 13.5));
+    final target = CameraPosition(target: LatLng(p.lat, p.lng), zoom: 13.5);
+    _camera = target;
+    await _map?.animateCamera(CameraUpdate.newCameraPosition(target));
     if (mounted) setState(() => _searchOpen = false);
   }
 
@@ -89,9 +92,13 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
       MapLibreMap(
         key: ValueKey(_styleName),
         styleString: _styles[_styleName]!,
-        initialCameraPosition: const CameraPosition(target: _geneva, zoom: 11.5),
+        initialCameraPosition: _camera,
         onMapCreated: (c) => _map = c,
         onStyleLoadedCallback: _syncPois,
+        onCameraIdle: () async {
+          final map = _map;
+          if (map != null) _camera = map.cameraPosition!;
+        },
         compassEnabled: true, rotateGesturesEnabled: true, tiltGesturesEnabled: false,
         attributionButtonMargins: const Point(8, 82),
       ),
@@ -115,7 +122,7 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
         const SizedBox(height: 6),
         _MapButton(icon: Icons.remove, tooltip: 'Zoom arrière', onTap: () => _map?.animateCamera(CameraUpdate.zoomBy(-1))),
       ])),
-      Positioned(right: 12, bottom: 24, child: _MapButton(icon: Icons.my_location, tooltip: 'Recentrer sur Genève', onTap: () => _map?.animateCamera(CameraUpdate.newLatLngZoom(_geneva, 11.5)))),
+      Positioned(right: 12, bottom: 24, child: _MapButton(icon: Icons.center_focus_strong, tooltip: 'Recentrer sur Genève', onTap: () { _camera = const CameraPosition(target: _geneva, zoom: 11.5); _map?.animateCamera(CameraUpdate.newCameraPosition(_camera)); })),
       Positioned(left: 12, bottom: 24, child: Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7), decoration: BoxDecoration(color: Colors.white.withValues(alpha: .94), borderRadius: BorderRadius.circular(10)), child: Row(mainAxisSize: MainAxisSize.min, children: [const Icon(Icons.wifi, size: 16, color: Color(0xff087f83)), const SizedBox(width: 6), Text('Carte en ligne · $_styleName', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800))]))),
     ]),
   );
@@ -130,7 +137,7 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
         Wrap(spacing: 8, children: _styles.keys.map((name) => ChoiceChip(label: Text(name), selected: _styleName == name, onSelected: (_) { _setStyle(name); modalSetState(() {}); })).toList()),
         const Divider(height: 28),
         SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.local_hospital_outlined, color: Color(0xffd92d36)), title: const Text('Urgences médicales'), value: _showEmergency, onChanged: (v) { setState(() => _showEmergency = v); modalSetState(() {}); _syncPois(); }),
-        SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.groups_outlined, color: Color(0xff087f83)), title: const Text('Points de rassemblement'), value: _showAssembly, onChanged: (v) { setState(() => _showAssembly = v); modalSetState(() {}); _syncPois(); }),
+        SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.place_outlined, color: Color(0xff087f83)), title: const Text('Repères ReadySafe'), subtitle: const Text('Repères indicatifs, pas des points officiels d’évacuation'), value: _showAssembly, onChanged: (v) { setState(() => _showAssembly = v); modalSetState(() {}); _syncPois(); }),
       ]),
     )));
   }
