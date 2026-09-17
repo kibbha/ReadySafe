@@ -72,7 +72,19 @@ final firstAidGuides = [
       'assets/illustrations/cpr_child_aed.svg',
     ],
   ),
-  _guide('cpr_infant', 'aid_cpr_infant', 'aid_cpr_infant_summary', ['aid_infant_cpr_1', 'aid_infant_cpr_2', 'aid_infant_cpr_3']),
+  _guide(
+    'cpr_infant',
+    'aid_cpr_infant',
+    'aid_cpr_infant_summary',
+    ['aid_infant_cpr_1', 'aid_infant_cpr_2', 'aid_infant_cpr_3', 'aid_infant_cpr_4'],
+    sources: [_erc2025, _ercPaediatric2025],
+    illustrations: [
+      'assets/illustrations/cpr_infant_assess.svg',
+      'assets/illustrations/cpr_infant_breaths.svg',
+      'assets/illustrations/cpr_infant_compressions.svg',
+      'assets/illustrations/cpr_infant_aed.svg',
+    ],
+  ),
   _guide(
     'choking_adult',
     'aid_choking_adult',
