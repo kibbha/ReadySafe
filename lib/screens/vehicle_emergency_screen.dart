@@ -102,7 +102,10 @@ class _VehicleEmergencyScreenState extends State<VehicleEmergencyScreen> {
   @override
   Widget build(BuildContext context) {
     final en = Localizations.localeOf(context).languageCode == 'en';
-    final progress = _items.isEmpty ? 0.0 : _done.length / _items.length;
+    final validIds = _items.map((item) => item.id).toSet();
+    final readyCount = _done.intersection(validIds).length;
+    final progress =
+        _items.isEmpty ? 0.0 : readyCount / _items.length;
 
     return Scaffold(
       backgroundColor: const Color(0xfff7faf9),
@@ -155,8 +158,8 @@ class _VehicleEmergencyScreenState extends State<VehicleEmergencyScreen> {
                       const SizedBox(height: 5),
                       Text(
                         en
-                            ? '${_done.length} / ${_items.length} vehicle items ready'
-                            : '${_done.length} / ${_items.length} points véhicule prêts',
+                            ? '$readyCount / ${_items.length} vehicle items ready'
+                            : '$readyCount / ${_items.length} points véhicule prêts',
                         style: const TextStyle(fontWeight: FontWeight.w900),
                       ),
                     ],
