@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../app/app_scope.dart';
 import '../app/localizations.dart';
@@ -770,26 +771,9 @@ class FirstAidDetailScreen extends StatelessWidget {
                   const SizedBox(height: 6),
                   _MedicalNotice(text: t.get('medicalNotice')),
                   const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.all(11),
-                    decoration: BoxDecoration(
-                      color: const Color(0xfffff4c7),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.verified_outlined, color: Color(0xff9a6a00)),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            en
-                                ? 'Offline guide · ${guide.sourceUris.length} reference source(s)'
-                                : 'Guide hors ligne · ${guide.sourceUris.length} source(s) de référence',
-                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
-                          ),
-                        ),
-                      ],
-                    ),
+                  _ReferenceSources(
+                    sources: guide.sourceUris,
+                    en: en,
                   ),
                 ],
               ),
@@ -799,6 +783,72 @@ class FirstAidDetailScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+class _ReferenceSources extends StatelessWidget {
+  const _ReferenceSources({
+    required this.sources,
+    required this.en,
+  });
+
+  final List<Uri> sources;
+  final bool en;
+
+  String _label(Uri uri) {
+    final host = uri.host.toLowerCase();
+    if (host.contains('erc.edu')) return 'European Resuscitation Council · 2025';
+    if (host.contains('nhs.uk')) return 'NHS · First aid';
+    return host.replaceFirst('www.', '');
+  }
+
+  Future<void> _open(BuildContext context, Uri uri) async {
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication) &&
+        context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            en ? 'Unable to open this reference.' : 'Impossible d’ouvrir cette référence.',
+          ),
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => Card(
+        child: ExpansionTile(
+          leading: const CircleAvatar(
+            backgroundColor: Color(0xfffff4c7),
+            child: Icon(Icons.verified_outlined, color: Color(0xff9a6a00)),
+          ),
+          title: Text(
+            en ? 'Verified references' : 'Références vérifiées',
+            style: const TextStyle(fontWeight: FontWeight.w900),
+          ),
+          subtitle: Text(
+            en
+                ? 'Offline guide · ${sources.length} authoritative source(s)'
+                : 'Guide hors ligne · ${sources.length} source(s) de référence',
+          ),
+          children: [
+            for (final source in sources)
+              ListTile(
+                dense: true,
+                leading: const Icon(Icons.open_in_new_rounded, size: 20),
+                title: Text(
+                  _label(source),
+                  style: const TextStyle(fontWeight: FontWeight.w800),
+                ),
+                subtitle: Text(
+                  source.host,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                onTap: () => _open(context, source),
+              ),
+          ],
+        ),
+      );
 }
 
 class _PosterDetailHeader extends StatelessWidget {
