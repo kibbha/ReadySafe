@@ -7,6 +7,7 @@ import 'communication_plan_screen.dart';
 import 'checklist_screen.dart';
 import 'guide_list_screen.dart';
 import 'home_safety_screen.dart';
+import 'maintenance_screen.dart';
 import 'leave_now_screen.dart';
 import 'offline_readiness_screen.dart';
 import 'official_sources_screen.dart';
@@ -14,6 +15,7 @@ import 'power_outage_screen.dart';
 import 'preparedness_review_screen.dart';
 import 'recovery_screen.dart';
 import 'safety_tools_screen.dart';
+import 'secure_vault_screen.dart';
 import 'special_kits_screen.dart';
 import 'support_needs_screen.dart';
 import 'training_screen.dart';
@@ -117,6 +119,13 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         const CommunicationPlanScreen(),
       ),
       _Module(
+        'Coffre sécurisé',
+        'Références sensibles chiffrées et disponibles localement',
+        Icons.lock_rounded,
+        const Color(0xff6750a4),
+        const SecureVaultScreen(),
+      ),
+      _Module(
         'Sécurité du domicile',
         'Sorties, coupures techniques, détecteurs et zone sûre',
         Icons.home_work_rounded,
@@ -157,6 +166,13 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.restore_rounded,
         const Color(0xff147343),
         const RecoveryScreen(),
+      ),
+      _Module(
+        'Entretien & rappels',
+        'Péremptions, rotation des stocks et vérifications périodiques',
+        Icons.event_repeat_rounded,
+        const Color(0xffb7833f),
+        const MaintenanceScreen(),
       ),
       _Module(
         'Revue de préparation',
