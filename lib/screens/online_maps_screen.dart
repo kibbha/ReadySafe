@@ -190,13 +190,17 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
   }
 
   Future<void> _openNearby(String query) async {
+    await _openExternalSearch('$query near me');
+  }
+
+  Future<void> _openExternalSearch(String query) async {
     final geo = Uri.parse('geo:0,0?q=${Uri.encodeComponent(query)}');
     if (await canLaunchUrl(geo)) {
       await launchUrl(geo, mode: LaunchMode.externalApplication);
       return;
     }
     final web = Uri.parse(
-      'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent('$query near me')}',
+      'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(query)}',
     );
     await launchUrl(web, mode: LaunchMode.externalApplication);
   }
@@ -448,9 +452,17 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                       boxShadow: const [BoxShadow(blurRadius: 14, color: Color(0x22000000))],
                     ),
                     child: _searchResults.isEmpty
-                        ? const Padding(
-                            padding: EdgeInsets.all(16),
-                            child: Text('Aucun résultat'),
+                        ? ListTile(
+                            leading: const Icon(Icons.open_in_new_rounded, color: Color(0xff087f83)),
+                            title: const Text(
+                              'Rechercher dans l’application de cartes',
+                              style: TextStyle(fontWeight: FontWeight.w900),
+                            ),
+                            subtitle: Text(_search.text.trim()),
+                            onTap: () {
+                              final query = _search.text.trim();
+                              if (query.isNotEmpty) _openExternalSearch(query);
+                            },
                           )
                         : ListView(
                             shrinkWrap: true,
