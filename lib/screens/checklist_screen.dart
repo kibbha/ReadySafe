@@ -89,7 +89,20 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
   String _date(DateTime value) =>
       '${value.day.toString().padLeft(2, '0')}.${value.month.toString().padLeft(2, '0')}.${value.year}';
 
+  bool _applicable(ChecklistItem item) {
+    final unit = item.unit ?? '';
+    if (unit.contains('/ enfant')) {
+      return (family['children'] ?? 0) > 0;
+    }
+    if (unit.contains('/ animal')) {
+      return pets > 0;
+    }
+    return true;
+  }
+
   bool _ready(ChecklistItem item) {
+    if (!_applicable(item)) return false;
+
     final entry = stock[item.id];
     if (entry == null || entry.isExpired) return false;
 
@@ -271,8 +284,9 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
     }
 
     final all = kitItems;
-    final readyCount = all.where(_ready).length;
-    final visible = all.where((item) {
+    final applicable = all.where(_applicable).toList();
+    final readyCount = applicable.where(_ready).length;
+    final visible = applicable.where((item) {
       if (filter == 1) return !_ready(item);
       if (filter == 2) return item.hasExpiry;
       return true;
@@ -315,7 +329,7 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
                 ),
                 const SizedBox(height: 14),
                 LinearProgressIndicator(
-                  value: all.isEmpty ? 0 : readyCount / all.length,
+                  value: applicable.isEmpty ? 0 : readyCount / applicable.length,
                   minHeight: 8,
                   borderRadius: BorderRadius.circular(6),
                 ),
@@ -325,8 +339,8 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
                     Expanded(
                       child: Text(
                         en
-                            ? '$readyCount / ${all.length} items ready'
-                            : '$readyCount / ${all.length} éléments prêts',
+                            ? '$readyCount / ${applicable.length} relevant items ready'
+                            : '$readyCount / ${applicable.length} éléments utiles prêts',
                         style: const TextStyle(fontWeight: FontWeight.w900),
                       ),
                     ),
