@@ -7,7 +7,11 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     await tester.pumpWidget(const ReadySafeApp());
     await tester.pumpAndSettle();
-    expect(find.text('Bienvenue dans ReadySafe'), findsOneWidget);
+    expect(find.text('ReadySafe'), findsOneWidget);
+    expect(
+      find.text('Sélectionnez votre pays de résidence'),
+      findsOneWidget,
+    );
     expect(find.text('Continuer'), findsOneWidget);
   });
 
