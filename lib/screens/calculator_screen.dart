@@ -279,6 +279,7 @@ class _Counter extends StatelessWidget {
           ),
         ),
       );
+}
 
 class _ResultCard extends StatelessWidget {
   const _ResultCard({
