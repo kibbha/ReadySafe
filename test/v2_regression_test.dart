@@ -14,6 +14,8 @@ void main() {
       'IS': {'112'},
       'TR': {'112'},
       'LI': {'112', '117', '118', '144'},
+      'GE': {'112'},
+      'MD': {'112'},
     };
 
     for (final entry in expected.entries) {
