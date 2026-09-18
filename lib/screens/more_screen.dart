@@ -7,11 +7,14 @@ import 'emergency_plan_summary_screen.dart';
 import 'family_documents_screen.dart';
 import 'first_aid_screen.dart';
 import 'guide_list_screen.dart';
+import 'home_safety_screen.dart';
+import 'offline_readiness_screen.dart';
 import 'official_sources_screen.dart';
 import 'preparedness_review_screen.dart';
 import 'recovery_screen.dart';
 import 'safety_tools_screen.dart';
 import 'settings_screen.dart';
+import 'support_needs_screen.dart';
 import 'training_screen.dart';
 
 class MoreScreen extends StatelessWidget {
@@ -81,6 +84,24 @@ class MoreScreen extends StatelessWidget {
         en ? 'Blackout, evacuation and shelter guidance' : 'Panne, évacuation, confinement et réflexes utiles',
         Icons.menu_book_rounded,
         const GuideListScreen(kind: GuideKind.emergencies),
+      ),
+      _MoreItem(
+        en ? 'Home safety' : 'Sécurité du domicile',
+        en ? 'Exits, utilities, alarms and safe indoor area' : 'Sorties, coupures techniques, détecteurs et zone sûre',
+        Icons.home_work_rounded,
+        const HomeSafetyScreen(),
+      ),
+      _MoreItem(
+        en ? 'Accessibility & support needs' : 'Besoins spécifiques',
+        en ? 'Plan for mobility, hearing, vision and power needs' : 'Préparer mobilité, audition, vision, aide et énergie',
+        Icons.accessibility_new_rounded,
+        const SupportNeedsScreen(),
+      ),
+      _MoreItem(
+        en ? 'Offline readiness' : 'Préparation hors ligne',
+        en ? 'Check what remains useful without connectivity' : 'Vérifier ce qui reste utile sans connexion',
+        Icons.offline_bolt_rounded,
+        const OfflineReadinessScreen(),
       ),
       _MoreItem(
         en ? 'Preparedness review' : 'Revue de préparation',
