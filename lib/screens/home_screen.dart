@@ -8,6 +8,7 @@ import 'family_documents_screen.dart';
 import 'first_aid_screen.dart';
 import 'global_search_screen.dart';
 import 'guided_emergency_screen.dart';
+import 'offline_readiness_screen.dart';
 import 'online_maps_screen.dart';
 import 'settings_screen.dart';
 import 'safety_tools_screen.dart';
@@ -211,8 +212,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           _QuickAction(
                             icon: Icons.offline_bolt_rounded,
                             label: 'Hors ligne',
-                            onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Les fiches, kits, contacts, plans et repères personnels restent disponibles hors ligne.')),
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const OfflineReadinessScreen()),
                             ),
                           ),
                         ],
