@@ -401,6 +401,7 @@ class _UnverifiedCountryNotice extends StatelessWidget {
           ],
         ),
       );
+}
 
 Future<void> _call(BuildContext context, AppLocalizations t, EmergencyService service, EmergencyCallService caller) async {
   final number=service.number; if(number==null||!service.isCallable)return;
