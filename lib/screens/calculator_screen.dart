@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../app/app_scope.dart';
 import '../app/localizations.dart';
 import '../services/local_storage_service.dart';
+import 'water_safety_screen.dart';
 
 class CalculatorScreen extends StatefulWidget {
   const CalculatorScreen({super.key});
@@ -214,6 +215,15 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                 ],
               ),
             ),
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const WaterSafetyScreen()),
+            ),
+            icon: const Icon(Icons.local_drink_rounded),
+            label: const Text('Que faire si l’eau n’est plus sûre ?'),
+          ),
           const SizedBox(height: 12),
           const Card(
             child: Padding(
