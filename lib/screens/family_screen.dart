@@ -42,7 +42,7 @@ class _FamilyScreenState extends State<FamilyScreen> {
 
   void _change(String key, int delta) {
     final current = _values[key] ?? 0;
-    final next = (current + delta).clamp(0, 99);
+    final next = (current + delta).clamp(0, 99).toInt();
 
     setState(() {
       _values = {
