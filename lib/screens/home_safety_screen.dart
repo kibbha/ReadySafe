@@ -134,7 +134,8 @@ class _HomeSafetyScreenState extends State<HomeSafetyScreen> {
   @override
   Widget build(BuildContext context) {
     final en = Localizations.localeOf(context).languageCode == 'en';
-    final ready = _checks.length;
+    final validIds = _checkItems.map((item) => item.id).toSet();
+    final ready = _checks.intersection(validIds).length;
     final progress =
         _checkItems.isEmpty ? 0.0 : ready / _checkItems.length;
 
