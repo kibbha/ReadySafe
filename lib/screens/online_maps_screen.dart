@@ -30,6 +30,58 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
   static const _style = 'https://tiles.openfreemap.org/styles/liberty';
   static const _europe = LatLng(50.0, 10.0);
 
+  static const _countryViews = <String, CameraPosition>{
+    'AL': CameraPosition(target: LatLng(41.1533, 20.1683), zoom: 6.3),
+    'AD': CameraPosition(target: LatLng(42.5063, 1.5218), zoom: 10.0),
+    'AM': CameraPosition(target: LatLng(40.0691, 45.0382), zoom: 6.2),
+    'AT': CameraPosition(target: LatLng(47.5162, 14.5501), zoom: 6.2),
+    'AZ': CameraPosition(target: LatLng(40.1431, 47.5769), zoom: 5.8),
+    'BE': CameraPosition(target: LatLng(50.5039, 4.4699), zoom: 7.2),
+    'BG': CameraPosition(target: LatLng(42.7339, 25.4858), zoom: 6.2),
+    'BY': CameraPosition(target: LatLng(53.7098, 27.9534), zoom: 5.5),
+    'BA': CameraPosition(target: LatLng(43.9159, 17.6791), zoom: 6.4),
+    'CH': CameraPosition(target: LatLng(46.8182, 8.2275), zoom: 7.0),
+    'CY': CameraPosition(target: LatLng(35.1264, 33.4299), zoom: 7.1),
+    'CZ': CameraPosition(target: LatLng(49.8175, 15.4730), zoom: 6.4),
+    'DE': CameraPosition(target: LatLng(51.1657, 10.4515), zoom: 5.5),
+    'DK': CameraPosition(target: LatLng(56.2639, 9.5018), zoom: 6.2),
+    'EE': CameraPosition(target: LatLng(58.5953, 25.0136), zoom: 6.3),
+    'ES': CameraPosition(target: LatLng(40.4637, -3.7492), zoom: 5.4),
+    'FI': CameraPosition(target: LatLng(61.9241, 25.7482), zoom: 5.1),
+    'FR': CameraPosition(target: LatLng(46.2276, 2.2137), zoom: 5.4),
+    'GB': CameraPosition(target: LatLng(55.3781, -3.4360), zoom: 5.2),
+    'GE': CameraPosition(target: LatLng(42.3154, 43.3569), zoom: 6.1),
+    'GR': CameraPosition(target: LatLng(39.0742, 21.8243), zoom: 5.9),
+    'HR': CameraPosition(target: LatLng(45.1000, 15.2000), zoom: 6.0),
+    'HU': CameraPosition(target: LatLng(47.1625, 19.5033), zoom: 6.4),
+    'IE': CameraPosition(target: LatLng(53.4129, -8.2439), zoom: 6.2),
+    'IS': CameraPosition(target: LatLng(64.9631, -19.0208), zoom: 5.5),
+    'IT': CameraPosition(target: LatLng(41.8719, 12.5674), zoom: 5.3),
+    'LI': CameraPosition(target: LatLng(47.1660, 9.5554), zoom: 10.0),
+    'LT': CameraPosition(target: LatLng(55.1694, 23.8813), zoom: 6.2),
+    'LU': CameraPosition(target: LatLng(49.8153, 6.1296), zoom: 8.3),
+    'LV': CameraPosition(target: LatLng(56.8796, 24.6032), zoom: 6.2),
+    'MC': CameraPosition(target: LatLng(43.7384, 7.4246), zoom: 12.0),
+    'MD': CameraPosition(target: LatLng(47.4116, 28.3699), zoom: 6.4),
+    'ME': CameraPosition(target: LatLng(42.7087, 19.3744), zoom: 7.1),
+    'MK': CameraPosition(target: LatLng(41.6086, 21.7453), zoom: 7.0),
+    'MT': CameraPosition(target: LatLng(35.9375, 14.3754), zoom: 9.0),
+    'NL': CameraPosition(target: LatLng(52.1326, 5.2913), zoom: 6.6),
+    'NO': CameraPosition(target: LatLng(60.4720, 8.4689), zoom: 4.8),
+    'PL': CameraPosition(target: LatLng(51.9194, 19.1451), zoom: 5.7),
+    'PT': CameraPosition(target: LatLng(39.3999, -8.2245), zoom: 6.0),
+    'RO': CameraPosition(target: LatLng(45.9432, 24.9668), zoom: 5.8),
+    'RS': CameraPosition(target: LatLng(44.0165, 21.0059), zoom: 6.2),
+    'SE': CameraPosition(target: LatLng(60.1282, 18.6435), zoom: 4.9),
+    'SI': CameraPosition(target: LatLng(46.1512, 14.9955), zoom: 7.1),
+    'SK': CameraPosition(target: LatLng(48.6690, 19.6990), zoom: 6.5),
+    'SM': CameraPosition(target: LatLng(43.9424, 12.4578), zoom: 11.0),
+    'TR': CameraPosition(target: LatLng(38.9637, 35.2433), zoom: 5.2),
+    'UA': CameraPosition(target: LatLng(48.3794, 31.1656), zoom: 5.0),
+    'VA': CameraPosition(target: LatLng(41.9029, 12.4534), zoom: 13.0),
+    'XK': CameraPosition(target: LatLng(42.6026, 20.9030), zoom: 7.2),
+  };
+
   final _storage = LocalStorageService();
   final _search = TextEditingController();
 
@@ -200,55 +252,9 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
     await _syncMarkers();
   }
 
-  CameraPosition _initialCamera(String code) {
-    switch (code) {
-      case 'CH':
-        return const CameraPosition(
-          target: LatLng(46.8182, 8.2275),
-          zoom: 7.0,
-        );
-      case 'FR':
-        return const CameraPosition(
-          target: LatLng(46.2276, 2.2137),
-          zoom: 5.4,
-        );
-      case 'DE':
-        return const CameraPosition(
-          target: LatLng(51.1657, 10.4515),
-          zoom: 5.5,
-        );
-      case 'IT':
-        return const CameraPosition(
-          target: LatLng(41.8719, 12.5674),
-          zoom: 5.3,
-        );
-      case 'BE':
-        return const CameraPosition(
-          target: LatLng(50.5039, 4.4699),
-          zoom: 7.2,
-        );
-      case 'GB':
-        return const CameraPosition(
-          target: LatLng(55.3781, -3.4360),
-          zoom: 5.2,
-        );
-      case 'ES':
-        return const CameraPosition(
-          target: LatLng(40.4637, -3.7492),
-          zoom: 5.4,
-        );
-      case 'AT':
-        return const CameraPosition(
-          target: LatLng(47.5162, 14.5501),
-          zoom: 6.2,
-        );
-      default:
-        return const CameraPosition(
-          target: _europe,
-          zoom: 4.3,
-        );
-    }
-  }
+  CameraPosition _initialCamera(String code) =>
+      _countryViews[code] ??
+      const CameraPosition(target: _europe, zoom: 4.3);
 
   Future<void> _openNearby(String query) async {
     await _openExternalSearch('$query near me');
