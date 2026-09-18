@@ -44,6 +44,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
+    final en = Localizations.localeOf(context).languageCode == 'en';
     final country = AppScope.of(context).activeCountry;
     final isSwitzerland = country?.isoCode == 'CH';
     final people = adults + children + care;
@@ -65,26 +66,28 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
               ),
               borderRadius: BorderRadius.circular(22),
             ),
-            child: const Row(
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircleAvatar(
+                const CircleAvatar(
                   backgroundColor: Color(0xff237fc7),
                   child: Icon(Icons.water_drop_rounded, color: Colors.white),
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Autonomie eau & nourriture',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+                        en ? 'Water & food autonomy' : 'Autonomie eau & nourriture',
+                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
-                        'Estimez un stock de départ puis adaptez-le aux besoins réels de votre foyer, au climat et aux recommandations locales.',
-                        style: TextStyle(color: Color(0xff65747a), height: 1.35),
+                        en
+                            ? 'Estimate a starting reserve, then adapt it to your household, climate and local official guidance.'
+                            : 'Estimez un stock de départ puis adaptez-le aux besoins réels de votre foyer, au climat et aux recommandations locales.',
+                        style: const TextStyle(color: Color(0xff65747a), height: 1.35),
                       ),
                     ],
                   ),
@@ -93,7 +96,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             ),
           ),
           const SizedBox(height: 14),
-          const Text('Votre foyer', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
+          Text(en ? 'Your household' : 'Votre foyer', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
           const SizedBox(height: 6),
           _Counter(
             label: t.get('adults'),
@@ -106,12 +109,12 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             onChange: (v) => setState(() => children = v),
           ),
           _Counter(
-            label: 'Personnes avec besoins de soins',
+            label: en ? 'People with care needs' : 'Personnes avec besoins de soins',
             value: care,
             onChange: (v) => setState(() => care = v),
           ),
           const SizedBox(height: 12),
-          const Text('Durée cible', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
+          Text(en ? 'Target duration' : 'Durée cible', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
           const SizedBox(height: 7),
           Wrap(
             spacing: 8,
@@ -119,7 +122,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             children: [
               for (final value in const [3, 4, 7, 14])
                 ChoiceChip(
-                  label: Text('$value jours'),
+                  label: Text(en ? '$value days' : '$value jours'),
                   selected: days == value,
                   showCheckmark: false,
                   onSelected: (_) => setState(() => days = value),
@@ -127,13 +130,15 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             ],
           ),
           const SizedBox(height: 14),
-          const Text(
-            'Hypothèse eau',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+          Text(
+            en ? 'Water assumption' : 'Hypothèse eau',
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 4),
           Text(
-            '${litresPerPersonDay.toStringAsFixed(1)} L / personne / jour',
+            en
+                ? '${litresPerPersonDay.toStringAsFixed(1)} L / person / day'
+                : '${litresPerPersonDay.toStringAsFixed(1)} L / personne / jour',
             style: const TextStyle(fontWeight: FontWeight.w800, color: Color(0xff237fc7)),
           ),
           Slider(
@@ -144,9 +149,11 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             label: '${litresPerPersonDay.toStringAsFixed(1)} L',
             onChanged: (value) => setState(() => litresPerPersonDay = value),
           ),
-          const Text(
-            'Ce réglage est un outil d’estimation, pas une prescription universelle. Augmentez selon chaleur, activité, grossesse, allaitement ou autres besoins particuliers.',
-            style: TextStyle(fontSize: 12, color: Color(0xff65747a), height: 1.35),
+          Text(
+            en
+                ? 'This is an estimation tool, not a universal prescription. Increase the amount for heat, physical activity, pregnancy, breastfeeding or other special needs.'
+                : 'Ce réglage est un outil d’estimation, pas une prescription universelle. Augmentez selon chaleur, activité, grossesse, allaitement ou autres besoins particuliers.',
+            style: const TextStyle(fontSize: 12, color: Color(0xff65747a), height: 1.35),
           ),
           const SizedBox(height: 14),
           Row(
@@ -154,9 +161,9 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
               Expanded(
                 child: _ResultCard(
                   icon: Icons.water_drop_rounded,
-                  title: 'Eau',
+                  title: en ? 'Water' : 'Eau',
                   value: '${water.toStringAsFixed(water.truncateToDouble() == water ? 0 : 1)} L',
-                  subtitle: '$effectivePeople personne(s) · $days jours',
+                  subtitle: en ? '$effectivePeople people · $days days' : '$effectivePeople personne(s) · $days jours',
                   color: const Color(0xff237fc7),
                 ),
               ),
@@ -164,9 +171,9 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
               Expanded(
                 child: _ResultCard(
                   icon: Icons.restaurant_rounded,
-                  title: 'Repas',
+                  title: en ? 'Meals' : 'Repas',
                   value: '$meals',
-                  subtitle: 'équivalents repas',
+                  subtitle: en ? 'meal equivalents' : 'équivalents repas',
                   color: const Color(0xffb7833f),
                 ),
               ),
@@ -180,15 +187,17 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                 color: const Color(0xfffff4c7),
                 borderRadius: BorderRadius.circular(17),
               ),
-              child: const Row(
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.flag_outlined, color: Color(0xff9a6a00)),
-                  SizedBox(width: 9),
+                  const Icon(Icons.flag_outlined, color: Color(0xff9a6a00)),
+                  const SizedBox(width: 9),
                   Expanded(
                     child: Text(
-                      'Référence Suisse : Alertswiss recommande au moins 9 litres d’eau par personne pour 3–4 jours et des denrées alimentaires pour environ une semaine. Adaptez toujours le stock aux besoins personnels.',
-                      style: TextStyle(fontWeight: FontWeight.w700, height: 1.35),
+                      en
+                          ? 'Swiss reference: Alertswiss recommends at least 9 litres of water per person for 3–4 days and food for about one week. Always adapt the reserve to personal needs.'
+                          : 'Référence Suisse : Alertswiss recommande au moins 9 litres d’eau par personne pour 3–4 jours et des denrées alimentaires pour environ une semaine. Adaptez toujours le stock aux besoins personnels.',
+                      style: const TextStyle(fontWeight: FontWeight.w700, height: 1.35),
                     ),
                   ),
                 ],
@@ -201,15 +210,17 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                 color: const Color(0xffeaf6f4),
                 borderRadius: BorderRadius.circular(17),
               ),
-              child: const Row(
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.info_outline_rounded, color: Color(0xff087f83)),
-                  SizedBox(width: 9),
+                  const Icon(Icons.info_outline_rounded, color: Color(0xff087f83)),
+                  const SizedBox(width: 9),
                   Expanded(
                     child: Text(
-                      'Consultez les recommandations officielles de votre pays pour confirmer la quantité et la durée de réserve adaptées.',
-                      style: TextStyle(fontWeight: FontWeight.w700, height: 1.35),
+                      en
+                          ? 'Check the official guidance for your country to confirm the appropriate reserve amount and duration.'
+                          : 'Consultez les recommandations officielles de votre pays pour confirmer la quantité et la durée de réserve adaptées.',
+                      style: const TextStyle(fontWeight: FontWeight.w700, height: 1.35),
                     ),
                   ),
                 ],
@@ -222,22 +233,25 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
               MaterialPageRoute(builder: (_) => const WaterSafetyScreen()),
             ),
             icon: const Icon(Icons.local_drink_rounded),
-            label: const Text('Que faire si l’eau n’est plus sûre ?'),
+            label: Text(en ? 'What if the water is no longer safe?' : 'Que faire si l’eau n’est plus sûre ?'),
           ),
           const SizedBox(height: 12),
-          const Card(
+          Card(
             child: Padding(
-              padding: EdgeInsets.all(14),
+              padding: const EdgeInsets.all(14),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('À ne pas oublier', style: TextStyle(fontWeight: FontWeight.w900)),
-                  SizedBox(height: 8),
-                  _Tip('Prévoir des aliments consommables sans cuisson.'),
-                  _Tip('Faire tourner les stocks dans la consommation quotidienne.'),
-                  _Tip('Contrôler régulièrement les dates de péremption.'),
-                  _Tip('Prévoir séparément les besoins des animaux.'),
-                  _Tip('Conserver une marge pour les besoins particuliers et les visiteurs éventuels.'),
+                  Text(
+                    en ? 'Do not forget' : 'À ne pas oublier',
+                    style: const TextStyle(fontWeight: FontWeight.w900),
+                  ),
+                  const SizedBox(height: 8),
+                  _Tip(en ? 'Keep food that can be eaten without cooking.' : 'Prévoir des aliments consommables sans cuisson.'),
+                  _Tip(en ? 'Rotate emergency food through normal household use.' : 'Faire tourner les stocks dans la consommation quotidienne.'),
+                  _Tip(en ? 'Check expiry dates regularly.' : 'Contrôler régulièrement les dates de péremption.'),
+                  _Tip(en ? 'Plan pet needs separately.' : 'Prévoir séparément les besoins des animaux.'),
+                  _Tip(en ? 'Keep extra margin for special needs and possible visitors.' : 'Conserver une marge pour les besoins particuliers et les visiteurs éventuels.'),
                 ],
               ),
             ),
