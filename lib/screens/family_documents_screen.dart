@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../services/local_storage_service.dart';
+import 'communication_plan_screen.dart';
 import 'family_screen.dart';
 
 class FamilyDocumentsScreen extends StatefulWidget {
@@ -249,6 +250,22 @@ class _FamilyDocumentsScreenState extends State<FamilyDocumentsScreen>
                     const Icon(Icons.chevron_right_rounded),
                   ],
                 ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Card(
+            child: ListTile(
+              leading: const CircleAvatar(
+                backgroundColor: Color(0xffe4f2f0),
+                child: Icon(Icons.connect_without_contact_rounded, color: Color(0xff087f83)),
+              ),
+              title: const Text('Plan de communication', style: TextStyle(fontWeight: FontWeight.w900)),
+              subtitle: const Text('Contact extérieur, école/travail, reconnexion et message « Je suis en sécurité »'),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const CommunicationPlanScreen()),
               ),
             ),
           ),
