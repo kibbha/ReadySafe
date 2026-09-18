@@ -67,195 +67,196 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final en = Localizations.localeOf(context).languageCode == 'en';
     final progress = _total == 0 ? 0.0 : _ready / _total;
     final modules = [
       _Module(
-        'Kit domicile',
-        'Réserves pour plusieurs jours : eau, nourriture, radio, lumière et santé',
+        en ? 'Home kit' : 'Kit domicile',
+        en ? 'Several days of water, food, radio, light and health supplies' : 'Réserves pour plusieurs jours : eau, nourriture, radio, lumière et santé',
         Icons.backpack_rounded,
         const Color(0xff087f83),
         const ChecklistScreen(kit: true),
         'prepare',
       ),
       _Module(
-        'Kits spécialisés',
-        'Évacuation, voiture, voyage, enfant, animaux et extérieur',
+        en ? 'Specialized kits' : 'Kits spécialisés',
+        en ? 'Evacuation, vehicle, travel, child, pets and outdoors' : 'Évacuation, voiture, voyage, enfant, animaux et extérieur',
         Icons.inventory_2_rounded,
         const Color(0xff147343),
         const SpecialKitsScreen(),
         'prepare',
       ),
       _Module(
-        'Check-lists',
-        'Évacuation, incendie, panne, voyage, voiture et famille',
+        en ? 'Checklists' : 'Check-lists',
+        en ? 'Evacuation, fire, outage, travel, vehicle and family' : 'Évacuation, incendie, panne, voyage, voiture et famille',
         Icons.fact_check_rounded,
         const Color(0xffb7833f),
         const ChecklistScreen(kit: false),
         'prepare',
       ),
       _Module(
-        'Eau & nourriture',
-        'Estimer les besoins de votre foyer et votre autonomie',
+        en ? 'Water & food' : 'Eau & nourriture',
+        en ? 'Estimate household needs and autonomy' : 'Estimer les besoins de votre foyer et votre autonomie',
         Icons.water_drop_rounded,
         const Color(0xff2087c7),
         const CalculatorScreen(),
         'prepare',
       ),
       _Module(
-        'Eau sûre en urgence',
-        'Ébullition, traitement, filtres et contamination',
+        en ? 'Safe water in an emergency' : 'Eau sûre en urgence',
+        en ? 'Boiling, treatment, filters and contamination' : 'Ébullition, traitement, filtres et contamination',
         Icons.local_drink_rounded,
         const Color(0xff237fc7),
         const WaterSafetyScreen(),
         'act',
       ),
       _Module(
-        'Hygiène & assainissement',
-        'Mains, déchets, eaux souillées et prévention des infections',
+        en ? 'Hygiene & sanitation' : 'Hygiène & assainissement',
+        en ? 'Hands, waste, dirty water and infection prevention' : 'Mains, déchets, eaux souillées et prévention des infections',
         Icons.sanitizer_rounded,
         const Color(0xff087f83),
         const SanitationHygieneScreen(),
         'act',
       ),
       _Module(
-        'Sécurité alimentaire',
-        'Panne, froid, aliments décongelés et contamination par les eaux',
+        en ? 'Food safety' : 'Sécurité alimentaire',
+        en ? 'Outages, cold chain, thawing and flood contamination' : 'Panne, froid, aliments décongelés et contamination par les eaux',
         Icons.restaurant_rounded,
         const Color(0xffb7833f),
         const EmergencyFoodSafetyScreen(),
         'act',
       ),
       _Module(
-        'Fumée & qualité de l’air',
-        'Pièce à air plus propre, filtration et exposition à la fumée',
+        en ? 'Smoke & air quality' : 'Fumée & qualité de l’air',
+        en ? 'Cleaner-air room, filtration and smoke exposure' : 'Pièce à air plus propre, filtration et exposition à la fumée',
         Icons.air_rounded,
         const Color(0xffd16a32),
         const SmokeAirQualityScreen(),
         'act',
       ),
       _Module(
-        'Panne électrique',
-        'Énergie, froid alimentaire, communication et sécurité CO',
+        en ? 'Power outage' : 'Panne électrique',
+        en ? 'Power, food refrigeration, communication and CO safety' : 'Énergie, froid alimentaire, communication et sécurité CO',
         Icons.power_off_rounded,
         const Color(0xffb7833f),
         const PowerOutageScreen(),
         'act',
       ),
       _Module(
-        'Risques & catastrophes',
-        'Avant, pendant et après : incendie, inondation, tempête…',
+        en ? 'Risks & disasters' : 'Risques & catastrophes',
+        en ? 'Before, during and after fire, flood, storm and more' : 'Avant, pendant et après : incendie, inondation, tempête…',
         Icons.thunderstorm_rounded,
         const Color(0xffd16a32),
         const GuideListScreen(kind: GuideKind.disasters),
         'act',
       ),
       _Module(
-        'Conseils de survie',
-        'Panne, évacuation, confinement et réflexes essentiels',
+        en ? 'Survival guidance' : 'Conseils de survie',
+        en ? 'Outage, evacuation, sheltering and essential actions' : 'Panne, évacuation, confinement et réflexes essentiels',
         Icons.menu_book_rounded,
         const Color(0xff4c6d72),
         const GuideListScreen(kind: GuideKind.emergencies),
         'act',
       ),
       _Module(
-        'Communication familiale',
-        'Contact extérieur, reconnexion et message « Je suis en sécurité »',
+        en ? 'Family communication' : 'Communication familiale',
+        en ? 'Out-of-area contact, reconnection and safe message' : 'Contact extérieur, reconnexion et message « Je suis en sécurité »',
         Icons.connect_without_contact_rounded,
         const Color(0xff0f7c7f),
         const CommunicationPlanScreen(),
         'prepare',
       ),
       _Module(
-        'Coffre sécurisé',
-        'Références sensibles chiffrées et disponibles localement',
+        en ? 'Secure vault' : 'Coffre sécurisé',
+        en ? 'Encrypted sensitive references stored locally' : 'Références sensibles chiffrées et disponibles localement',
         Icons.lock_rounded,
         const Color(0xff6750a4),
         const SecureVaultScreen(),
         'prepare',
       ),
       _Module(
-        'Sécurité du domicile',
-        'Sorties, coupures techniques, détecteurs et zone sûre',
+        en ? 'Home safety' : 'Sécurité du domicile',
+        en ? 'Exits, utilities, alarms and safe indoor area' : 'Sorties, coupures techniques, détecteurs et zone sûre',
         Icons.home_work_rounded,
         const Color(0xff4c6d72),
         const HomeSafetyScreen(),
         'prepare',
       ),
       _Module(
-        'Besoins spécifiques',
-        'Mobilité, audition, vision, aide, énergie et communication',
+        en ? 'Support needs' : 'Besoins spécifiques',
+        en ? 'Mobility, hearing, vision, assistance, power and communication' : 'Mobilité, audition, vision, aide, énergie et communication',
         Icons.accessibility_new_rounded,
         const Color(0xff6750a4),
         const SupportNeedsScreen(),
         'prepare',
       ),
       _Module(
-        'Continuité médicale',
-        'Traitements, appareils, froid, consommables et solution de secours',
+        en ? 'Medical continuity' : 'Continuité médicale',
+        en ? 'Medicines, devices, refrigeration, consumables and backup care' : 'Traitements, appareils, froid, consommables et solution de secours',
         Icons.medical_services_rounded,
         const Color(0xffd92d36),
         const MedicalContinuityScreen(),
         'prepare',
       ),
       _Module(
-        'Animaux',
-        'Évacuation, identification, hébergement et personne relais',
+        en ? 'Pets' : 'Animaux',
+        en ? 'Evacuation, identification, shelter and backup helper' : 'Évacuation, identification, hébergement et personne relais',
         Icons.pets_rounded,
         const Color(0xff147343),
         const PetEmergencyScreen(),
         'prepare',
       ),
       _Module(
-        'Préparation hors ligne',
-        'Vérifier ce qui reste disponible sans réseau ni Internet',
+        en ? 'Offline readiness' : 'Préparation hors ligne',
+        en ? 'Check what remains available without network or Internet' : 'Vérifier ce qui reste disponible sans réseau ni Internet',
         Icons.offline_bolt_rounded,
         const Color(0xff087f83),
         const OfflineReadinessScreen(),
         'prepare',
       ),
       _Module(
-        'Outils d’urgence',
-        'Signal SOS, numéros, messages et accès rapide aux repères',
+        en ? 'Emergency tools' : 'Outils d’urgence',
+        en ? 'SOS signal, numbers, messages and quick landmark access' : 'Signal SOS, numéros, messages et accès rapide aux repères',
         Icons.handyman_rounded,
         const Color(0xffd92d36),
         const SafetyToolsScreen(),
         'act',
       ),
       _Module(
-        'Alertes officielles',
-        'Accéder aux canaux gouvernementaux et météo du pays actif',
+        en ? 'Official alerts' : 'Alertes officielles',
+        en ? 'Open government and weather channels for the active country' : 'Accéder aux canaux gouvernementaux et météo du pays actif',
         Icons.campaign_rounded,
         const Color(0xffd16a32),
         const OfficialSourcesScreen(),
         'act',
       ),
       _Module(
-        'Après l’urgence',
-        'Sécuriser le retour, les proches, le logement et les démarches',
+        en ? 'After the emergency' : 'Après l’urgence',
+        en ? 'Safe return, household, home and recovery steps' : 'Sécuriser le retour, les proches, le logement et les démarches',
         Icons.restore_rounded,
         const Color(0xff147343),
         const RecoveryScreen(),
         'recover',
       ),
       _Module(
-        'Entretien & rappels',
-        'Péremptions, rotation des stocks et vérifications périodiques',
+        en ? 'Maintenance & reminders' : 'Entretien & rappels',
+        en ? 'Expiry dates, stock rotation and periodic checks' : 'Péremptions, rotation des stocks et vérifications périodiques',
         Icons.event_repeat_rounded,
         const Color(0xffb7833f),
         const MaintenanceScreen(),
         'prepare',
       ),
       _Module(
-        'Revue de préparation',
-        'Vérifier chaque année contacts, réserves, alertes et besoins du foyer',
+        en ? 'Preparedness review' : 'Revue de préparation',
+        en ? 'Review contacts, supplies, alerts and household needs each year' : 'Vérifier chaque année contacts, réserves, alertes et besoins du foyer',
         Icons.fact_check_rounded,
         const Color(0xff087f83),
         const PreparednessReviewScreen(),
         'prepare',
       ),
       _Module(
-        'Formation & exercices',
-        'Réviser les gestes et tester votre préparation',
+        en ? 'Training & drills' : 'Formation & exercices',
+        en ? 'Refresh skills and test your preparedness' : 'Réviser les gestes et tester votre préparation',
         Icons.school_rounded,
         const Color(0xff6750a4),
         const TrainingScreen(),
@@ -266,10 +267,10 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Kits & survie'),
+        title: Text(en ? 'Kits & preparedness' : 'Kits & survie'),
         actions: [
           IconButton(
-            tooltip: 'Actualiser',
+            tooltip: en ? 'Refresh' : 'Actualiser',
             onPressed: _load,
             icon: const Icon(Icons.refresh_rounded),
           ),
@@ -306,13 +307,13 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Votre centre de préparation',
-                            style: TextStyle(fontSize: 21, fontWeight: FontWeight.w900),
+                          Text(
+                            en ? 'Your preparedness center' : 'Votre centre de préparation',
+                            style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w900),
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '$_ready / $_total éléments de base prêts',
+                            en ? '$_ready / $_total core items ready' : '$_ready / $_total éléments de base prêts',
                             style: const TextStyle(fontWeight: FontWeight.w800, color: Color(0xff52666b)),
                           ),
                           const SizedBox(height: 8),
@@ -338,18 +339,18 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
                 child: InkWell(
                   borderRadius: BorderRadius.circular(20),
                   onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const LeaveNowScreen())),
-                  child: const Padding(
-                    padding: EdgeInsets.all(15),
+                  child: Padding(
+                    padding: const EdgeInsets.all(15),
                     child: Row(
                       children: [
-                        CircleAvatar(backgroundColor: Color(0x22ffffff), child: Icon(Icons.directions_run_rounded, color: Colors.white)),
-                        SizedBox(width: 12),
+                        const CircleAvatar(backgroundColor: Color(0x22ffffff), child: Icon(Icons.directions_run_rounded, color: Colors.white)),
+                        const SizedBox(width: 12),
                         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                          Text('JE DOIS PARTIR MAINTENANT', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900)),
-                          SizedBox(height: 2),
-                          Text('Checklist d’évacuation immédiate', style: TextStyle(color: Colors.white)),
+                          Text(en ? 'I MUST LEAVE NOW' : 'JE DOIS PARTIR MAINTENANT', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900)),
+                          const SizedBox(height: 2),
+                          Text(en ? 'Immediate evacuation checklist' : 'Checklist d’évacuation immédiate', style: const TextStyle(color: Colors.white)),
                         ])),
-                        Icon(Icons.arrow_forward_rounded, color: Colors.white),
+                        const Icon(Icons.arrow_forward_rounded, color: Colors.white),
                       ],
                     ),
                   ),
@@ -360,10 +361,10 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    _sectionChip('prepare', 'Préparer', Icons.backpack_outlined),
-                    _sectionChip('act', 'Agir', Icons.flash_on_rounded),
-                    _sectionChip('recover', 'Après', Icons.restore_rounded),
-                    _sectionChip('learn', 'Apprendre', Icons.school_outlined),
+                    _sectionChip('prepare', en ? 'Prepare' : 'Préparer', Icons.backpack_outlined),
+                    _sectionChip('act', en ? 'Act' : 'Agir', Icons.flash_on_rounded),
+                    _sectionChip('recover', en ? 'After' : 'Après', Icons.restore_rounded),
+                    _sectionChip('learn', en ? 'Learn' : 'Apprendre', Icons.school_outlined),
                   ],
                 ),
               ),
@@ -372,7 +373,7 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
                 children: [
                   Expanded(
                     child: Text(
-                      _sectionTitle(),
+                      _sectionTitle(en),
                       style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w900),
                     ),
                   ),
@@ -409,27 +410,27 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
                 itemBuilder: (context, index) => _ModuleCard(module: visibleModules[index]),
               ),
               const SizedBox(height: 18),
-              const Text('Réflexes rapides', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
+              Text(en ? 'Quick reminders' : 'Réflexes rapides', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
               const SizedBox(height: 8),
               _tip(
                 Icons.water_drop_outlined,
-                'Eau',
-                'Stockez une réserve adaptée au foyer et traitez toute eau dont la potabilité est incertaine.',
+                en ? 'Water' : 'Eau',
+                en ? 'Keep a household-appropriate reserve and treat water whenever its safety is uncertain.' : 'Stockez une réserve adaptée au foyer et traitez toute eau dont la potabilité est incertaine.',
               ),
               _tip(
                 Icons.bolt_outlined,
-                'Énergie',
-                'Gardez lampes, piles, batterie externe et radio dans un endroit connu de toute la famille.',
+                en ? 'Power' : 'Énergie',
+                en ? 'Keep lights, batteries, power banks and radio where everyone can find them.' : 'Gardez lampes, piles, batterie externe et radio dans un endroit connu de toute la famille.',
               ),
               _tip(
                 Icons.directions_run_rounded,
-                'Évacuation',
-                'Documents, médicaments, téléphone, eau, kit, animaux et point de rassemblement : gardez l’ordre simple.',
+                en ? 'Evacuation' : 'Évacuation',
+                en ? 'People, medicines, phone, water, kit, pets and meeting point: keep the sequence simple.' : 'Documents, médicaments, téléphone, eau, kit, animaux et point de rassemblement : gardez l’ordre simple.',
               ),
               _tip(
                 Icons.forum_outlined,
-                'Communication',
-                'Prévoyez un contact extérieur, un point de reconnexion et une copie papier des numéros importants.',
+                en ? 'Communication' : 'Communication',
+                en ? 'Plan an out-of-area contact, a reconnection point and a paper copy of key numbers.' : 'Prévoyez un contact extérieur, un point de reconnexion et une copie papier des numéros importants.',
               ),
             ],
           );
@@ -438,16 +439,16 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
     );
   }
 
-  String _sectionTitle() {
+  String _sectionTitle(bool en) {
     switch (_section) {
       case 'act':
-        return 'Agir pendant une urgence';
+        return en ? 'Act during an emergency' : 'Agir pendant une urgence';
       case 'recover':
-        return 'Après l’urgence';
+        return en ? 'After the emergency' : 'Après l’urgence';
       case 'learn':
-        return 'Formation & exercices';
+        return en ? 'Training & drills' : 'Formation & exercices';
       default:
-        return 'Préparer le foyer';
+        return en ? 'Prepare the household' : 'Préparer le foyer';
     }
   }
 
