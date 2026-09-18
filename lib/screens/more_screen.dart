@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../app/localizations.dart';
 import 'communication_plan_screen.dart';
+import 'diagnostics_screen.dart';
 import 'emergency_plan_summary_screen.dart';
 import 'emergency_screen.dart';
 import 'family_documents_screen.dart';
@@ -231,9 +232,19 @@ class MoreScreen extends StatelessWidget {
         [
           _MoreItem(
             t.get('settings'),
-            en ? 'Country, language, travel mode and accessibility' : 'Pays, langue, mode voyage et accessibilité',
+            en
+                ? 'Country, language, travel mode and accessibility'
+                : 'Pays, langue, mode voyage et accessibilité',
             Icons.settings_outlined,
             const SettingsScreen(),
+          ),
+          _MoreItem(
+            en ? 'ReadySafe self-check' : 'Auto-contrôle ReadySafe',
+            en
+                ? 'Check emergency data, illustrations and local services'
+                : 'Vérifier données d’urgence, illustrations et services locaux',
+            Icons.health_and_safety_outlined,
+            const DiagnosticsScreen(),
           ),
         ],
       ),
@@ -241,9 +252,13 @@ class MoreScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(t.get('more'))),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(14, 4, 14, 28),
-        children: [
+      body: Align(
+        alignment: Alignment.topCenter,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 960),
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(14, 4, 14, 28),
+            children: [
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -296,7 +311,9 @@ class MoreScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
           ],
-        ],
+            ],
+          ),
+        ),
       ),
     );
   }
