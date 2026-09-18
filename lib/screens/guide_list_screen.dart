@@ -666,6 +666,18 @@ const _englishGuides = <String, _GuideTranslation>{
     callHelp: 'Call when someone is trapped, injured or a structure is at immediate risk of collapse.',
     evacuate: 'Leave the area when an evacuation is ordered or ground movement threatens you.',
   ),
+  'gas_leak': _GuideTranslation(
+    title: 'Gas leak / suspicious gas smell',
+    immediate: 'Leave the area and get other people out. From a safe location, contact the appropriate emergency or local gas service.',
+    avoid: 'Do not operate electrical switches or appliances, smoke, use a flame or use a phone in the area where a leak is suspected.',
+    steps: [
+      'Move away from the building or suspected area without trying to locate the leak.',
+      'Avoid anything that could create a spark or ignition source and warn others without delaying your exit.',
+      'Do not re-enter until a competent service or authority says the area is safe.',
+    ],
+    callHelp: 'Call from outside or another safe place if the smell persists, the leak appears significant, someone becomes unwell or there is immediate danger.',
+    evacuate: 'Leave immediately when a gas leak is suspected or when an authority or qualified professional tells you to evacuate.',
+  ),
   'industrial': _GuideTranslation(
     title: 'Industrial / chemical incident',
     immediate: 'Move away or shelter according to the specific official instructions for the release.',
