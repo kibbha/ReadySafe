@@ -23,6 +23,7 @@ import 'recovery_screen.dart';
 import 'safety_tools_screen.dart';
 import 'sanitation_hygiene_screen.dart';
 import 'secure_vault_screen.dart';
+import 'smoke_air_quality_screen.dart';
 import 'special_kits_screen.dart';
 import 'support_needs_screen.dart';
 import 'water_safety_screen.dart';
@@ -113,6 +114,9 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
       'congélateur': _SearchHit('Kits & survie', 'Sécurité alimentaire', Icons.restaurant_rounded, EmergencyFoodSafetyScreen()),
       'frigo': _SearchHit('Kits & survie', 'Sécurité alimentaire', Icons.restaurant_rounded, EmergencyFoodSafetyScreen()),
       'décongelé': _SearchHit('Kits & survie', 'Sécurité alimentaire', Icons.restaurant_rounded, EmergencyFoodSafetyScreen()),
+      'fumée': _SearchHit('Kits & survie', 'Fumée & qualité de l’air', Icons.air_rounded, SmokeAirQualityScreen()),
+      'qualité de l’air': _SearchHit('Kits & survie', 'Fumée & qualité de l’air', Icons.air_rounded, SmokeAirQualityScreen()),
+      'purificateur': _SearchHit('Kits & survie', 'Fumée & qualité de l’air', Icons.air_rounded, SmokeAirQualityScreen()),
       'hygiène': _SearchHit('Kits & survie', 'Hygiène & assainissement', Icons.sanitizer_rounded, SanitationHygieneScreen()),
       'assainissement': _SearchHit('Kits & survie', 'Hygiène & assainissement', Icons.sanitizer_rounded, SanitationHygieneScreen()),
       'eaux souillées': _SearchHit('Kits & survie', 'Hygiène & assainissement', Icons.sanitizer_rounded, SanitationHygieneScreen()),
