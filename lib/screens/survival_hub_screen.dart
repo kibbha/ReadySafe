@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../data/content.dart';
 import '../services/local_storage_service.dart';
+import 'avalanche_safety_screen.dart';
 import 'calculator_screen.dart';
 import 'communication_plan_screen.dart';
 import 'emergency_food_safety_screen.dart';
+import 'carbon_monoxide_screen.dart';
 import 'checklist_screen.dart';
 import 'guide_list_screen.dart';
 import 'home_safety_screen.dart';
@@ -140,6 +142,22 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.power_off_rounded,
         const Color(0xffb7833f),
         const PowerOutageScreen(),
+        'act',
+      ),
+      _Module(
+        en ? 'Carbon monoxide' : 'Monoxyde de carbone',
+        en ? 'Generators, fuel-burning devices, detectors and poisoning signs' : 'Groupes électrogènes, combustion, détecteurs et signes d’intoxication',
+        Icons.warning_amber_rounded,
+        const Color(0xffd92d36),
+        const CarbonMonoxideScreen(),
+        'act',
+      ),
+      _Module(
+        en ? 'Avalanche safety' : 'Sécurité avalanche',
+        en ? 'Official bulletin, burial response and Swiss rescue context' : 'Bulletin officiel, ensevelissement et secours en Suisse',
+        Icons.landscape_rounded,
+        const Color(0xff237fc7),
+        const AvalancheSafetyScreen(),
         'act',
       ),
       _Module(
