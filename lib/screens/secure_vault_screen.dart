@@ -51,9 +51,7 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
 
       setState(() {
         _loading = false;
-        _error = _en
-            ? 'Secure storage is not available on this device.'
-            : 'Le stockage sécurisé n’est pas disponible sur cet appareil.';
+        _error = 'storage_unavailable';
       });
     }
   }
@@ -188,9 +186,7 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
       if (!mounted) return;
 
       setState(() {
-        _error = en
-            ? 'Unable to save this item in the secure vault.'
-            : 'Impossible d’enregistrer dans le coffre sécurisé.';
+        _error = 'save_failed';
       });
     }
   }
@@ -226,9 +222,7 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        _error = en
-            ? 'Unable to delete this secure entry.'
-            : 'Impossible de supprimer cette entrée sécurisée.';
+        _error = 'delete_failed';
       });
     }
   }
@@ -344,7 +338,7 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Text(
-                          _error!,
+                          _errorMessage(_error!, en),
                           style: const TextStyle(
                             color: Color(0xffb00020),
                             fontWeight: FontWeight.w800,
@@ -497,6 +491,25 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
               ),
             ),
     );
+  }
+
+  String _errorMessage(String code, bool en) {
+    switch (code) {
+      case 'storage_unavailable':
+        return en
+            ? 'Secure storage is not available on this device.'
+            : 'Le stockage sécurisé n’est pas disponible sur cet appareil.';
+      case 'save_failed':
+        return en
+            ? 'Unable to save this item in the secure vault.'
+            : 'Impossible d’enregistrer dans le coffre sécurisé.';
+      case 'delete_failed':
+        return en
+            ? 'Unable to delete this secure entry.'
+            : 'Impossible de supprimer cette entrée sécurisée.';
+      default:
+        return en ? 'Secure-vault error.' : 'Erreur du coffre sécurisé.';
+    }
   }
 
   static String _categoryLabel(String category, bool en) {
