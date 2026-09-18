@@ -173,17 +173,21 @@ class _FirstAidScreenState extends State<FirstAidScreen> {
       body: LayoutBuilder(
         builder: (context, constraints) {
           final width = constraints.maxWidth;
-          final columns = width >= 1040
-              ? 5
-              : width >= 760
+          final columns = width >= 1280
+              ? 4
+              : width >= 900
                   ? 3
-                  : 2;
-          final horizontal = width >= 760 ? 20.0 : 10.0;
-          final posterHeight = width >= 1040
-              ? 425.0
-              : width >= 760
-                  ? 390.0
-                  : 365.0;
+                  : width >= 560
+                      ? 2
+                      : 1;
+          final horizontal = width >= 760 ? 20.0 : 12.0;
+          final posterHeight = width >= 1280
+              ? 470.0
+              : width >= 900
+                  ? 485.0
+                  : width >= 560
+                      ? 500.0
+                      : 515.0;
 
           return ListView(
             padding: EdgeInsets.fromLTRB(horizontal, 4, horizontal, 28),
@@ -369,73 +373,112 @@ class _PosterGuideCard extends StatelessWidget {
     final hero = guide.steps.first.illustrationAsset;
 
     return Material(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(13),
+      color: const Color(0xfffffcf5),
+      elevation: 1.5,
+      shadowColor: const Color(0x22000000),
+      borderRadius: BorderRadius.circular(18),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(13),
-            border: Border.all(color: const Color(0xff9dd2cb), width: 1.2),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: const Color(0xff7fc7bd), width: 1.3),
           ),
           child: Column(
             children: [
               Container(
-                height: 65,
-                padding: const EdgeInsets.fromLTRB(7, 6, 7, 5),
+                width: double.infinity,
+                padding: const EdgeInsets.fromLTRB(13, 11, 12, 10),
                 color: const Color(0xff087f83),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     if (number != null)
                       Container(
-                        width: 38,
-                        height: 38,
+                        width: 46,
+                        height: 46,
                         alignment: Alignment.center,
-                        decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
                         child: Text(
                           number.toString(),
-                          style: const TextStyle(color: Color(0xff087f83), fontWeight: FontWeight.w900, fontSize: 18),
+                          style: const TextStyle(
+                            color: Color(0xff087f83),
+                            fontWeight: FontWeight.w900,
+                            fontSize: 21,
+                          ),
                         ),
                       ),
-                    if (number != null) const SizedBox(width: 7),
+                    if (number != null) const SizedBox(width: 10),
                     Expanded(
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             title.toUpperCase(),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(color: Colors.white, fontSize: 11.5, height: 1.02, fontWeight: FontWeight.w900),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              height: 1.0,
+                              letterSpacing: .2,
+                              fontWeight: FontWeight.w900,
+                            ),
                           ),
-                          const SizedBox(height: 2),
+                          const SizedBox(height: 4),
                           Text(
                             subtitle,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(color: Color(0xffdff7f2), fontSize: 7.7, fontWeight: FontWeight.w800),
+                            style: const TextStyle(
+                              color: Color(0xffdff7f2),
+                              fontSize: 10,
+                              letterSpacing: .25,
+                              fontWeight: FontWeight.w800,
+                            ),
                           ),
                         ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: const Color(0x22ffffff),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Icon(
+                        Icons.offline_pin_rounded,
+                        color: Colors.white,
+                        size: 18,
                       ),
                     ),
                   ],
                 ),
               ),
               Expanded(
-                flex: 5,
+                flex: 7,
                 child: Container(
                   width: double.infinity,
-                  color: const Color(0xfff4fbfa),
-                  padding: const EdgeInsets.fromLTRB(6, 7, 6, 2),
+                  padding: const EdgeInsets.fromLTRB(18, 13, 18, 8),
+                  decoration: const BoxDecoration(
+                    color: Color(0xffeff8f6),
+                    border: Border(
+                      bottom: BorderSide(color: Color(0xffd6ebe7)),
+                    ),
+                  ),
                   child: SvgPicture.asset(hero, fit: BoxFit.contain),
                 ),
               ),
               Expanded(
-                flex: 6,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(6, 5, 6, 4),
+                flex: 8,
+                child: Container(
+                  color: const Color(0xfffffcf5),
+                  padding: const EdgeInsets.fromLTRB(10, 8, 10, 7),
                   child: Column(
                     children: [
                       for (var i = 0; i < steps.length; i++)
@@ -452,14 +495,43 @@ class _PosterGuideCard extends StatelessWidget {
               ),
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                 color: const Color(0xffffe61a),
-                child: Text(
-                  en
-                      ? 'If the situation is severe: call $emergencyNumber'
-                      : 'Situation grave : appeler le $emergencyNumber',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 9.2, color: Color(0xff9f1d25), fontWeight: FontWeight.w900),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.phone_in_talk_rounded,
+                      size: 17,
+                      color: Color(0xff9f1d25),
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        en
+                            ? 'Severe situation: call $emergencyNumber'
+                            : 'Situation grave : appeler le $emergencyNumber',
+                        style: const TextStyle(
+                          fontSize: 11.2,
+                          color: Color(0xff9f1d25),
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      en ? 'OPEN' : 'OUVRIR',
+                      style: const TextStyle(
+                        fontSize: 10,
+                        color: Color(0xff6f161c),
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    const SizedBox(width: 3),
+                    const Icon(
+                      Icons.arrow_forward_rounded,
+                      size: 16,
+                      color: Color(0xff6f161c),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -482,35 +554,56 @@ class _PosterMiniStep extends StatelessWidget {
   final String illustrationAsset;
 
   @override
-  Widget build(BuildContext context) => Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            width: 18,
-            height: 18,
-            alignment: Alignment.center,
-            decoration: const BoxDecoration(color: Color(0xff087f83), shape: BoxShape.circle),
-            child: Text(
-              number.toString(),
-              style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w900),
+  Widget build(BuildContext context) => Container(
+        margin: const EdgeInsets.symmetric(vertical: 2),
+        padding: const EdgeInsets.fromLTRB(8, 5, 6, 5),
+        decoration: BoxDecoration(
+          color: number.isOdd ? const Color(0xffffffff) : const Color(0xfff7f1e7),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xffebe1d1)),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: 27,
+              height: 27,
+              alignment: Alignment.center,
+              decoration: const BoxDecoration(
+                color: Color(0xff087f83),
+                shape: BoxShape.circle,
+              ),
+              child: Text(
+                number.toString(),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
             ),
-          ),
-          const SizedBox(width: 4),
-          Expanded(
-            child: Text(
-              text,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 8.9, height: 1.08, fontWeight: FontWeight.w700, color: Color(0xff263b40)),
+            const SizedBox(width: 7),
+            Expanded(
+              child: Text(
+                text,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 11.2,
+                  height: 1.18,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xff263b40),
+                ),
+              ),
             ),
-          ),
-          const SizedBox(width: 3),
-          SizedBox(
-            width: 38,
-            height: 38,
-            child: SvgPicture.asset(illustrationAsset, fit: BoxFit.contain),
-          ),
-        ],
+            const SizedBox(width: 6),
+            SizedBox(
+              width: 54,
+              height: 54,
+              child: SvgPicture.asset(illustrationAsset, fit: BoxFit.contain),
+            ),
+          ],
+        ),
       );
 }
 
