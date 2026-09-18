@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../app/localizations.dart';
+
 import '../data/content.dart';
 import '../data/first_aid_repository.dart';
 import 'checklist_screen.dart';
@@ -50,8 +52,16 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
     if (q.isEmpty) return const [];
 
     final hits = <_SearchHit>[];
+    final t = AppLocalizations.of(context);
     for (final guide in firstAidGuides) {
-      final terms = '${guide.id} ${guide.titleKey} ${guide.summaryKey}'.toLowerCase();
+      final terms = [
+        guide.id,
+        guide.titleKey,
+        guide.summaryKey,
+        t.get(guide.titleKey),
+        t.get(guide.summaryKey),
+        ...guide.steps.map((step) => t.get(step.textKey)),
+      ].join(' ').toLowerCase();
       if (terms.contains(q) ||
           (q.contains('rcp') && guide.id.contains('cpr')) ||
           (q.contains('étouff') && guide.id.contains('choking')) ||
@@ -62,7 +72,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
           'Premiers secours',
           _labelAid(guide.id),
           Icons.health_and_safety_rounded,
-          const FirstAidScreen(),
+          FirstAidDetailScreen(guide: guide),
         ));
       }
     }
