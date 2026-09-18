@@ -87,7 +87,7 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
 
   MapLibreMapController? _map;
   CameraPosition _camera = const CameraPosition(target: _europe, zoom: 4.3);
-  bool _countryCameraSet = false;
+  String? _lastCountryCode;
   _PlaceKind? _filter;
   bool _searchOpen = false;
   final List<Circle> _circles = [];
@@ -121,11 +121,21 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_countryCameraSet) return;
 
     final code = AppScope.of(context).activeCountry?.isoCode ?? '';
+    if (_lastCountryCode == code) return;
+
+    _lastCountryCode = code;
     _camera = _initialCamera(code);
-    _countryCameraSet = true;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+
+      await _map?.animateCamera(
+        CameraUpdate.newCameraPosition(_camera),
+      );
+      await _syncMarkers();
+    });
   }
 
   @override
@@ -277,10 +287,23 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
       'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(query)}',
     );
 
-    await launchUrl(
+    final opened = await launchUrl(
       web,
       mode: LaunchMode.externalApplication,
     );
+
+    if (!opened && mounted) {
+      final en = Localizations.localeOf(context).languageCode == 'en';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            en
+                ? 'Unable to open an external map application.'
+                : 'Impossible d’ouvrir une application de cartes externe.',
+          ),
+        ),
+      );
+    }
   }
 
   Future<void> _copyCenterCoordinates(bool en) async {
