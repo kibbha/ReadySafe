@@ -15,6 +15,7 @@ import 'power_outage_screen.dart';
 import 'preparedness_review_screen.dart';
 import 'recovery_screen.dart';
 import 'safety_tools_screen.dart';
+import 'sanitation_hygiene_screen.dart';
 import 'secure_vault_screen.dart';
 import 'special_kits_screen.dart';
 import 'support_needs_screen.dart';
@@ -97,6 +98,13 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.local_drink_rounded,
         const Color(0xff237fc7),
         const WaterSafetyScreen(),
+      ),
+      _Module(
+        'Hygiène & assainissement',
+        'Mains, déchets, eaux souillées et prévention des infections',
+        Icons.sanitizer_rounded,
+        const Color(0xff087f83),
+        const SanitationHygieneScreen(),
       ),
       _Module(
         'Panne électrique',
