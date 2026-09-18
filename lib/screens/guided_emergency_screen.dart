@@ -11,6 +11,7 @@ import 'guide_list_screen.dart';
 import 'home_safety_screen.dart';
 import 'leave_now_screen.dart';
 import 'official_sources_screen.dart';
+import 'power_outage_screen.dart';
 import 'offline_readiness_screen.dart';
 import 'recovery_screen.dart';
 import 'safety_tools_screen.dart';
@@ -207,7 +208,7 @@ class GuidedEmergencyScreen extends StatelessWidget {
         en ? 'Power outage' : 'Panne électrique',
         en ? 'Loss of power or prolonged blackout' : 'Coupure ou panne prolongée',
         Icons.power_off_rounded,
-        () => _openHazard(context, 'blackout'),
+        () => _openPage(context, const PowerOutageScreen()),
       ),
       _Situation(
         en ? 'Industrial / chemical incident' : 'Accident industriel / chimique',
