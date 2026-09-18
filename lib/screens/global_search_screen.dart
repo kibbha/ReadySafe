@@ -11,6 +11,7 @@ import 'communication_plan_screen.dart';
 import 'emergency_food_safety_screen.dart';
 import 'emergency_plan_summary_screen.dart';
 import 'family_documents_screen.dart';
+import 'family_reunification_screen.dart';
 import 'first_aid_screen.dart';
 import 'guide_list_screen.dart';
 import 'home_safety_screen.dart';
@@ -28,6 +29,7 @@ import 'secure_vault_screen.dart';
 import 'smoke_air_quality_screen.dart';
 import 'special_kits_screen.dart';
 import 'support_needs_screen.dart';
+import 'vehicle_emergency_screen.dart';
 import 'water_safety_screen.dart';
 import 'online_maps_screen.dart';
 import 'survival_hub_screen.dart';
@@ -123,12 +125,18 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
       'assainissement': _SearchHit('Kits & survie', 'Hygiène & assainissement', Icons.sanitizer_rounded, SanitationHygieneScreen()),
       'eaux souillées': _SearchHit('Kits & survie', 'Hygiène & assainissement', Icons.sanitizer_rounded, SanitationHygieneScreen()),
       'kit': _SearchHit('Kits & survie', 'Kit 72 h', Icons.backpack_rounded, ChecklistScreen(kit: true)),
-      'voiture': _SearchHit('Kits & survie', 'Kits spécialisés', Icons.directions_car_rounded, SpecialKitsScreen()),
+      'voiture': _SearchHit('Risques', 'Urgence véhicule', Icons.directions_car_rounded, VehicleEmergencyScreen()),
+      'panne voiture': _SearchHit('Risques', 'Urgence véhicule', Icons.directions_car_rounded, VehicleEmergencyScreen()),
+      'accident voiture': _SearchHit('Risques', 'Urgence véhicule', Icons.directions_car_rounded, VehicleEmergencyScreen()),
+      'route inondée': _SearchHit('Risques', 'Urgence véhicule', Icons.directions_car_rounded, VehicleEmergencyScreen()),
       'voyage': _SearchHit('Kits & survie', 'Kits spécialisés', Icons.luggage_rounded, SpecialKitsScreen()),
       'animal': _SearchHit('Kits & survie', 'Kits spécialisés', Icons.pets_rounded, SpecialKitsScreen()),
       'bébé': _SearchHit('Kits & survie', 'Kits spécialisés', Icons.child_care_rounded, SpecialKitsScreen()),
       'evacuation bag': _SearchHit('Kits & survie', 'Kits spécialisés', Icons.inventory_2_rounded, SpecialKitsScreen()),
       'check': _SearchHit('Kits & survie', 'Check-lists', Icons.fact_check_rounded, ChecklistScreen(kit: false)),
+      'réunification': _SearchHit('Famille', 'Réunification familiale', Icons.family_restroom_rounded, FamilyReunificationScreen()),
+      'récupérer enfant': _SearchHit('Famille', 'Réunification familiale', Icons.family_restroom_rounded, FamilyReunificationScreen()),
+      'point de rendez-vous': _SearchHit('Famille', 'Réunification familiale', Icons.family_restroom_rounded, FamilyReunificationScreen()),
       'famille': _SearchHit('Famille', 'Famille & documents', Icons.family_restroom_rounded, FamilyDocumentsScreen()),
       'document': _SearchHit('Famille', 'Documents importants', Icons.folder_copy_rounded, FamilyDocumentsScreen()),
       'coffre': _SearchHit('Famille', 'Coffre sécurisé', Icons.lock_rounded, SecureVaultScreen()),
