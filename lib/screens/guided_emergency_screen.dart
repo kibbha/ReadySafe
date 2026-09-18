@@ -15,6 +15,7 @@ import 'power_outage_screen.dart';
 import 'offline_readiness_screen.dart';
 import 'recovery_screen.dart';
 import 'safety_tools_screen.dart';
+import 'sanitation_hygiene_screen.dart';
 import 'water_safety_screen.dart';
 
 class GuidedEmergencyScreen extends StatelessWidget {
@@ -265,6 +266,12 @@ class GuidedEmergencyScreen extends StatelessWidget {
         en ? 'Boiling, treatment and contamination guidance' : 'Ébullition, traitement et contamination',
         Icons.local_drink_rounded,
         () => _openPage(context, const WaterSafetyScreen()),
+      ),
+      _Situation(
+        en ? 'Sanitation is disrupted' : 'L’hygiène devient difficile',
+        en ? 'Safe hygiene, waste and dirty-water guidance' : 'Hygiène, déchets et eaux souillées',
+        Icons.sanitizer_rounded,
+        () => _openPage(context, const SanitationHygieneScreen()),
       ),
       _Situation(
         en ? 'No network / Internet' : 'Pas de réseau / Internet',
