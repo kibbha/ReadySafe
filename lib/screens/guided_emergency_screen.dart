@@ -23,6 +23,8 @@ import 'offline_readiness_screen.dart';
 import 'recovery_screen.dart';
 import 'safety_tools_screen.dart';
 import 'smoke_air_quality_screen.dart';
+import 'travel_emergency_screen.dart';
+import 'tsunami_safety_screen.dart';
 import 'sanitation_hygiene_screen.dart';
 import 'vehicle_emergency_screen.dart';
 import 'volcano_safety_screen.dart';
@@ -51,9 +53,11 @@ class GuidedEmergencyScreen extends StatelessWidget {
   }
 
   void _openHazard(BuildContext context, String id) {
+    final en = Localizations.localeOf(context).languageCode == 'en';
+    final guide = localizedGuide(_hazard(id), en);
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => GuideDetail(guide: _hazard(id)),
+        builder: (_) => GuideDetail(guide: guide),
       ),
     );
   }
@@ -420,9 +424,16 @@ class GuidedEmergencyScreen extends StatelessWidget {
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
-          final wide = constraints.maxWidth >= 760;
+          final width = constraints.maxWidth;
+          final wide = width >= 760;
           final horizontal = wide ? 28.0 : 14.0;
-          final columns = wide ? 3 : 2;
+          final columns = width >= 1120
+              ? 4
+              : width >= 760
+                  ? 3
+                  : width >= 440
+                      ? 2
+                      : 1;
           return ListView(
             padding: EdgeInsets.fromLTRB(horizontal, 4, horizontal, 32),
             children: [
@@ -494,7 +505,7 @@ class GuidedEmergencyScreen extends StatelessWidget {
               _SituationGrid(
                 situations: medicalSituations,
                 columns: columns,
-                wide: wide,
+                compact: columns == 1,
               ),
               const SizedBox(height: 20),
               _SectionHeader(
@@ -545,12 +556,12 @@ class _SituationGrid extends StatelessWidget {
   const _SituationGrid({
     required this.situations,
     required this.columns,
-    required this.wide,
+    required this.compact,
   });
 
   final List<_Situation> situations;
   final int columns;
-  final bool wide;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) => GridView.builder(
@@ -559,7 +570,7 @@ class _SituationGrid extends StatelessWidget {
         itemCount: situations.length,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: columns,
-          mainAxisExtent: wide ? 158 : 148,
+          mainAxisExtent: compact ? 108 : 154,
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
         ),
@@ -571,6 +582,7 @@ class _SituationGrid extends StatelessWidget {
             icon: item.icon,
             onTap: item.onTap,
             accent: item.urgentColor,
+            compact: compact,
           );
         },
       );
@@ -632,6 +644,7 @@ class _SituationCard extends StatelessWidget {
     required this.icon,
     required this.onTap,
     this.accent,
+    required this.compact,
   });
 
   final String title;
@@ -639,6 +652,7 @@ class _SituationCard extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
   final Color? accent;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -655,34 +669,89 @@ class _SituationCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: color.withValues(alpha: .22)),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: .12),
-                  borderRadius: BorderRadius.circular(13),
+          child: compact
+              ? Row(
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: color.withValues(alpha: .12),
+                        borderRadius: BorderRadius.circular(13),
+                      ),
+                      child: Icon(icon, color: color),
+                    ),
+                    const SizedBox(width: 11),
+                    Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 14.8,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            subtitle,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 11.2,
+                              color: Color(0xff65747a),
+                              height: 1.18,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(
+                      Icons.chevron_right_rounded,
+                      color: Color(0xff87969a),
+                    ),
+                  ],
+                )
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: color.withValues(alpha: .12),
+                        borderRadius: BorderRadius.circular(13),
+                      ),
+                      child: Icon(icon, color: color),
+                    ),
+                    const Spacer(),
+                    Text(
+                      title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 14.8,
+                        fontWeight: FontWeight.w900,
+                        height: 1.08,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 11.2,
+                        color: Color(0xff65747a),
+                        height: 1.18,
+                      ),
+                    ),
+                  ],
                 ),
-                child: Icon(icon, color: color),
-              ),
-              const Spacer(),
-              Text(
-                title,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 14.8, fontWeight: FontWeight.w900, height: 1.08),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 11.2, color: Color(0xff65747a), height: 1.18),
-              ),
-            ],
-          ),
         ),
       ),
     );
