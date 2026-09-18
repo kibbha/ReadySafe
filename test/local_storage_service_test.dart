@@ -116,4 +116,23 @@ void main() {
     expect(dates['radio']?.month, 9);
     expect(dates['water']?.day, 18);
   });
+
+  test('medical continuity and pet planning checks persist', () async {
+    SharedPreferences.setMockInitialValues({});
+    final storage = LocalStorageService();
+
+    await storage.toggle('medical_continuity_v3', 'med_list', true);
+    await storage.toggle('medical_continuity_v3', 'device_power', true);
+    await storage.toggle('pet_emergency_v3', 'id', true);
+    await storage.toggle('pet_emergency_v3', 'carrier', true);
+
+    expect(
+      await storage.completed('medical_continuity_v3'),
+      containsAll({'med_list', 'device_power'}),
+    );
+    expect(
+      await storage.completed('pet_emergency_v3'),
+      containsAll({'id', 'carrier'}),
+    );
+  });
 }
