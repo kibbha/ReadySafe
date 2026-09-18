@@ -21,6 +21,7 @@ import 'safety_tools_screen.dart';
 import 'secure_vault_screen.dart';
 import 'special_kits_screen.dart';
 import 'support_needs_screen.dart';
+import 'water_safety_screen.dart';
 import 'online_maps_screen.dart';
 import 'survival_hub_screen.dart';
 
@@ -101,6 +102,9 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
 
     const shortcuts = <String, _SearchHit>{
       'eau': _SearchHit('Kits & survie', 'Eau & réserves', Icons.water_drop_rounded, SurvivalHubScreen()),
+      'eau potable': _SearchHit('Kits & survie', 'Eau sûre en urgence', Icons.local_drink_rounded, WaterSafetyScreen()),
+      'faire bouillir': _SearchHit('Kits & survie', 'Eau sûre en urgence', Icons.local_drink_rounded, WaterSafetyScreen()),
+      'contamination eau': _SearchHit('Kits & survie', 'Eau sûre en urgence', Icons.local_drink_rounded, WaterSafetyScreen()),
       'kit': _SearchHit('Kits & survie', 'Kit 72 h', Icons.backpack_rounded, ChecklistScreen(kit: true)),
       'voiture': _SearchHit('Kits & survie', 'Kits spécialisés', Icons.directions_car_rounded, SpecialKitsScreen()),
       'voyage': _SearchHit('Kits & survie', 'Kits spécialisés', Icons.luggage_rounded, SpecialKitsScreen()),
