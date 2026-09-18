@@ -88,10 +88,11 @@ class LocalStorageService {
       if (raw == null) return defaults;
       final decoded = jsonDecode(raw);
       if (decoded is! List) return defaults;
-      return decoded
-          .whereType<Map>()
-          .map((item) => item.map((key, value) => MapEntry('$key', '${value ?? ''}')))
-          .toList();
+      return decoded.whereType<Map>().map((item) {
+        return <String, String>{
+          for (final entry in item.entries) '${entry.key}': '${entry.value ?? ''}',
+        };
+      }).toList();
     } catch (_) {
       return defaults;
     }
@@ -135,7 +136,9 @@ class LocalStorageService {
       }
       final decoded = jsonDecode(raw);
       if (decoded is! Map) return {'meetingPoint': '', 'backupMeetingPoint': '', 'notes': ''};
-      return decoded.map((key, value) => MapEntry('$key', '${value ?? ''}'));
+      return <String, String>{
+        for (final entry in decoded.entries) '${entry.key}': '${entry.value ?? ''}',
+      };
     } catch (_) {
       return {'meetingPoint': '', 'backupMeetingPoint': '', 'notes': ''};
     }
@@ -162,6 +165,6 @@ class LocalStorageService {
     if (contacts.any((contact) => (contact['phone'] ?? '').trim().isNotEmpty)) score += 15;
     if ((plan['meetingPoint'] ?? '').trim().isNotEmpty) score += 15;
     if (docs.where((doc) => doc['ready'] == true).length >= 3) score += 15;
-    return score.clamp(0, 100);
+    return score.clamp(0, 100).toInt();
   }
 }
