@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'first_aid_screen.dart';
+import 'preparedness_review_screen.dart';
 
 class TrainingScreen extends StatelessWidget {
   const TrainingScreen({super.key});
@@ -39,6 +40,36 @@ class TrainingScreen extends StatelessWidget {
           en ? 'Review what to do if mobile data is unavailable.' : 'Revoir quoi faire si les données mobiles sont indisponibles.',
         ],
       ),
+      _Drill(
+        en ? 'Shelter in place' : 'Confinement',
+        en ? 'Practise moving quickly to the safest indoor area.' : 'S’entraîner à rejoindre rapidement la zone intérieure la plus sûre.',
+        Icons.home_work_outlined,
+        [
+          en ? 'Choose the room or area to use.' : 'Choisir la pièce ou la zone à utiliser.',
+          en ? 'Know how to close ventilation when authorities instruct you to.' : 'Savoir couper la ventilation si les autorités le demandent.',
+          en ? 'Bring radio, water, phones and essential medicines.' : 'Rassembler radio, eau, téléphones et médicaments indispensables.',
+        ],
+      ),
+      _Drill(
+        en ? 'Evacuation in 5 minutes' : 'Évacuation en 5 minutes',
+        en ? 'Test whether the household can leave with the essentials.' : 'Tester si le foyer peut partir avec les indispensables.',
+        Icons.timer_outlined,
+        [
+          en ? 'Take people, medicines, phones and documents first.' : 'Prendre d’abord personnes, médicaments, téléphones et documents.',
+          en ? 'Take the emergency bag and pet equipment.' : 'Prendre le sac d’urgence et le matériel pour animaux.',
+          en ? 'Meet at the planned point without going back inside.' : 'Se retrouver au point prévu sans retourner dans le logement.',
+        ],
+      ),
+      _Drill(
+        en ? 'Earthquake response' : 'Réflexe séisme',
+        en ? 'Practise drop, cover and hold on.' : 'S’entraîner à se baisser, s’abriter et s’agripper.',
+        Icons.terrain_outlined,
+        [
+          en ? 'Identify sturdy cover in each main room.' : 'Identifier un abri solide dans les pièces principales.',
+          en ? 'Protect head and neck.' : 'Protéger la tête et le cou.',
+          en ? 'Review the post-shaking meeting point.' : 'Revoir le point de rassemblement après les secousses.',
+        ],
+      ),
     ];
 
     return Scaffold(
@@ -75,6 +106,29 @@ class TrainingScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           ...drills.map((drill) => _DrillCard(drill: drill)),
+          const SizedBox(height: 8),
+          Card(
+            child: ListTile(
+              minTileHeight: 70,
+              leading: const CircleAvatar(
+                backgroundColor: Color(0xffe4f2f0),
+                child: Icon(Icons.fact_check_rounded, color: Color(0xff087f83)),
+              ),
+              title: Text(
+                en ? 'Annual preparedness review' : 'Revue annuelle de préparation',
+                style: const TextStyle(fontWeight: FontWeight.w900),
+              ),
+              subtitle: Text(
+                en
+                    ? 'Review contacts, plans, supplies, alerts and special needs.'
+                    : 'Revoir contacts, plans, réserves, alertes et besoins particuliers.',
+              ),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const PreparednessReviewScreen()),
+              ),
+            ),
+          ),
           const SizedBox(height: 8),
           Card(
             child: ListTile(
