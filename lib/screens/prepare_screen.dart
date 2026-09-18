@@ -158,7 +158,7 @@ class PrepareScreen extends StatelessWidget {
                 itemCount: modules.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: wide ? 3 : 2,
-                  childAspectRatio: wide ? 1.35 : 1.02,
+                  mainAxisExtent: wide ? 164 : 148,
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
                 ),
