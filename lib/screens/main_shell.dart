@@ -38,8 +38,9 @@ class _MainShellState extends State<MainShell> {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final useRail = constraints.maxWidth >= 700;
         final content = IndexedStack(index: index, children: pages);
+        final useRail = constraints.maxWidth >= 700;
+        final extendedRail = constraints.maxWidth >= 980;
 
         if (!useRail) {
           return Scaffold(
@@ -68,30 +69,49 @@ class _MainShellState extends State<MainShell> {
                 NavigationRail(
                   selectedIndex: index,
                   onDestinationSelected: (value) => setState(() => index = value),
-                  labelType: constraints.maxWidth >= 1000
-                      ? NavigationRailLabelType.all
-                      : NavigationRailLabelType.selected,
+                  extended: extendedRail,
+                  minWidth: 76,
+                  minExtendedWidth: 205,
+                  labelType: extendedRail ? NavigationRailLabelType.none : NavigationRailLabelType.all,
+                  groupAlignment: -0.72,
                   leading: Padding(
-                    padding: const EdgeInsets.only(top: 16, bottom: 12),
-                    child: Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primaryContainer,
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: Icon(
-                        Icons.health_and_safety_rounded,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
+                    padding: const EdgeInsets.fromLTRB(10, 18, 10, 22),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: const Color(0xff087f83),
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: const Icon(
+                            Icons.health_and_safety_rounded,
+                            color: Colors.white,
+                            size: 28,
+                          ),
+                        ),
+                        if (extendedRail) ...[
+                          const SizedBox(width: 10),
+                          const Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('ReadySafe', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
+                              Text('ÊTRE PRÊT. AGIR.', style: TextStyle(fontSize: 9.5, letterSpacing: 1.1, color: Color(0xff718084), fontWeight: FontWeight.w800)),
+                            ],
+                          ),
+                        ],
+                      ],
                     ),
                   ),
                   destinations: [
                     for (final item in destinations)
                       NavigationRailDestination(
+                        padding: const EdgeInsets.symmetric(vertical: 5),
                         icon: Icon(item.$1),
                         selectedIcon: Icon(item.$2),
-                        label: Text(item.$3),
+                        label: Text(item.$3, style: const TextStyle(fontWeight: FontWeight.w800)),
                       ),
                   ],
                 ),
