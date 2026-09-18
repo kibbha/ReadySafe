@@ -109,7 +109,10 @@ class _MedicalContinuityScreenState extends State<MedicalContinuityScreen> {
   @override
   Widget build(BuildContext context) {
     final en = Localizations.localeOf(context).languageCode == 'en';
-    final progress = _items.isEmpty ? 0.0 : _done.length / _items.length;
+    final validIds = _items.map((item) => item.id).toSet();
+    final readyCount = _done.intersection(validIds).length;
+    final progress =
+        _items.isEmpty ? 0.0 : readyCount / _items.length;
 
     return Scaffold(
       backgroundColor: const Color(0xfff7faf9),
@@ -162,8 +165,8 @@ class _MedicalContinuityScreenState extends State<MedicalContinuityScreen> {
                       const SizedBox(height: 5),
                       Text(
                         en
-                            ? '${_done.length} / ${_items.length} continuity points ready'
-                            : '${_done.length} / ${_items.length} points de continuité préparés',
+                            ? '$readyCount / ${_items.length} continuity points ready'
+                            : '$readyCount / ${_items.length} points de continuité préparés',
                         style: const TextStyle(fontWeight: FontWeight.w900),
                       ),
                     ],
