@@ -162,7 +162,10 @@ Consignes : ${_childInstructions.text.trim().isEmpty ? 'Suivre les consignes de 
   @override
   Widget build(BuildContext context) {
     final en = Localizations.localeOf(context).languageCode == 'en';
-    final progress = _checkItems.isEmpty ? 0.0 : _checks.length / _checkItems.length;
+    final validIds = _checkItems.map((item) => item.id).toSet();
+    final readyCount = _checks.intersection(validIds).length;
+    final progress =
+        _checkItems.isEmpty ? 0.0 : readyCount / _checkItems.length;
 
     return Scaffold(
       backgroundColor: const Color(0xfff7faf9),
@@ -229,8 +232,8 @@ Consignes : ${_childInstructions.text.trim().isEmpty ? 'Suivre les consignes de 
                       const SizedBox(height: 5),
                       Text(
                         en
-                            ? '${_checks.length} / ${_checkItems.length} reunification points ready'
-                            : '${_checks.length} / ${_checkItems.length} points de réunification préparés',
+                            ? '$readyCount / ${_checkItems.length} reunification points ready'
+                            : '$readyCount / ${_checkItems.length} points de réunification préparés',
                         style: const TextStyle(fontWeight: FontWeight.w900),
                       ),
                     ],
