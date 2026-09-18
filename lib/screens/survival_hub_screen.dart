@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../data/content.dart';
 import '../services/local_storage_service.dart';
 import 'calculator_screen.dart';
+import 'communication_plan_screen.dart';
 import 'checklist_screen.dart';
 import 'guide_list_screen.dart';
 import 'leave_now_screen.dart';
@@ -84,6 +85,13 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.menu_book_rounded,
         const Color(0xff4c6d72),
         const GuideListScreen(kind: GuideKind.emergencies),
+      ),
+      _Module(
+        'Communication familiale',
+        'Contact extérieur, reconnexion et message « Je suis en sécurité »',
+        Icons.connect_without_contact_rounded,
+        const Color(0xff0f7c7f),
+        const CommunicationPlanScreen(),
       ),
       _Module(
         'Formation & exercices',
@@ -237,6 +245,11 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
                 Icons.directions_run_rounded,
                 'Évacuation',
                 'Documents, médicaments, téléphone, eau, kit, animaux et point de rassemblement : gardez l’ordre simple.',
+              ),
+              _tip(
+                Icons.forum_outlined,
+                'Communication',
+                'Prévoyez un contact extérieur, un point de reconnexion et une copie papier des numéros importants.',
               ),
             ],
           );
