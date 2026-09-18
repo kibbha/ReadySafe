@@ -212,10 +212,12 @@ class _MedicalContinuityScreenState extends State<MedicalContinuityScreen> {
                         ),
                       ),
                       title: Text(
-                        item.title,
+                        en ? _medicalTitleEn(item.id) : item.title,
                         style: const TextStyle(fontWeight: FontWeight.w900),
                       ),
-                      subtitle: Text(item.subtitle),
+                      subtitle: Text(
+                        en ? _medicalSubtitleEn(item.id) : item.subtitle,
+                      ),
                     ),
                   );
                 }),
@@ -256,6 +258,38 @@ class _MedicalContinuityScreenState extends State<MedicalContinuityScreen> {
             ),
     );
   }
+}
+
+String _medicalTitleEn(String id) {
+  return const {
+        'med_list': 'Treatment list',
+        'prescriptions': 'Prescriptions / references',
+        'pharmacy': 'Pharmacy & prescriber',
+        'reserve': 'Authorized reserve',
+        'cold_chain': 'Cold-chain plan',
+        'device_power': 'Powered medical devices',
+        'consumables': 'Medical consumables',
+        'transport': 'Transport / regular treatment',
+        'backup_location': 'Backup location',
+        'caregiver': 'Caregiver / trusted person',
+      }[id] ??
+      id;
+}
+
+String _medicalSubtitleEn(String id) {
+  return const {
+        'med_list': 'Medicine names, doses, schedules and allergies are available in a safe form.',
+        'prescriptions': 'A copy or useful prescription references are accessible when away from home.',
+        'pharmacy': 'Pharmacist, doctor or usual care-service contact details are known.',
+        'reserve': 'An appropriate reserve exists when the treatment and local rules allow it.',
+        'cold_chain': 'Medicines requiring refrigeration have a storage and replacement plan.',
+        'device_power': 'Battery autonomy, cables, backup power and manual options are known.',
+        'consumables': 'Sensors, test strips, syringes or other required consumables are planned.',
+        'transport': 'A solution exists to reach dialysis, treatment or another essential appointment.',
+        'backup_location': 'A place able to provide electricity, refrigeration or essential care is identified.',
+        'caregiver': 'A trusted person knows the practical needs and can help when required.',
+      }[id] ??
+      '';
 }
 
 class _MedicalItem {
