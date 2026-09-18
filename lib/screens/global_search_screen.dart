@@ -6,6 +6,7 @@ import '../data/content.dart';
 import '../data/first_aid_repository.dart';
 import 'checklist_screen.dart';
 import 'communication_plan_screen.dart';
+import 'emergency_food_safety_screen.dart';
 import 'emergency_plan_summary_screen.dart';
 import 'family_documents_screen.dart';
 import 'first_aid_screen.dart';
@@ -108,6 +109,10 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
       'eau potable': _SearchHit('Kits & survie', 'Eau sûre en urgence', Icons.local_drink_rounded, WaterSafetyScreen()),
       'faire bouillir': _SearchHit('Kits & survie', 'Eau sûre en urgence', Icons.local_drink_rounded, WaterSafetyScreen()),
       'contamination eau': _SearchHit('Kits & survie', 'Eau sûre en urgence', Icons.local_drink_rounded, WaterSafetyScreen()),
+      'aliment': _SearchHit('Kits & survie', 'Sécurité alimentaire', Icons.restaurant_rounded, EmergencyFoodSafetyScreen()),
+      'congélateur': _SearchHit('Kits & survie', 'Sécurité alimentaire', Icons.restaurant_rounded, EmergencyFoodSafetyScreen()),
+      'frigo': _SearchHit('Kits & survie', 'Sécurité alimentaire', Icons.restaurant_rounded, EmergencyFoodSafetyScreen()),
+      'décongelé': _SearchHit('Kits & survie', 'Sécurité alimentaire', Icons.restaurant_rounded, EmergencyFoodSafetyScreen()),
       'hygiène': _SearchHit('Kits & survie', 'Hygiène & assainissement', Icons.sanitizer_rounded, SanitationHygieneScreen()),
       'assainissement': _SearchHit('Kits & survie', 'Hygiène & assainissement', Icons.sanitizer_rounded, SanitationHygieneScreen()),
       'eaux souillées': _SearchHit('Kits & survie', 'Hygiène & assainissement', Icons.sanitizer_rounded, SanitationHygieneScreen()),
