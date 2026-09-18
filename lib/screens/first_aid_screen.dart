@@ -33,7 +33,7 @@ String _aidText(BuildContext context, String key) {
     'first_aid_child': 'Enfant',
     'first_aid_infant': 'Nourrisson',
     'first_aid_header': 'Fiches Premiers Secours',
-    'first_aid_header_body': '10 fiches essentielles pour savoir réagir en cas d’urgence',
+    'first_aid_header_body': '10 fiches essentielles, visuelles et disponibles hors ligne',
     'aid_child_cpr_1': 'Vérifiez la réaction et la respiration. Appelez les secours sans délai et utilisez le haut-parleur.',
     'aid_child_cpr_2': 'Si l’enfant ne respire pas normalement, donnez 5 insufflations initiales.',
     'aid_child_cpr_3': 'Commencez immédiatement les compressions. Faites 30 compressions pour 2 insufflations, ou 15:2 si vous êtes spécifiquement formé à la RCP pédiatrique PBLS.',
@@ -52,7 +52,7 @@ String _aidText(BuildContext context, String key) {
     'first_aid_child': 'Child',
     'first_aid_infant': 'Infant',
     'first_aid_header': 'First Aid Guides',
-    'first_aid_header_body': '10 essential guides to help you react in an emergency',
+    'first_aid_header_body': '10 essential visual guides available offline',
     'aid_child_cpr_1': 'Check responsiveness and breathing. Call emergency services without delay and use speakerphone.',
     'aid_child_cpr_2': 'If the child is not breathing normally, give 5 initial rescue breaths.',
     'aid_child_cpr_3': 'Immediately start compressions. Use 30 compressions to 2 breaths, or 15:2 if you are specifically trained in paediatric PBLS.',
@@ -81,6 +81,34 @@ String _emergencyNumber(BuildContext context) {
     if (service.isCallable && service.number != null) return service.number!;
   }
   return '112';
+}
+
+String _posterTag(String id, bool en) {
+  const fr = <String, String>{
+    'cpr_adult': 'AGIR VITE PEUT SAUVER UNE VIE',
+    'choking_adult': 'AIDER UNE PERSONNE QUI S’ÉTOUFFE',
+    'unconscious': 'POSITION LATÉRALE DE SÉCURITÉ',
+    'bleeding': 'ARRÊTER LE SAIGNEMENT',
+    'aed': 'SIMPLE ET EFFICACE',
+    'cpr_child': '1 AN — PUBERTÉ',
+    'cpr_infant': '0 — 1 AN',
+    'choking_infant': 'DÉSOBSTRUER LES VOIES AÉRIENNES',
+    'drowning': 'RÉAGIR RAPIDEMENT',
+    'anaphylaxis': 'RÉACTION ALLERGIQUE SÉVÈRE',
+  };
+  const english = <String, String>{
+    'cpr_adult': 'ACT FAST — SAVE A LIFE',
+    'choking_adult': 'HELP A PERSON WHO IS CHOKING',
+    'unconscious': 'RECOVERY POSITION',
+    'bleeding': 'STOP THE BLEEDING',
+    'aed': 'SIMPLE AND EFFECTIVE',
+    'cpr_child': '1 YEAR — PUBERTY',
+    'cpr_infant': '0 — 1 YEAR',
+    'choking_infant': 'CLEAR THE AIRWAY',
+    'drowning': 'ACT QUICKLY',
+    'anaphylaxis': 'SEVERE ALLERGIC REACTION',
+  };
+  return (en ? english : fr)[id] ?? (en ? 'FIRST AID' : 'PREMIERS SECOURS');
 }
 
 class FirstAidScreen extends StatefulWidget {
@@ -125,11 +153,10 @@ class _FirstAidScreenState extends State<FirstAidScreen> {
       return haystack.contains(q);
     }).toList();
 
-    final extras = firstAidGuides
-        .where((guide) => !_essentialIds.contains(guide.id))
-        .toList();
+    final extras = firstAidGuides.where((guide) => !_essentialIds.contains(guide.id)).toList();
 
     return Scaffold(
+      backgroundColor: const Color(0xfff6faf9),
       appBar: AppBar(
         title: Text(t.get('firstAid')),
         actions: [
@@ -146,27 +173,27 @@ class _FirstAidScreenState extends State<FirstAidScreen> {
       body: LayoutBuilder(
         builder: (context, constraints) {
           final width = constraints.maxWidth;
-          final columns = width >= 900
+          final columns = width >= 1040
               ? 5
-              : width >= 650
+              : width >= 760
                   ? 3
                   : 2;
-          final horizontal = width >= 760 ? 22.0 : 12.0;
-          final posterHeight = width >= 900
-              ? 350.0
-              : width >= 650
-                  ? 330.0
-                  : 310.0;
+          final horizontal = width >= 760 ? 20.0 : 10.0;
+          final posterHeight = width >= 1040
+              ? 425.0
+              : width >= 760
+                  ? 390.0
+                  : 365.0;
 
           return ListView(
-            padding: EdgeInsets.fromLTRB(horizontal, 2, horizontal, 28),
+            padding: EdgeInsets.fromLTRB(horizontal, 4, horizontal, 28),
             children: [
               _FirstAidHeader(
                 title: _aidText(context, 'first_aid_header'),
                 subtitle: _aidText(context, 'first_aid_header_body'),
                 emergencyNumber: _emergencyNumber(context),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
               TextField(
                 onChanged: (value) => setState(() => _query = value),
                 textInputAction: TextInputAction.search,
@@ -181,7 +208,7 @@ class _FirstAidScreenState extends State<FirstAidScreen> {
                         ),
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
@@ -193,7 +220,7 @@ class _FirstAidScreenState extends State<FirstAidScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
               if (guides.isEmpty)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 40),
@@ -207,8 +234,8 @@ class _FirstAidScreenState extends State<FirstAidScreen> {
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: columns,
                     mainAxisExtent: posterHeight,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 9,
+                    mainAxisSpacing: 9,
                   ),
                   itemBuilder: (context, index) {
                     final guide = guides[index];
@@ -217,41 +244,21 @@ class _FirstAidScreenState extends State<FirstAidScreen> {
                       guide: guide,
                       number: essentialIndex >= 0 ? essentialIndex + 1 : null,
                       title: t.get(guide.titleKey),
+                      subtitle: _posterTag(guide.id, en),
                       emergencyNumber: _emergencyNumber(context),
                       onTap: () => Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (_) => FirstAidDetailScreen(guide: guide),
-                        ),
+                        MaterialPageRoute(builder: (_) => FirstAidDetailScreen(guide: guide)),
                       ),
                     );
                   },
                 ),
               if (!browsingAll && extras.isNotEmpty) ...[
-                const SizedBox(height: 18),
+                const SizedBox(height: 16),
                 _AdditionalGuides(guides: extras),
               ],
               const SizedBox(height: 14),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: const Color(0xffffeeee),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(Icons.emergency_outlined, color: Theme.of(context).colorScheme.error),
-                    const SizedBox(width: 9),
-                    Expanded(
-                      child: Text(
-                        t.get('medicalNotice'),
-                        style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, height: 1.35),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              _MedicalNotice(text: t.get('medicalNotice')),
             ],
           );
         },
@@ -260,7 +267,7 @@ class _FirstAidScreenState extends State<FirstAidScreen> {
   }
 
   Widget _filterChip(String value, String label) => Padding(
-        padding: const EdgeInsets.only(right: 8),
+        padding: const EdgeInsets.only(right: 7),
         child: ChoiceChip(
           label: Text(label),
           selected: _filter == value,
@@ -283,24 +290,26 @@ class _FirstAidHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.fromLTRB(16, 14, 14, 14),
+        padding: const EdgeInsets.fromLTRB(14, 13, 12, 13),
         decoration: BoxDecoration(
-          color: Colors.white,
+          gradient: const LinearGradient(
+            colors: [Color(0xffe5f4f1), Color(0xfffff5e8)],
+          ),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xffdbe8e7)),
+          border: Border.all(color: const Color(0xffd7e8e5)),
         ),
         child: Row(
           children: [
             Container(
-              width: 52,
-              height: 52,
+              width: 50,
+              height: 50,
               decoration: BoxDecoration(
                 color: const Color(0xff087f83),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(15),
               ),
-              child: const Icon(Icons.volunteer_activism_rounded, color: Colors.white, size: 29),
+              child: const Icon(Icons.volunteer_activism_rounded, color: Colors.white, size: 28),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 11),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -309,20 +318,20 @@ class _FirstAidHeader extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: const TextStyle(fontSize: 12.5, color: Color(0xff607075), fontWeight: FontWeight.w600),
+                    style: const TextStyle(fontSize: 12, color: Color(0xff607075), fontWeight: FontWeight.w700),
                   ),
                 ],
               ),
             ),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
               decoration: BoxDecoration(
-                color: const Color(0xffffeeee),
-                borderRadius: BorderRadius.circular(14),
+                color: const Color(0xffffe8e8),
+                borderRadius: BorderRadius.circular(13),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.call_rounded, size: 16, color: Color(0xffd92d36)),
+                  const Icon(Icons.call_rounded, size: 15, color: Color(0xffd92d36)),
                   const SizedBox(width: 4),
                   Text(
                     emergencyNumber,
@@ -341,6 +350,7 @@ class _PosterGuideCard extends StatelessWidget {
     required this.guide,
     required this.number,
     required this.title,
+    required this.subtitle,
     required this.emergencyNumber,
     required this.onTap,
   });
@@ -348,64 +358,89 @@ class _PosterGuideCard extends StatelessWidget {
   final FirstAidGuide guide;
   final int? number;
   final String title;
+  final String subtitle;
   final String emergencyNumber;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final steps = guide.steps.take(4).toList();
     final en = Localizations.localeOf(context).languageCode == 'en';
+    final steps = guide.steps.take(3).toList();
+    final hero = guide.steps.first.illustrationAsset;
 
     return Material(
       color: Colors.white,
-      borderRadius: BorderRadius.circular(15),
+      borderRadius: BorderRadius.circular(13),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(color: const Color(0xffb9ded9)),
+            borderRadius: BorderRadius.circular(13),
+            border: Border.all(color: const Color(0xff9dd2cb), width: 1.2),
           ),
           child: Column(
             children: [
               Container(
-                height: 55,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
+                height: 65,
+                padding: const EdgeInsets.fromLTRB(7, 6, 7, 5),
                 color: const Color(0xff087f83),
                 child: Row(
                   children: [
                     if (number != null)
                       Container(
-                        width: 33,
-                        height: 33,
+                        width: 38,
+                        height: 38,
                         alignment: Alignment.center,
                         decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
                         child: Text(
                           number.toString(),
-                          style: const TextStyle(color: Color(0xff087f83), fontWeight: FontWeight.w900, fontSize: 16),
+                          style: const TextStyle(color: Color(0xff087f83), fontWeight: FontWeight.w900, fontSize: 18),
                         ),
                       ),
                     if (number != null) const SizedBox(width: 7),
                     Expanded(
-                      child: Text(
-                        title.toUpperCase(),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(color: Colors.white, fontSize: 11.5, height: 1.05, fontWeight: FontWeight.w900),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title.toUpperCase(),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(color: Colors.white, fontSize: 11.5, height: 1.02, fontWeight: FontWeight.w900),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            subtitle,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(color: Color(0xffdff7f2), fontSize: 7.7, fontWeight: FontWeight.w800),
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
               Expanded(
+                flex: 5,
+                child: Container(
+                  width: double.infinity,
+                  color: const Color(0xfff4fbfa),
+                  padding: const EdgeInsets.fromLTRB(6, 7, 6, 2),
+                  child: SvgPicture.asset(hero, fit: BoxFit.contain),
+                ),
+              ),
+              Expanded(
+                flex: 6,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(7, 7, 7, 5),
+                  padding: const EdgeInsets.fromLTRB(6, 5, 6, 4),
                   child: Column(
                     children: [
                       for (var i = 0; i < steps.length; i++)
                         Expanded(
-                          child: _PosterStep(
+                          child: _PosterMiniStep(
                             number: i + 1,
                             text: _aidText(context, steps[i].textKey),
                             illustrationAsset: steps[i].illustrationAsset,
@@ -417,12 +452,14 @@ class _PosterGuideCard extends StatelessWidget {
               ),
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 6),
-                color: const Color(0xffffeded),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+                color: const Color(0xffffe61a),
                 child: Text(
-                  en ? 'Emergency $emergencyNumber' : 'Urgence $emergencyNumber',
+                  en
+                      ? 'If the situation is severe: call $emergencyNumber'
+                      : 'Situation grave : appeler le $emergencyNumber',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 10.5, color: Color(0xffc8212c), fontWeight: FontWeight.w900),
+                  style: const TextStyle(fontSize: 9.2, color: Color(0xff9f1d25), fontWeight: FontWeight.w900),
                 ),
               ),
             ],
@@ -433,8 +470,8 @@ class _PosterGuideCard extends StatelessWidget {
   }
 }
 
-class _PosterStep extends StatelessWidget {
-  const _PosterStep({
+class _PosterMiniStep extends StatelessWidget {
+  const _PosterMiniStep({
     required this.number,
     required this.text,
     required this.illustrationAsset,
@@ -445,38 +482,35 @@ class _PosterStep extends StatelessWidget {
   final String illustrationAsset;
 
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 2),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              width: 18,
-              height: 18,
-              alignment: Alignment.center,
-              decoration: const BoxDecoration(color: Color(0xff087f83), shape: BoxShape.circle),
-              child: Text(
-                number.toString(),
-                style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w900),
-              ),
+  Widget build(BuildContext context) => Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            width: 18,
+            height: 18,
+            alignment: Alignment.center,
+            decoration: const BoxDecoration(color: Color(0xff087f83), shape: BoxShape.circle),
+            child: Text(
+              number.toString(),
+              style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w900),
             ),
-            const SizedBox(width: 5),
-            Expanded(
-              child: Text(
-                text,
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 9.2, height: 1.1, fontWeight: FontWeight.w700, color: Color(0xff31464b)),
-              ),
+          ),
+          const SizedBox(width: 4),
+          Expanded(
+            child: Text(
+              text,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 8.9, height: 1.08, fontWeight: FontWeight.w700, color: Color(0xff263b40)),
             ),
-            const SizedBox(width: 3),
-            SizedBox(
-              width: 50,
-              height: 52,
-              child: SvgPicture.asset(illustrationAsset, fit: BoxFit.contain),
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(width: 3),
+          SizedBox(
+            width: 38,
+            height: 38,
+            child: SvgPicture.asset(illustrationAsset, fit: BoxFit.contain),
+          ),
+        ],
       );
 }
 
@@ -491,6 +525,10 @@ class _AdditionalGuides extends StatelessWidget {
 
     return Card(
       child: ExpansionTile(
+        leading: const CircleAvatar(
+          backgroundColor: Color(0xffe5f3f1),
+          child: Icon(Icons.add_circle_outline_rounded, color: Color(0xff087f83)),
+        ),
         title: Text(
           en ? 'Additional first-aid guides' : 'Fiches complémentaires',
           style: const TextStyle(fontWeight: FontWeight.w900),
@@ -528,118 +566,137 @@ class FirstAidDetailScreen extends StatelessWidget {
     final t = AppLocalizations.of(context);
     final en = Localizations.localeOf(context).languageCode == 'en';
     final emergencyNumber = _emergencyNumber(context);
+    final index = _essentialIds.indexOf(guide.id);
+    final number = index < 0 ? null : index + 1;
 
     return Scaffold(
+      backgroundColor: const Color(0xfff7faf9),
       appBar: AppBar(title: Text(t.get(guide.titleKey))),
+      bottomNavigationBar: SafeArea(
+        minimum: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+        child: Row(
+          children: [
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.arrow_back_rounded),
+                label: Text(en ? 'Back' : 'Retour'),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              flex: 2,
+              child: FilledButton.icon(
+                style: FilledButton.styleFrom(
+                  backgroundColor: const Color(0xffd92d36),
+                  minimumSize: const Size.fromHeight(52),
+                ),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => FirstAidEmergencyModeScreen(guide: guide)),
+                ),
+                icon: const Icon(Icons.sos_rounded),
+                label: Text(en ? 'Emergency mode' : 'Mode urgence'),
+              ),
+            ),
+          ],
+        ),
+      ),
       body: LayoutBuilder(
         builder: (context, constraints) {
-          final wide = constraints.maxWidth >= 760;
+          final wide = constraints.maxWidth >= 780;
           return Align(
             alignment: Alignment.topCenter,
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 1080),
+              constraints: const BoxConstraints(maxWidth: 980),
               child: ListView(
-                padding: EdgeInsets.fromLTRB(wide ? 24 : 14, 4, wide ? 24 : 14, 30),
+                padding: EdgeInsets.fromLTRB(wide ? 24 : 12, 4, wide ? 24 : 12, 26),
                 children: [
+                  _PosterDetailHeader(
+                    number: number,
+                    title: t.get(guide.titleKey),
+                    subtitle: _posterTag(guide.id, en),
+                  ),
+                  const SizedBox(height: 8),
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: const Color(0xffeaf6f4),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      t.get(guide.summaryKey),
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800, height: 1.3),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: FilledButton.icon(
-                          style: FilledButton.styleFrom(
-                            backgroundColor: const Color(0xff087f83),
-                            minimumSize: const Size.fromHeight(52),
-                          ),
-                          onPressed: () {},
-                          icon: const Icon(Icons.menu_book_rounded),
-                          label: Text(en ? 'Learn' : 'Apprendre'),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: FilledButton.icon(
-                          style: FilledButton.styleFrom(
-                            backgroundColor: Theme.of(context).colorScheme.error,
-                            minimumSize: const Size.fromHeight(52),
-                          ),
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => FirstAidEmergencyModeScreen(guide: guide),
-                            ),
-                          ),
-                          icon: const Icon(Icons.sos_rounded),
-                          label: Text(en ? 'Emergency mode' : 'Mode urgence'),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
-                    decoration: BoxDecoration(
-                      color: const Color(0xffffeeee),
-                      borderRadius: BorderRadius.circular(18),
-                      border: Border.all(color: const Color(0xffffcccc)),
+                      borderRadius: BorderRadius.circular(15),
                     ),
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(Icons.phone_in_talk, color: Theme.of(context).colorScheme.error),
-                        const SizedBox(width: 10),
+                        const Icon(Icons.info_outline_rounded, color: Color(0xff087f83)),
+                        const SizedBox(width: 9),
                         Expanded(
                           child: Text(
-                            t.get('aid_call_now'),
-                            style: const TextStyle(fontWeight: FontWeight.w800, height: 1.3),
+                            t.get(guide.summaryKey),
+                            style: const TextStyle(fontWeight: FontWeight.w800, height: 1.35),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        FilledButton(
-                          style: FilledButton.styleFrom(
-                            backgroundColor: Theme.of(context).colorScheme.error,
-                            minimumSize: const Size(62, 42),
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                          ),
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => const EmergencyScreen()),
-                          ),
-                          child: Text(emergencyNumber),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  ...guide.steps.indexed.map(
-                    (entry) => _StepCard(
-                      number: entry.$1 + 1,
-                      step: entry.$2,
-                      wide: wide,
-                    ),
-                  ),
                   const SizedBox(height: 8),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Icon(Icons.verified_outlined, size: 18, color: Color(0xff087f83)),
-                      const SizedBox(width: 7),
-                      Expanded(
-                        child: Text(
-                          t.get('medicalNotice'),
-                          style: const TextStyle(fontSize: 12, color: Color(0xff65747a)),
+                  Material(
+                    color: const Color(0xffd92d36),
+                    borderRadius: BorderRadius.circular(15),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(15),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const EmergencyScreen()),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.call_rounded, color: Colors.white, size: 28),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                en ? 'EMERGENCY — CALL $emergencyNumber' : 'URGENCE — APPELER LE $emergencyNumber',
+                                style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w900),
+                              ),
+                            ),
+                            const Icon(Icons.chevron_right_rounded, color: Colors.white),
+                          ],
                         ),
                       ),
-                    ],
+                    ),
+                  ),
+                  const SizedBox(height: 9),
+                  ...guide.steps.indexed.map(
+                    (entry) => _DetailStepCard(
+                      number: entry.$1 + 1,
+                      step: entry.$2,
+                      emphasizeCpr: guide.id == 'cpr_adult' && entry.$1 == 2,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  _MedicalNotice(text: t.get('medicalNotice')),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.all(11),
+                    decoration: BoxDecoration(
+                      color: const Color(0xfffff4c7),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.verified_outlined, color: Color(0xff9a6a00)),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            en
+                                ? 'Offline guide · ${guide.sourceUris.length} reference source(s)'
+                                : 'Guide hors ligne · ${guide.sourceUris.length} source(s) de référence',
+                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -649,6 +706,150 @@ class FirstAidDetailScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+class _PosterDetailHeader extends StatelessWidget {
+  const _PosterDetailHeader({
+    required this.number,
+    required this.title,
+    required this.subtitle,
+  });
+
+  final int? number;
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.all(13),
+        decoration: BoxDecoration(
+          color: const Color(0xff087f83),
+          borderRadius: BorderRadius.circular(17),
+        ),
+        child: Row(
+          children: [
+            if (number != null)
+              Container(
+                width: 46,
+                height: 46,
+                alignment: Alignment.center,
+                decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                child: Text(
+                  number.toString(),
+                  style: const TextStyle(color: Color(0xff087f83), fontSize: 22, fontWeight: FontWeight.w900),
+                ),
+              ),
+            if (number != null) const SizedBox(width: 11),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title.toUpperCase(),
+                    style: const TextStyle(color: Colors.white, fontSize: 19, fontWeight: FontWeight.w900),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(color: Color(0xffdff7f2), fontSize: 10, fontWeight: FontWeight.w800),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.health_and_safety_rounded, color: Colors.white, size: 30),
+          ],
+        ),
+      );
+}
+
+class _DetailStepCard extends StatelessWidget {
+  const _DetailStepCard({
+    required this.number,
+    required this.step,
+    required this.emphasizeCpr,
+  });
+
+  final int number;
+  final FirstAidStep step;
+  final bool emphasizeCpr;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: const Color(0xffd3e6e3)),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: 33,
+              height: 33,
+              alignment: Alignment.center,
+              decoration: const BoxDecoration(color: Color(0xff087f83), shape: BoxShape.circle),
+              child: Text(
+                number.toString(),
+                style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w900),
+              ),
+            ),
+            const SizedBox(width: 9),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _aidText(context, step.textKey),
+                    style: const TextStyle(fontSize: 14.2, height: 1.28, fontWeight: FontWeight.w700),
+                  ),
+                  if (emphasizeCpr) ...[
+                    const SizedBox(height: 7),
+                    const Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: [
+                        _MetricBadge(label: '100–120/min'),
+                        _MetricBadge(label: '5–6 cm', alert: true),
+                      ],
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            SizedBox(
+              width: 112,
+              height: 96,
+              child: SvgPicture.asset(step.illustrationAsset, fit: BoxFit.contain),
+            ),
+          ],
+        ),
+      );
+}
+
+class _MetricBadge extends StatelessWidget {
+  const _MetricBadge({required this.label, this.alert = false});
+  final String label;
+  final bool alert;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+        decoration: BoxDecoration(
+          color: alert ? const Color(0xffffe7e8) : const Color(0xffe7f4f2),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: alert ? const Color(0xffc8212c) : const Color(0xff075e68),
+            fontWeight: FontWeight.w900,
+            fontSize: 11,
+          ),
+        ),
+      );
 }
 
 class FirstAidEmergencyModeScreen extends StatefulWidget {
@@ -691,7 +892,7 @@ class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScree
     final emergencyNumber = _emergencyNumber(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xfff8fbfa),
+      backgroundColor: const Color(0xfff4f9f8),
       appBar: AppBar(
         title: Text(t.get(widget.guide.titleKey)),
         actions: [
@@ -714,7 +915,7 @@ class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScree
           children: [
             LinearProgressIndicator(
               value: (index + 1) / widget.guide.steps.length,
-              minHeight: 5,
+              minHeight: 6,
               color: const Color(0xffd92d36),
               backgroundColor: const Color(0xffffdfe1),
             ),
@@ -725,61 +926,102 @@ class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScree
                 onPageChanged: (value) => setState(() => index = value),
                 itemBuilder: (context, pageIndex) {
                   final step = widget.guide.steps[pageIndex];
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  final cprMetric = widget.guide.id == 'cpr_adult' && pageIndex == 2;
+                  return SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
                     child: Column(
                       children: [
-                        Expanded(
-                          flex: 6,
-                          child: Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: const Color(0xffeaf6f4),
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                            child: SvgPicture.asset(step.illustrationAsset, fit: BoxFit.contain),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: const Color(0xff087f83),
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 44,
+                                height: 44,
+                                alignment: Alignment.center,
+                                decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                                child: Text(
+                                  '${pageIndex + 1}',
+                                  style: const TextStyle(color: Color(0xff087f83), fontSize: 20, fontWeight: FontWeight.w900),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  en ? 'EMERGENCY STEP ${pageIndex + 1}' : 'ÉTAPE URGENCE ${pageIndex + 1}',
+                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, letterSpacing: .4),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(height: 14),
-                        Expanded(
-                          flex: 4,
-                          child: Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(18),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(22),
-                              border: Border.all(color: const Color(0xffdbe8e8)),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  en ? 'STEP ${pageIndex + 1}' : 'ÉTAPE ${pageIndex + 1}',
-                                  style: const TextStyle(
-                                    color: Color(0xff087f83),
-                                    fontWeight: FontWeight.w900,
-                                    letterSpacing: .8,
-                                  ),
-                                ),
+                        const SizedBox(height: 8),
+                        Container(
+                          height: 330,
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: const Color(0xffeaf6f4),
+                            borderRadius: BorderRadius.circular(18),
+                            border: Border.all(color: const Color(0xffcce4e1)),
+                          ),
+                          child: SvgPicture.asset(step.illustrationAsset, fit: BoxFit.contain),
+                        ),
+                        const SizedBox(height: 8),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(15),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(18),
+                            border: Border.all(color: const Color(0xffd3e6e3)),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                _aidText(context, step.textKey),
+                                style: const TextStyle(fontSize: 19, height: 1.32, fontWeight: FontWeight.w800),
+                              ),
+                              if (cprMetric) ...[
                                 const SizedBox(height: 10),
-                                Expanded(
-                                  child: Align(
-                                    alignment: Alignment.topLeft,
-                                    child: Text(
-                                      _aidText(context, step.textKey),
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        height: 1.35,
-                                        fontWeight: FontWeight.w800,
-                                        color: Color(0xff203338),
-                                      ),
-                                    ),
-                                  ),
+                                const Wrap(
+                                  spacing: 8,
+                                  children: [
+                                    _MetricBadge(label: '100–120/min'),
+                                    _MetricBadge(label: '5–6 cm', alert: true),
+                                  ],
                                 ),
                               ],
-                            ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+                          decoration: BoxDecoration(
+                            color: const Color(0xfffff2c5),
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.lightbulb_outline_rounded, color: Color(0xff9a6a00)),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  en
+                                      ? 'Follow the emergency operator’s instructions whenever available.'
+                                      : 'Suivez les instructions de l’opérateur des secours dès qu’elles sont disponibles.',
+                                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
@@ -789,7 +1031,7 @@ class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScree
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(12, 6, 12, 12),
+              padding: const EdgeInsets.fromLTRB(10, 6, 10, 10),
               child: Row(
                 children: [
                   Expanded(
@@ -799,11 +1041,11 @@ class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScree
                       label: Text(en ? 'Previous' : 'Précédent'),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 7),
                   FilledButton.icon(
                     style: FilledButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.error,
-                      minimumSize: const Size(118, 50),
+                      backgroundColor: const Color(0xffd92d36),
+                      minimumSize: const Size(112, 50),
                     ),
                     onPressed: () => Navigator.push(
                       context,
@@ -812,12 +1054,10 @@ class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScree
                     icon: const Icon(Icons.call_rounded),
                     label: Text(emergencyNumber),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 7),
                   Expanded(
                     child: FilledButton.icon(
-                      onPressed: index == widget.guide.steps.length - 1
-                          ? null
-                          : () => _go(index + 1),
+                      onPressed: index == widget.guide.steps.length - 1 ? null : () => _go(index + 1),
                       iconAlignment: IconAlignment.end,
                       icon: const Icon(Icons.arrow_forward_rounded),
                       label: Text(en ? 'Next' : 'Suivant'),
@@ -833,96 +1073,29 @@ class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScree
   }
 }
 
-class _StepCard extends StatelessWidget {
-  const _StepCard({
-    required this.number,
-    required this.step,
-    required this.wide,
-  });
-
-  final int number;
-  final FirstAidStep step;
-  final bool wide;
+class _MedicalNotice extends StatelessWidget {
+  const _MedicalNotice({required this.text});
+  final String text;
 
   @override
-  Widget build(BuildContext context) {
-    final en = Localizations.localeOf(context).languageCode == 'en';
-    final visual = Container(
-      height: wide ? 255 : 220,
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(10, 10, 10, 2),
-      decoration: BoxDecoration(
-        color: const Color(0xffeaf6f4),
-        borderRadius: BorderRadius.circular(22),
-      ),
-      child: SvgPicture.asset(step.illustrationAsset, fit: BoxFit.contain),
-    );
-
-    final copy = Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xffdbe8e8)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 34,
-                height: 34,
-                alignment: Alignment.center,
-                decoration: const BoxDecoration(
-                  color: Color(0xff087f83),
-                  shape: BoxShape.circle,
-                ),
-                child: Text(
-                  number.toString(),
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 16),
-                ),
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.all(11),
+        decoration: BoxDecoration(
+          color: const Color(0xffffeeee),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Icon(Icons.emergency_outlined, color: Color(0xffd92d36)),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                text,
+                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, height: 1.35),
               ),
-              const SizedBox(width: 10),
-              Text(
-                en ? 'Step $number' : 'Étape $number',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Color(0xff075e68)),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            _aidText(context, step.textKey),
-            style: const TextStyle(
-              fontSize: 16,
-              height: 1.42,
-              fontWeight: FontWeight.w600,
-              color: Color(0xff24363a),
             ),
-          ),
-        ],
-      ),
-    );
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: wide
-          ? Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(flex: 6, child: visual),
-                const SizedBox(width: 16),
-                Expanded(flex: 5, child: copy),
-              ],
-            )
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                visual,
-                Transform.translate(offset: const Offset(0, -8), child: copy),
-              ],
-            ),
-    );
-  }
+          ],
+        ),
+      );
 }
