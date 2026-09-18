@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
 
 import '../app/localizations.dart';
+import '../data/content.dart';
 import '../data/first_aid_repository.dart';
 import '../models/first_aid_guide.dart';
+import '../models/guide.dart';
 import 'emergency_screen.dart';
 import 'first_aid_screen.dart';
+import 'guide_list_screen.dart';
+import 'home_safety_screen.dart';
+import 'leave_now_screen.dart';
+import 'official_sources_screen.dart';
+import 'offline_readiness_screen.dart';
+import 'recovery_screen.dart';
+import 'safety_tools_screen.dart';
 
 class GuidedEmergencyScreen extends StatelessWidget {
   const GuidedEmergencyScreen({super.key});
@@ -12,12 +21,33 @@ class GuidedEmergencyScreen extends StatelessWidget {
   FirstAidGuide _guide(String id) =>
       firstAidGuides.firstWhere((guide) => guide.id == id);
 
+  Guide _hazard(String id) {
+    for (final guide in disasterGuides) {
+      if (guide.id == id) return guide;
+    }
+    return emergencyGuides.firstWhere((guide) => guide.id == id);
+  }
+
   void _openGuide(BuildContext context, String id) {
     final guide = _guide(id);
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => FirstAidEmergencyModeScreen(guide: guide),
       ),
+    );
+  }
+
+  void _openHazard(BuildContext context, String id) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => GuideDetail(guide: _hazard(id)),
+      ),
+    );
+  }
+
+  void _openPage(BuildContext context, Widget page) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => page),
     );
   }
 
@@ -78,72 +108,160 @@ class GuidedEmergencyScreen extends StatelessWidget {
     final en = Localizations.localeOf(context).languageCode == 'en';
     final t = AppLocalizations.of(context);
 
-    final situations = <_Situation>[
+    final medicalSituations = <_Situation>[
       _Situation(
         en ? 'Not responding' : 'Ne répond pas',
         en ? 'Unconscious or difficult to wake' : 'Inconscient ou difficile à réveiller',
         Icons.person_off_rounded,
-        'unconscious',
+        () => _openGuide(context, 'unconscious'),
       ),
       _Situation(
         en ? 'Not breathing normally' : 'Ne respire pas normalement',
         en ? 'Open CPR guidance immediately' : 'Ouvrir immédiatement le guidage RCP',
         Icons.favorite_rounded,
-        'cpr_adult',
+        () => _openGuide(context, 'cpr_adult'),
       ),
       _Situation(
         en ? 'Choking' : 'S’étouffe',
         en ? 'Cannot speak, cough or breathe' : 'Ne peut plus parler, tousser ou respirer',
         Icons.air_rounded,
-        'choking_adult',
+        () => _openGuide(context, 'choking_adult'),
       ),
       _Situation(
         en ? 'Heavy bleeding' : 'Saigne beaucoup',
         en ? 'Severe or uncontrolled bleeding' : 'Hémorragie importante ou incontrôlée',
         Icons.bloodtype_rounded,
-        'bleeding',
+        () => _openGuide(context, 'bleeding'),
       ),
       _Situation(
         en ? 'Severe allergy' : 'Allergie grave',
         en ? 'Breathing difficulty, swelling or collapse' : 'Difficulté respiratoire, gonflement ou malaise',
         Icons.medication_liquid_rounded,
-        'anaphylaxis',
+        () => _openGuide(context, 'anaphylaxis'),
       ),
       _Situation(
         en ? 'Burn' : 'Brûlure',
         en ? 'Thermal, chemical or electrical' : 'Thermique, chimique ou électrique',
         Icons.local_fire_department_rounded,
-        'burn',
+        () => _openGuide(context, 'burn'),
       ),
       _Situation(
         en ? 'Drowning' : 'Noyade',
         en ? 'Person in difficulty or rescued from water' : 'Personne en difficulté ou sortie de l’eau',
         Icons.water_rounded,
-        'drowning',
+        () => _openGuide(context, 'drowning'),
       ),
       _Situation(
         en ? 'Seizure' : 'Convulsions',
         en ? 'Convulsive episode or uncontrolled movements' : 'Crise convulsive ou mouvements incontrôlés',
         Icons.monitor_heart_rounded,
-        'seizure',
+        () => _openGuide(context, 'seizure'),
       ),
       _Situation(
         en ? 'Accident / fall' : 'Accident / chute',
         en ? 'Trauma, fracture or serious fall' : 'Traumatisme, fracture ou chute importante',
         Icons.personal_injury_rounded,
-        'trauma',
+        () => _openGuide(context, 'trauma'),
+      ),
+      _Situation(
+        en ? 'Child / infant' : 'Enfant / bébé',
+        en ? 'Paediatric emergency guidance' : 'Guidage pédiatrique',
+        Icons.child_friendly_rounded,
+        () => _openPaediatricChoices(context),
+      ),
+    ];
+
+    final otherSituations = <_Situation>[
+      _Situation(
+        en ? 'Fire / smoke' : 'Feu / fumée',
+        en ? 'Fire at home or nearby' : 'Incendie dans le logement ou à proximité',
+        Icons.local_fire_department_rounded,
+        () => _openHazard(context, 'fire'),
+        urgentColor: const Color(0xffd92d36),
+      ),
+      _Situation(
+        en ? 'Flood / rising water' : 'Inondation / montée des eaux',
+        en ? 'Water entering the area or home' : 'Eau qui monte dans la zone ou le logement',
+        Icons.flood_rounded,
+        () => _openHazard(context, 'flood'),
+      ),
+      _Situation(
+        en ? 'Storm / extreme weather' : 'Tempête / météo extrême',
+        en ? 'Severe weather is affecting the area' : 'Un phénomène météo sévère touche la zone',
+        Icons.thunderstorm_rounded,
+        () => _openHazard(context, 'storm'),
+      ),
+      _Situation(
+        en ? 'Earthquake' : 'Séisme',
+        en ? 'Shaking or aftershock risk' : 'Secousses ou risque de réplique',
+        Icons.terrain_rounded,
+        () => _openHazard(context, 'earthquake'),
+      ),
+      _Situation(
+        en ? 'Wildfire' : 'Feu de végétation',
+        en ? 'Vegetation fire or smoke nearby' : 'Feu de végétation ou fumée à proximité',
+        Icons.forest_rounded,
+        () => _openHazard(context, 'wildfire'),
+      ),
+      _Situation(
+        en ? 'Power outage' : 'Panne électrique',
+        en ? 'Loss of power or prolonged blackout' : 'Coupure ou panne prolongée',
+        Icons.power_off_rounded,
+        () => _openHazard(context, 'blackout'),
+      ),
+      _Situation(
+        en ? 'Industrial / chemical incident' : 'Accident industriel / chimique',
+        en ? 'Leak, plume or official shelter warning' : 'Fuite, nuage ou consigne officielle de confinement',
+        Icons.factory_rounded,
+        () => _openHazard(context, 'industrial'),
+      ),
+      _Situation(
+        en ? 'I must leave now' : 'Je dois partir maintenant',
+        en ? 'Immediate evacuation checklist' : 'Checklist d’évacuation immédiate',
+        Icons.directions_run_rounded,
+        () => _openPage(context, const LeaveNowScreen()),
+        urgentColor: const Color(0xffd92d36),
+      ),
+      _Situation(
+        en ? 'Official alert received' : 'J’ai reçu une alerte officielle',
+        en ? 'Open trusted government sources' : 'Ouvrir les sources gouvernementales fiables',
+        Icons.campaign_rounded,
+        () => _openPage(context, const OfficialSourcesScreen()),
+      ),
+      _Situation(
+        en ? 'Home is unsafe' : 'Le logement semble dangereux',
+        en ? 'Exits, utilities and home safety plan' : 'Sorties, installations et plan de sécurité du domicile',
+        Icons.home_work_rounded,
+        () => _openPage(context, const HomeSafetyScreen()),
+      ),
+      _Situation(
+        en ? 'No network / Internet' : 'Pas de réseau / Internet',
+        en ? 'Offline resources and backup plan' : 'Ressources hors ligne et plan B',
+        Icons.signal_wifi_connected_no_internet_4_rounded,
+        () => _openPage(context, const OfflineReadinessScreen()),
+      ),
+      _Situation(
+        en ? 'Need to attract attention' : 'Besoin de me signaler',
+        en ? 'Visual SOS and emergency tools' : 'Signal SOS visuel et outils d’urgence',
+        Icons.sos_rounded,
+        () => _openPage(context, const SafetyToolsScreen()),
+      ),
+      _Situation(
+        en ? 'The danger has passed' : 'Le danger immédiat est passé',
+        en ? 'Recovery and safe return guidance' : 'Récupération et retour en sécurité',
+        Icons.restore_rounded,
+        () => _openPage(context, const RecoveryScreen()),
       ),
     ];
 
     return Scaffold(
+      backgroundColor: const Color(0xfff7faf9),
       appBar: AppBar(
         title: Text(en ? 'Emergency — guide me' : 'Urgence — guidez-moi'),
         actions: [
           IconButton(
             tooltip: t.get('emergencies'),
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const EmergencyScreen()),
-            ),
+            onPressed: () => _openPage(context, const EmergencyScreen()),
             icon: const Icon(Icons.phone_in_talk_rounded),
           ),
         ],
@@ -151,7 +269,8 @@ class GuidedEmergencyScreen extends StatelessWidget {
       body: LayoutBuilder(
         builder: (context, constraints) {
           final wide = constraints.maxWidth >= 760;
-          final horizontal = wide ? 28.0 : 16.0;
+          final horizontal = wide ? 28.0 : 14.0;
+          final columns = wide ? 3 : 2;
           return ListView(
             padding: EdgeInsets.fromLTRB(horizontal, 4, horizontal, 32),
             children: [
@@ -165,24 +284,26 @@ class GuidedEmergencyScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(children: [
-                      Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.error,
-                          borderRadius: BorderRadius.circular(15),
+                    Row(
+                      children: [
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.error,
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: const Icon(Icons.sos_rounded, color: Colors.white),
                         ),
-                        child: const Icon(Icons.sos_rounded, color: Colors.white),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          en ? 'What is happening?' : 'Que se passe-t-il ?',
-                          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            en ? 'What is happening?' : 'Que se passe-t-il ?',
+                            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
+                          ),
                         ),
-                      ),
-                    ]),
+                      ],
+                    ),
                     const SizedBox(height: 10),
                     Text(
                       en
@@ -198,9 +319,7 @@ class GuidedEmergencyScreen extends StatelessWidget {
                           backgroundColor: Theme.of(context).colorScheme.error,
                           minimumSize: const Size.fromHeight(52),
                         ),
-                        onPressed: () => Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => const EmergencyScreen()),
-                        ),
+                        onPressed: () => _openPage(context, const EmergencyScreen()),
                         icon: const Icon(Icons.call_rounded),
                         label: Text(
                           en ? 'Emergency numbers' : 'Numéros d’urgence',
@@ -212,38 +331,32 @@ class GuidedEmergencyScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 18),
-              Text(
-                en ? 'Choose a situation' : 'Choisissez une situation',
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+              _SectionHeader(
+                icon: Icons.health_and_safety_rounded,
+                title: en ? 'Medical emergency' : 'Urgence médicale',
+                subtitle: en
+                    ? 'Choose what you observe about the person.'
+                    : 'Choisissez ce que vous observez chez la personne.',
               ),
-              const SizedBox(height: 10),
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: situations.length + 1,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: wide ? 3 : 2,
-                  mainAxisExtent: wide ? 158 : 146,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                ),
-                itemBuilder: (context, index) {
-                  if (index == situations.length) {
-                    return _SituationCard(
-                      title: en ? 'Child / infant' : 'Enfant / bébé',
-                      subtitle: en ? 'Paediatric emergency guidance' : 'Guidage pédiatrique',
-                      icon: Icons.child_friendly_rounded,
-                      onTap: () => _openPaediatricChoices(context),
-                    );
-                  }
-                  final item = situations[index];
-                  return _SituationCard(
-                    title: item.title,
-                    subtitle: item.subtitle,
-                    icon: item.icon,
-                    onTap: () => _openGuide(context, item.guideId),
-                  );
-                },
+              const SizedBox(height: 9),
+              _SituationGrid(
+                situations: medicalSituations,
+                columns: columns,
+                wide: wide,
+              ),
+              const SizedBox(height: 20),
+              _SectionHeader(
+                icon: Icons.warning_amber_rounded,
+                title: en ? 'Other emergency' : 'Autre situation d’urgence',
+                subtitle: en
+                    ? 'Fire, weather, evacuation, outage, alert or loss of connectivity.'
+                    : 'Incendie, météo, évacuation, panne, alerte ou perte de connexion.',
+              ),
+              const SizedBox(height: 9),
+              _SituationGrid(
+                situations: otherSituations,
+                columns: columns,
+                wide: wide,
               ),
               const SizedBox(height: 18),
               Container(
@@ -260,8 +373,8 @@ class GuidedEmergencyScreen extends StatelessWidget {
                     Expanded(
                       child: Text(
                         en
-                            ? 'Essential guidance is stored on the device and remains available without a network connection.'
-                            : 'Les guides essentiels sont stockés sur l’appareil et restent disponibles sans connexion réseau.',
+                            ? 'Essential first-aid and preparedness guidance is stored on the device. Live maps and official alerts may require connectivity.'
+                            : 'Les guides essentiels de premiers secours et de préparation sont stockés sur l’appareil. Les cartes en ligne et les alertes officielles peuvent nécessiter une connexion.',
                         style: const TextStyle(fontWeight: FontWeight.w700, height: 1.35),
                       ),
                     ),
@@ -276,12 +389,88 @@ class GuidedEmergencyScreen extends StatelessWidget {
   }
 }
 
+class _SituationGrid extends StatelessWidget {
+  const _SituationGrid({
+    required this.situations,
+    required this.columns,
+    required this.wide,
+  });
+
+  final List<_Situation> situations;
+  final int columns;
+  final bool wide;
+
+  @override
+  Widget build(BuildContext context) => GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: situations.length,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: columns,
+          mainAxisExtent: wide ? 158 : 148,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+        ),
+        itemBuilder: (context, index) {
+          final item = situations[index];
+          return _SituationCard(
+            title: item.title,
+            subtitle: item.subtitle,
+            icon: item.icon,
+            onTap: item.onTap,
+            accent: item.urgentColor,
+          );
+        },
+      );
+}
+
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) => Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CircleAvatar(
+            backgroundColor: const Color(0xffe5f3f1),
+            child: Icon(icon, color: const Color(0xff087f83)),
+          ),
+          const SizedBox(width: 9),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
+                Text(subtitle, style: const TextStyle(color: Color(0xff65747a))),
+              ],
+            ),
+          ),
+        ],
+      );
+}
+
 class _Situation {
-  const _Situation(this.title, this.subtitle, this.icon, this.guideId);
+  const _Situation(
+    this.title,
+    this.subtitle,
+    this.icon,
+    this.onTap, {
+    this.urgentColor,
+  });
+
   final String title;
   final String subtitle;
   final IconData icon;
-  final String guideId;
+  final VoidCallback onTap;
+  final Color? urgentColor;
 }
 
 class _SituationCard extends StatelessWidget {
@@ -290,61 +479,71 @@ class _SituationCard extends StatelessWidget {
     required this.subtitle,
     required this.icon,
     required this.onTap,
+    this.accent,
   });
 
   final String title;
   final String subtitle;
   final IconData icon;
   final VoidCallback onTap;
+  final Color? accent;
 
   @override
-  Widget build(BuildContext context) => Material(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(22),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(22),
-          onTap: onTap,
-          child: Container(
-            padding: const EdgeInsets.all(15),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(22),
-              border: Border.all(color: const Color(0xffdde7e5)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 46,
-                  height: 46,
-                  decoration: BoxDecoration(
-                    color: const Color(0xffe5f3f1),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Icon(icon, color: const Color(0xff087f83)),
+  Widget build(BuildContext context) {
+    final color = accent ?? const Color(0xff087f83);
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(13),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: color.withValues(alpha: .22)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: .12),
+                  borderRadius: BorderRadius.circular(13),
                 ),
-                const Spacer(),
-                Text(
-                  title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900, height: 1.08),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  subtitle,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 11.5, color: Color(0xff65747a), height: 1.2),
-                ),
-              ],
-            ),
+                child: Icon(icon, color: color),
+              ),
+              const Spacer(),
+              Text(
+                title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: 14.8, fontWeight: FontWeight.w900, height: 1.08),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                subtitle,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: 11.2, color: Color(0xff65747a), height: 1.18),
+              ),
+            ],
           ),
         ),
-      );
+      ),
+    );
+  }
 }
 
 class _ChoiceButton extends StatelessWidget {
-  const _ChoiceButton({required this.icon, required this.label, required this.onTap});
+  const _ChoiceButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
   final IconData icon;
   final String label;
   final VoidCallback onTap;
@@ -355,7 +554,10 @@ class _ChoiceButton extends StatelessWidget {
         child: OutlinedButton.icon(
           onPressed: onTap,
           icon: Icon(icon),
-          label: Align(alignment: Alignment.centerLeft, child: Text(label)),
+          label: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(label),
+          ),
         ),
       );
 }
