@@ -50,20 +50,18 @@ class SecureVaultService {
   final FlutterSecureStorage _storage;
 
   Future<List<SecureVaultItem>> items() async {
-    try {
-      final raw = await _storage.read(key: _vaultKey);
-      if (raw == null || raw.isEmpty) return [];
-      final decoded = jsonDecode(raw);
-      if (decoded is! List) return [];
-      return decoded
-          .whereType<Map>()
-          .map((item) => SecureVaultItem.fromJson(Map<String, dynamic>.from(item)))
-          .where((item) => item.id.isNotEmpty && item.title.isNotEmpty)
-          .toList()
-        ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
-    } catch (_) {
-      return [];
+    final raw = await _storage.read(key: _vaultKey);
+    if (raw == null || raw.isEmpty) return [];
+    final decoded = jsonDecode(raw);
+    if (decoded is! List) {
+      throw const FormatException('Invalid secure vault data');
     }
+    return decoded
+        .whereType<Map>()
+        .map((item) => SecureVaultItem.fromJson(Map<String, dynamic>.from(item)))
+        .where((item) => item.id.isNotEmpty && item.title.isNotEmpty)
+        .toList()
+      ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
   }
 
   Future<void> saveAll(List<SecureVaultItem> items) async {

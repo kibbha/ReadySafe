@@ -365,11 +365,11 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                     ),
                     DropdownMenuItem(
                       value: _PlaceKind.shelter,
-                      child: Text(en ? 'Shelter / safe place' : 'Abri / lieu sûr'),
+                      child: Text(en ? 'Potential shelter (personal)' : 'Abri envisagé (personnel)'),
                     ),
                     DropdownMenuItem(
                       value: _PlaceKind.water,
-                      child: Text(en ? 'Water' : 'Eau'),
+                      child: Text(en ? 'Water point (unverified)' : 'Point d’eau (non vérifié)'),
                     ),
                     DropdownMenuItem(
                       value: _PlaceKind.health,
@@ -396,6 +396,13 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
+                Text(
+                  en
+                      ? 'Personal landmarks are not official shelters or verified drinking-water sources. Check local instructions and conditions before relying on them.'
+                      : 'Les repères personnels ne sont ni des abris officiels ni des sources d’eau potable vérifiées. Consultez les consignes locales avant de vous y fier.',
+                  style: const TextStyle(fontSize: 12, color: Color(0xff65747a)),
+                ),
+                const SizedBox(height: 8),
                 Text(
                   en
                       ? 'The landmark will be stored at the current map centre: '
@@ -577,7 +584,10 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
   }
 
   String _displaySubtitle(_Place place, bool en) {
-    if (place.personal) return place.subtitle;
+    if (place.personal) {
+      final status = en ? 'Personal · unverified' : 'Personnel · non vérifié';
+      return '$status · ${place.subtitle}';
+    }
     if (place.kind == _PlaceKind.city) {
       return en ? 'City' : 'Ville';
     }
@@ -680,6 +690,25 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                     ),
                   ),
                 ),
+                if (!_searchOpen)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: .95),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                        child: Text(
+                          en
+                              ? 'Online map · saved landmarks are personal, not official sites'
+                              : 'Carte en ligne · repères enregistrés personnels, non officiels',
+                          style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                    ),
+                  ),
                 if (_searchOpen)
                   Container(
                     margin: const EdgeInsets.only(top: 6),

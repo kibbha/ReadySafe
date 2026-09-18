@@ -62,7 +62,14 @@ class EmergencyScreen extends StatelessWidget {
                 Text(t.get(country.nameKey), style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w900)),
                 Text(t.get('emergency_hint'), style: const TextStyle(fontSize: 12, color: Color(0xff65747a))),
               ])),
-              const Icon(Icons.verified_outlined, color: Color(0xff087f83)),
+              Icon(
+                country.hasVerifiedNumbers
+                    ? Icons.verified_outlined
+                    : Icons.info_outline_rounded,
+                color: country.hasVerifiedNumbers
+                    ? const Color(0xff087f83)
+                    : const Color(0xff9a6a00),
+              ),
             ]),
           ),
           if (primary != null) ...[
