@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../app/localizations.dart';
 import 'emergency_screen.dart';
 import 'communication_plan_screen.dart';
+import 'emergency_plan_summary_screen.dart';
 import 'family_documents_screen.dart';
 import 'first_aid_screen.dart';
 import 'guide_list_screen.dart';
@@ -26,6 +27,12 @@ class MoreScreen extends StatelessWidget {
         en ? 'Visual guides and step-by-step mode' : 'Fiches visuelles et mode pas à pas',
         Icons.health_and_safety_rounded,
         const FirstAidScreen(),
+      ),
+      _MoreItem(
+        en ? 'My emergency plan' : 'Mon plan d’urgence',
+        en ? 'One summary of household contacts, meeting points and documents' : 'Résumé du foyer, contacts, rassemblement et documents',
+        Icons.assignment_turned_in_rounded,
+        const EmergencyPlanSummaryScreen(),
       ),
       _MoreItem(
         en ? 'Family & documents' : 'Famille & documents',
