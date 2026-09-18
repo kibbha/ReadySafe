@@ -44,7 +44,7 @@ class SecureVaultItem {
 
 class SecureVaultService {
   SecureVaultService({FlutterSecureStorage? storage})
-      : _storage = storage ?? const FlutterSecureStorage();
+      : _storage = storage ?? FlutterSecureStorage();
 
   static const _vaultKey = 'readysafe.secure_vault.v1';
   final FlutterSecureStorage _storage;
