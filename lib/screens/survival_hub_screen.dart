@@ -6,12 +6,15 @@ import 'calculator_screen.dart';
 import 'communication_plan_screen.dart';
 import 'checklist_screen.dart';
 import 'guide_list_screen.dart';
+import 'home_safety_screen.dart';
 import 'leave_now_screen.dart';
+import 'offline_readiness_screen.dart';
 import 'official_sources_screen.dart';
 import 'preparedness_review_screen.dart';
 import 'recovery_screen.dart';
 import 'safety_tools_screen.dart';
 import 'special_kits_screen.dart';
+import 'support_needs_screen.dart';
 import 'training_screen.dart';
 
 class SurvivalHubScreen extends StatefulWidget {
@@ -104,6 +107,27 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.connect_without_contact_rounded,
         const Color(0xff0f7c7f),
         const CommunicationPlanScreen(),
+      ),
+      _Module(
+        'Sécurité du domicile',
+        'Sorties, coupures techniques, détecteurs et zone sûre',
+        Icons.home_work_rounded,
+        const Color(0xff4c6d72),
+        const HomeSafetyScreen(),
+      ),
+      _Module(
+        'Besoins spécifiques',
+        'Mobilité, audition, vision, aide, énergie et communication',
+        Icons.accessibility_new_rounded,
+        const Color(0xff6750a4),
+        const SupportNeedsScreen(),
+      ),
+      _Module(
+        'Préparation hors ligne',
+        'Vérifier ce qui reste disponible sans réseau ni Internet',
+        Icons.offline_bolt_rounded,
+        const Color(0xff087f83),
+        const OfflineReadinessScreen(),
       ),
       _Module(
         'Outils d’urgence',
