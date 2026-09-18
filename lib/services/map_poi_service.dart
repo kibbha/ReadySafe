@@ -11,8 +11,11 @@ class MapPoiService {
     this.freshFor = const Duration(hours: 12),
   });
 
-  static const _endpoint = 'https://overpass-api.de/api/interpreter';
-  static const _cachePrefix = 'readysafe.map_poi.v1';
+  static const _endpoints = <String>[
+    'https://overpass-api.de/api/interpreter',
+    'https://overpass.kumi.systems/api/interpreter',
+  ];
+  static const _cachePrefix = 'readysafe.map_poi.v2';
   static const _sourceName = 'OpenStreetMap';
   static const _sourceCopyright = 'https://www.openstreetmap.org/copyright';
 
@@ -21,7 +24,7 @@ class MapPoiService {
   Future<MapPoiLoadResult> loadAround({
     required double latitude,
     required double longitude,
-    int radiusMeters = 12000,
+    int radiusMeters = 18000,
     bool force = false,
   }) async {
     final prefs = await SharedPreferences.getInstance();
@@ -77,7 +80,7 @@ class MapPoiService {
   static String buildOverpassQuery({
     required double latitude,
     required double longitude,
-    int radiusMeters = 12000,
+    int radiusMeters = 18000,
   }) {
     final around = 'around:$radiusMeters,$latitude,$longitude';
     return '''
@@ -253,10 +256,27 @@ out center tags;
       });
 
   Future<String> _requestOverpass(String query) async {
+    Object? lastError;
+
+    for (final endpoint in _endpoints) {
+      try {
+        return await _requestEndpoint(endpoint, query);
+      } catch (error) {
+        lastError = error;
+      }
+    }
+
+    throw lastError ??
+        HttpException('No Overpass endpoint could be reached');
+  }
+
+  Future<String> _requestEndpoint(String endpoint, String query) async {
     final client = HttpClient()
-      ..connectionTimeout = const Duration(seconds: 8);
+      ..connectionTimeout = const Duration(seconds: 7);
+    final uri = Uri.parse(endpoint);
+
     try {
-      final request = await client.postUrl(Uri.parse(_endpoint));
+      final request = await client.postUrl(uri);
       request.headers.contentType = ContentType(
         'application',
         'x-www-form-urlencoded',
@@ -269,18 +289,19 @@ out center tags;
       request.write('data=${Uri.encodeQueryComponent(query)}');
 
       final response =
-          await request.close().timeout(const Duration(seconds: 24));
+          await request.close().timeout(const Duration(seconds: 18));
       final body = await response
           .transform(utf8.decoder)
           .join()
-          .timeout(const Duration(seconds: 24));
+          .timeout(const Duration(seconds: 18));
 
       if (response.statusCode != HttpStatus.ok) {
         throw HttpException(
           'Overpass returned HTTP ${response.statusCode}',
-          uri: Uri.parse(_endpoint),
+          uri: uri,
         );
       }
+
       return body;
     } finally {
       client.close(force: true);

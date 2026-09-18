@@ -58,20 +58,24 @@ class AppLocalizations {
     'aid_cpr_child_summary':
         'Enfant inconscient qui ne respire pas normalement.',
     'aid_child_cpr_1':
-        'Appelez les secours et suivez immédiatement les instructions de l’opérateur.',
+        'Vérifiez la réaction et la respiration. Appelez les secours sans délai et utilisez le haut-parleur.',
     'aid_child_cpr_2':
-        'Commencez la réanimation selon votre formation et les consignes reçues.',
+        'Si l’enfant ne respire pas normalement, donnez 5 insufflations initiales.',
     'aid_child_cpr_3':
-        'Utilisez un DAE avec électrodes pédiatriques si disponible et suivez ses instructions.',
+        'Commencez immédiatement les compressions. Faites 30 compressions pour 2 insufflations, ou 15:2 si vous êtes spécifiquement formé à la RCP pédiatrique PBLS.',
+    'aid_child_cpr_4':
+        'Faites apporter et connecter un DAE dès que possible. Suivez ses instructions sans interrompre inutilement la RCP.',
     'aid_cpr_infant': 'RCP nourrisson',
     'aid_cpr_infant_summary':
         'Nourrisson inconscient qui ne respire pas normalement.',
     'aid_infant_cpr_1':
-        'Appelez les secours et placez le téléphone en haut-parleur.',
+        'Vérifiez la réaction et la respiration. Appelez les secours sans délai et utilisez le haut-parleur.',
     'aid_infant_cpr_2':
-        'Suivez les instructions spécifiques au nourrisson données par l’opérateur.',
+        'Si le nourrisson ne respire pas normalement, donnez 5 insufflations initiales.',
     'aid_infant_cpr_3':
-        'Poursuivez jusqu’à reprise de la respiration ou relais des secours.',
+        'Commencez immédiatement les compressions. Faites 30 compressions pour 2 insufflations, ou 15:2 si vous êtes spécifiquement formé à la RCP pédiatrique PBLS.',
+    'aid_infant_cpr_4':
+        'Faites apporter et connecter un DAE dès que possible. Suivez ses instructions sans interrompre inutilement la RCP.',
     'aid_trauma': 'Fracture ou traumatisme',
     'aid_trauma_summary': 'Douleur, déformation ou traumatisme important.',
     'aid_trauma_1': 'Ne déplacez pas la personne sauf danger immédiat.',
@@ -325,6 +329,8 @@ class AppLocalizations {
         'Commencez les compressions au centre de la poitrine et suivez le rythme indiqué par l’opérateur.',
     'aid_cpr_3':
         'Allumez le DAE, posez les électrodes et suivez exactement ses instructions.',
+    'aid_cpr_4':
+        'Poursuivez la RCP et suivez les instructions du DAE jusqu’à ce que la personne respire normalement ou que les secours prennent le relais.',
     'aid_choking_adult': 'Étouffement — adulte',
     'aid_choking_child': 'Étouffement — enfant',
     'aid_choking_infant': 'Étouffement — nourrisson',
@@ -453,18 +459,24 @@ class AppLocalizations {
     'aid_cpr_child_summary':
         'An unconscious child who is not breathing normally.',
     'aid_child_cpr_1':
-        'Call emergency services and immediately follow the operator’s directions.',
+        'Check responsiveness and breathing. Call emergency services without delay and use speakerphone.',
     'aid_child_cpr_2':
-        'Start resuscitation according to your training and the instructions received.',
+        'If the child is not breathing normally, give 5 initial rescue breaths.',
     'aid_child_cpr_3':
-        'Use an AED with paediatric pads if available and follow its prompts.',
+        'Immediately start compressions. Use 30 compressions to 2 breaths, or 15:2 if you are specifically trained in paediatric PBLS.',
+    'aid_child_cpr_4':
+        'Have an AED brought and attached as soon as possible. Follow its prompts and minimise interruptions to CPR.',
     'aid_cpr_infant': 'Infant CPR',
     'aid_cpr_infant_summary':
         'An unconscious infant who is not breathing normally.',
-    'aid_infant_cpr_1': 'Call emergency services and use speakerphone.',
-    'aid_infant_cpr_2': 'Follow the operator’s infant-specific instructions.',
+    'aid_infant_cpr_1':
+        'Check responsiveness and breathing. Call emergency services without delay and use speakerphone.',
+    'aid_infant_cpr_2':
+        'If the infant is not breathing normally, give 5 initial rescue breaths.',
     'aid_infant_cpr_3':
-        'Continue until normal breathing returns or emergency services take over.',
+        'Immediately start compressions. Use 30 compressions to 2 breaths, or 15:2 if you are specifically trained in paediatric PBLS.',
+    'aid_infant_cpr_4':
+        'Have an AED brought and attached as soon as possible. Follow its prompts and minimise interruptions to CPR.',
     'aid_trauma': 'Fracture or trauma',
     'aid_trauma_summary': 'Pain, deformity, or significant trauma.',
     'aid_trauma_1': 'Do not move the person unless there is immediate danger.',
@@ -716,6 +728,8 @@ class AppLocalizations {
         'Start chest compressions in the centre of the chest and follow the operator’s rhythm.',
     'aid_cpr_3':
         'Turn on the AED, attach the pads, and follow its prompts exactly.',
+    'aid_cpr_4':
+        'Continue CPR and follow the AED prompts until the person breathes normally or emergency services take over.',
     'aid_choking_adult': 'Choking — adult',
     'aid_choking_child': 'Choking — child',
     'aid_choking_infant': 'Choking — infant',

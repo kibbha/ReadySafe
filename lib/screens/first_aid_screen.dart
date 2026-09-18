@@ -34,15 +34,8 @@ String _aidText(BuildContext context, String key) {
     'first_aid_child': 'Enfant',
     'first_aid_infant': 'Nourrisson',
     'first_aid_header': 'Fiches Premiers Secours',
-    'first_aid_header_body': '10 fiches essentielles, visuelles et disponibles hors ligne',
-    'aid_child_cpr_1': 'Vérifiez la réaction et la respiration. Appelez les secours sans délai et utilisez le haut-parleur.',
-    'aid_child_cpr_2': 'Si l’enfant ne respire pas normalement, donnez 5 insufflations initiales.',
-    'aid_child_cpr_3': 'Commencez immédiatement les compressions. Faites 30 compressions pour 2 insufflations, ou 15:2 si vous êtes spécifiquement formé à la RCP pédiatrique PBLS.',
-    'aid_child_cpr_4': 'Faites apporter et connecter un DAE dès que possible. Suivez ses instructions sans interrompre inutilement la RCP.',
-    'aid_infant_cpr_1': 'Vérifiez la réaction et la respiration. Appelez les secours sans délai et utilisez le haut-parleur.',
-    'aid_infant_cpr_2': 'Si le nourrisson ne respire pas normalement, donnez 5 insufflations initiales.',
-    'aid_infant_cpr_3': 'Commencez immédiatement les compressions. Faites 30 compressions pour 2 insufflations, ou 15:2 si vous êtes spécifiquement formé à la RCP pédiatrique PBLS.',
-    'aid_infant_cpr_4': 'Faites apporter et connecter un DAE dès que possible. Suivez ses instructions sans interrompre inutilement la RCP.',
+    'first_aid_header_body':
+        '10 fiches essentielles, visuelles et disponibles hors ligne',
   };
 
   const english = <String, String>{
@@ -53,20 +46,12 @@ String _aidText(BuildContext context, String key) {
     'first_aid_child': 'Child',
     'first_aid_infant': 'Infant',
     'first_aid_header': 'First Aid Guides',
-    'first_aid_header_body': '10 essential visual guides available offline',
-    'aid_child_cpr_1': 'Check responsiveness and breathing. Call emergency services without delay and use speakerphone.',
-    'aid_child_cpr_2': 'If the child is not breathing normally, give 5 initial rescue breaths.',
-    'aid_child_cpr_3': 'Immediately start compressions. Use 30 compressions to 2 breaths, or 15:2 if you are specifically trained in paediatric PBLS.',
-    'aid_child_cpr_4': 'Have an AED brought and attached as soon as possible. Follow its prompts and minimise interruptions to CPR.',
-    'aid_infant_cpr_1': 'Check responsiveness and breathing. Call emergency services without delay and use speakerphone.',
-    'aid_infant_cpr_2': 'If the infant is not breathing normally, give 5 initial rescue breaths.',
-    'aid_infant_cpr_3': 'Immediately start compressions. Use 30 compressions to 2 breaths, or 15:2 if you are specifically trained in paediatric PBLS.',
-    'aid_infant_cpr_4': 'Have an AED brought and attached as soon as possible. Follow its prompts and minimise interruptions to CPR.',
+    'first_aid_header_body':
+        '10 essential visual guides available offline',
   };
 
   return (en ? english : fr)[key] ?? t.get(key);
 }
-
 bool _posterCritical(String id) => const {
       'cpr_adult',
       'choking_adult',
@@ -724,7 +709,7 @@ class FirstAidDetailScreen extends StatelessWidget {
           return Align(
             alignment: Alignment.topCenter,
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 760),
+              constraints: const BoxConstraints(maxWidth: 520),
               child: ListView(
                 padding: EdgeInsets.fromLTRB(wide ? 24 : 12, 4, wide ? 24 : 12, 26),
                 children: [
@@ -732,7 +717,6 @@ class FirstAidDetailScreen extends StatelessWidget {
                     number: number,
                     title: t.get(guide.titleKey),
                     subtitle: _posterTag(guide.id, en),
-                    summary: t.get(guide.summaryKey),
                     guide: guide,
                     emergencyNumber: emergencyNumber,
                     onEmergency: () => Navigator.push(
@@ -828,7 +812,6 @@ class _PosterDetailPanel extends StatelessWidget {
     required this.number,
     required this.title,
     required this.subtitle,
-    required this.summary,
     required this.guide,
     required this.emergencyNumber,
     required this.onEmergency,
@@ -837,7 +820,6 @@ class _PosterDetailPanel extends StatelessWidget {
   final int? number;
   final String title;
   final String subtitle;
-  final String summary;
   final FirstAidGuide guide;
   final String? emergencyNumber;
   final VoidCallback onEmergency;
@@ -915,24 +897,11 @@ class _PosterDetailPanel extends StatelessWidget {
               ],
             ),
           ),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(12, 9, 12, 9),
-            color: const Color(0xfff2f8f6),
-            child: Text(
-              summary,
-              style: const TextStyle(
-                fontSize: 13,
-                height: 1.3,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-          ),
           for (final entry in guide.steps.indexed)
             _PosterFullStep(
               number: entry.$1 + 1,
               step: entry.$2,
-              emphasizeCpr: guide.id == 'cpr_adult' && entry.$1 == 2,
+              emphasizeCpr: guide.id == 'cpr_adult' && entry.$1 == 1,
               last: entry.$1 == guide.steps.length - 1,
             ),
           Material(
@@ -1000,7 +969,7 @@ class _PosterFullStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.fromLTRB(12, 10, 10, 10),
+        padding: const EdgeInsets.fromLTRB(9, 7, 8, 7),
         decoration: BoxDecoration(
           color: number.isOdd
               ? const Color(0xfffffff9)
@@ -1015,8 +984,8 @@ class _PosterFullStep extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              width: 31,
-              height: 31,
+              width: 28,
+              height: 28,
               alignment: Alignment.center,
               decoration: const BoxDecoration(
                 color: Color(0xff087f83),
@@ -1026,12 +995,12 @@ class _PosterFullStep extends StatelessWidget {
                 number.toString(),
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 14,
+                  fontSize: 12.5,
                   fontWeight: FontWeight.w900,
                 ),
               ),
             ),
-            const SizedBox(width: 9),
+            const SizedBox(width: 7),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1039,8 +1008,8 @@ class _PosterFullStep extends StatelessWidget {
                   Text(
                     _aidText(context, step.textKey),
                     style: const TextStyle(
-                      fontSize: 14.2,
-                      height: 1.27,
+                      fontSize: 12.5,
+                      height: 1.2,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -1058,10 +1027,10 @@ class _PosterFullStep extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 6),
             SizedBox(
-              width: 150,
-              height: 120,
+              width: 112,
+              height: 88,
               child: SvgPicture.asset(
                 step.illustrationAsset,
                 fit: BoxFit.contain,

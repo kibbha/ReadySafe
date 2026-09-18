@@ -971,24 +971,25 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
           MapLibreMap(
             styleString: _style,
             initialCameraPosition: _camera,
+            trackCameraPosition: true,
             onMapCreated: (controller) => _map = controller,
             onStyleLoadedCallback: _syncMarkers,
+            onCameraMove: (position) {
+              _camera = position;
+            },
             onCameraIdle: () async {
-              final position = _map?.cameraPosition;
-              if (position != null) {
-                _camera = position;
+              final position = _camera;
 
-                if (mounted) {
-                  setState(() {});
-                }
+              if (mounted) {
+                setState(() {});
+              }
 
-                await _syncMarkers();
+              await _syncMarkers();
 
-                if (position.zoom >= 10 &&
-                    !_poiZoneMatchesCamera &&
-                    !_poiLoading) {
-                  await _loadUsefulPlaces();
-                }
+              if (position.zoom >= 10 &&
+                  !_poiZoneMatchesCamera &&
+                  !_poiLoading) {
+                await _loadUsefulPlaces();
               }
             },
             compassEnabled: true,
