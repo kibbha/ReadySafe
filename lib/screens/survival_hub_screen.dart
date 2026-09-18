@@ -7,6 +7,8 @@ import 'communication_plan_screen.dart';
 import 'checklist_screen.dart';
 import 'guide_list_screen.dart';
 import 'leave_now_screen.dart';
+import 'official_sources_screen.dart';
+import 'recovery_screen.dart';
 import 'safety_tools_screen.dart';
 import 'training_screen.dart';
 
@@ -100,6 +102,20 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.handyman_rounded,
         const Color(0xffd92d36),
         const SafetyToolsScreen(),
+      ),
+      _Module(
+        'Alertes officielles',
+        'Accéder aux canaux gouvernementaux et météo du pays actif',
+        Icons.campaign_rounded,
+        const Color(0xffd16a32),
+        const OfficialSourcesScreen(),
+      ),
+      _Module(
+        'Après l’urgence',
+        'Sécuriser le retour, les proches, le logement et les démarches',
+        Icons.restore_rounded,
+        const Color(0xff147343),
+        const RecoveryScreen(),
       ),
       _Module(
         'Formation & exercices',
