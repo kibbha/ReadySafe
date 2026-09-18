@@ -19,6 +19,11 @@ class LocalStorageService {
   static const _safetyMarkersKey = 'personal_safety_markers_v3';
   static const _reviewDateKey = 'preparedness_review_date_v3';
   static const _reviewChecksKey = 'preparedness_review_checks_v3';
+  static const _supportNeedsKey = 'support_needs_v3';
+  static const _supportNeedsNotesKey = 'support_needs_notes_v3';
+  static const _homeSafetyKey = 'home_safety_v3';
+  static const _homeSafetyChecksKey = 'home_safety_checks_v3';
+  static const _offlineChecksKey = 'offline_readiness_checks_v3';
 
   Future<SharedPreferences> get _prefs => SharedPreferences.getInstance();
 
@@ -214,6 +219,76 @@ class LocalStorageService {
 
   Future<void> savePreparednessReviewChecks(Set<String> values) async =>
       (await _prefs).setStringList(_reviewChecksKey, values.toList());
+
+  Future<Set<String>> supportNeeds() async {
+    try {
+      return (await _prefs).getStringList(_supportNeedsKey)?.toSet() ?? {};
+    } catch (_) {
+      return {};
+    }
+  }
+
+  Future<void> saveSupportNeeds(Set<String> values) async =>
+      (await _prefs).setStringList(_supportNeedsKey, values.toList());
+
+  Future<String> supportNeedsNotes() async {
+    try {
+      return (await _prefs).getString(_supportNeedsNotesKey) ?? '';
+    } catch (_) {
+      return '';
+    }
+  }
+
+  Future<void> saveSupportNeedsNotes(String value) async =>
+      (await _prefs).setString(_supportNeedsNotesKey, value);
+
+  Future<Map<String, String>> homeSafetyPlan() async {
+    const defaults = <String, String>{
+      'waterShutoff': '',
+      'gasShutoff': '',
+      'electricPanel': '',
+      'primaryExit': '',
+      'secondaryExit': '',
+      'safeRoom': '',
+    };
+    try {
+      final raw = (await _prefs).getString(_homeSafetyKey);
+      if (raw == null) return Map<String, String>.from(defaults);
+      final decoded = jsonDecode(raw);
+      if (decoded is! Map) return Map<String, String>.from(defaults);
+      return {
+        for (final entry in defaults.entries)
+          entry.key: '${decoded[entry.key] ?? entry.value}',
+      };
+    } catch (_) {
+      return Map<String, String>.from(defaults);
+    }
+  }
+
+  Future<void> saveHomeSafetyPlan(Map<String, String> value) async =>
+      (await _prefs).setString(_homeSafetyKey, jsonEncode(value));
+
+  Future<Set<String>> homeSafetyChecks() async {
+    try {
+      return (await _prefs).getStringList(_homeSafetyChecksKey)?.toSet() ?? {};
+    } catch (_) {
+      return {};
+    }
+  }
+
+  Future<void> saveHomeSafetyChecks(Set<String> values) async =>
+      (await _prefs).setStringList(_homeSafetyChecksKey, values.toList());
+
+  Future<Set<String>> offlineReadinessChecks() async {
+    try {
+      return (await _prefs).getStringList(_offlineChecksKey)?.toSet() ?? {};
+    } catch (_) {
+      return {};
+    }
+  }
+
+  Future<void> saveOfflineReadinessChecks(Set<String> values) async =>
+      (await _prefs).setStringList(_offlineChecksKey, values.toList());
 
   Future<int> preparednessScore() async {
     final stock = await kitStock();
