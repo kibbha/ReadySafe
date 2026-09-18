@@ -243,6 +243,36 @@ class GuidedEmergencyScreen extends StatelessWidget {
         () => _openHazard(context, 'industrial'),
       ),
       _Situation(
+        en ? 'Radiological incident' : 'Incident radiologique',
+        en ? 'Official shelter or protective instructions' : 'Consignes officielles de mise à l’abri ou de protection',
+        Icons.warning_amber_rounded,
+        () => _openHazard(context, 'radiological'),
+      ),
+      _Situation(
+        en ? 'Landslide / unstable ground' : 'Glissement de terrain / sol instable',
+        en ? 'Slope movement, debris or unstable terrain' : 'Mouvement de pente, débris ou terrain instable',
+        Icons.landslide_rounded,
+        () => _openHazard(context, 'landslide'),
+      ),
+      _Situation(
+        en ? 'Extreme heat' : 'Chaleur extrême',
+        en ? 'Dangerous heat or prolonged heatwave' : 'Chaleur dangereuse ou canicule prolongée',
+        Icons.wb_sunny_rounded,
+        () => _openHazard(context, 'heat'),
+      ),
+      _Situation(
+        en ? 'Extreme cold' : 'Froid extrême',
+        en ? 'Severe cold, snow or prolonged exposure' : 'Grand froid, neige ou exposition prolongée',
+        Icons.ac_unit_rounded,
+        () => _openHazard(context, 'cold'),
+      ),
+      _Situation(
+        en ? 'Health outbreak' : 'Situation sanitaire / épidémie',
+        en ? 'Official health measures or infectious disease event' : 'Mesures sanitaires officielles ou maladie infectieuse',
+        Icons.coronavirus_rounded,
+        () => _openHazard(context, 'outbreak'),
+      ),
+      _Situation(
         en ? 'I must leave now' : 'Je dois partir maintenant',
         en ? 'Immediate evacuation checklist' : 'Checklist d’évacuation immédiate',
         Icons.directions_run_rounded,
