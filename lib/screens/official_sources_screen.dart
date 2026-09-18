@@ -372,6 +372,12 @@ class OfficialSourcesScreen extends StatelessWidget {
     if (host.contains('112.be')) return '112 Belgique';
     if (host.contains('bbk.bund.de')) return 'BBK';
     if (host.contains('interno.gov.it')) return 'Ministero dell’Interno';
+    if (host.contains('dsb.no')) return 'DSB Norge';
+    if (host.contains('politiet.no')) return 'Politiet Norge';
+    if (host.contains('helsenorge.no')) return 'Helsenorge';
+    if (host == '112.is' || host.endsWith('.112.is')) return '112 Iceland';
+    if (host.contains('112.gov.tr')) return '112 Türkiye';
+    if (host.contains('llv.li')) return 'Liechtensteinische Landesverwaltung';
     if (host.contains('gov.uk')) return 'GOV.UK';
     return uri.host.replaceFirst('www.', '');
   }
