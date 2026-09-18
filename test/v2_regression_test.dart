@@ -41,6 +41,22 @@ void main() {
       flood.steps.join(' ').toLowerCase(),
       isNot(contains('coupez l’électricité')),
     );
+
+    final shelter = disasterGuides.firstWhere(
+      (guide) => guide.id == 'shelter',
+    );
+    expect(
+      shelter.immediate.toLowerCase(),
+      isNot(contains('fermez portes, fenêtres et ventilation')),
+    );
+
+    final earthquake = disasterGuides.firstWhere(
+      (guide) => guide.id == 'earthquake',
+    );
+    expect(
+      earthquake.steps.join(' ').toLowerCase(),
+      isNot(contains('sortez prudemment')),
+    );
   });
 
   test('essential step-by-step first-aid guides remain available', () {
