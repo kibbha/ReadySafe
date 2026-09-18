@@ -9,6 +9,7 @@ import 'family_reunification_screen.dart';
 import 'first_aid_screen.dart';
 import 'guide_list_screen.dart';
 import 'home_safety_screen.dart';
+import 'lightning_safety_screen.dart';
 import 'maintenance_screen.dart';
 import 'medical_continuity_screen.dart';
 import 'offline_readiness_screen.dart';
@@ -22,7 +23,9 @@ import 'secure_vault_screen.dart';
 import 'settings_screen.dart';
 import 'support_needs_screen.dart';
 import 'training_screen.dart';
+import 'tsunami_safety_screen.dart';
 import 'vehicle_emergency_screen.dart';
+import 'volcano_safety_screen.dart';
 
 class MoreScreen extends StatelessWidget {
   const MoreScreen({super.key});
@@ -103,6 +106,24 @@ class MoreScreen extends StatelessWidget {
         en ? 'Blackout, evacuation and shelter guidance' : 'Panne, évacuation, confinement et réflexes utiles',
         Icons.menu_book_rounded,
         const GuideListScreen(kind: GuideKind.emergencies),
+      ),
+      _MoreItem(
+        en ? 'Thunderstorm & lightning' : 'Orage & foudre',
+        en ? 'Shelter, electricity and secondary hazards' : 'Abri, électricité et dangers associés',
+        Icons.thunderstorm_rounded,
+        const LightningSafetyScreen(),
+      ),
+      _MoreItem(
+        en ? 'Tsunami' : 'Tsunami',
+        en ? 'Coastal evacuation and natural warning signs' : 'Évacuation côtière et signes naturels',
+        Icons.waves_rounded,
+        const TsunamiSafetyScreen(),
+      ),
+      _MoreItem(
+        en ? 'Volcano & ash' : 'Volcan & cendres',
+        en ? 'Evacuation, ash and debris-flow safety' : 'Évacuation, cendres et coulées de débris',
+        Icons.volcano_rounded,
+        const VolcanoSafetyScreen(),
       ),
       _MoreItem(
         en ? 'Vehicle emergency' : 'Urgence véhicule',
