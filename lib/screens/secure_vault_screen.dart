@@ -37,6 +37,7 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
       Localizations.localeOf(context).languageCode == 'en';
 
   Future<void> _load() async {
+    if (mounted) setState(() => _loading = true);
     try {
       final items = await _service.items();
       if (!mounted) return;
@@ -263,7 +264,9 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: _loading ? null : () => _edit(),
+        onPressed: _loading || _error == 'storage_unavailable'
+            ? null
+            : () => _edit(),
         icon: const Icon(Icons.add_rounded),
         label: Text(en ? 'Add' : 'Ajouter'),
       ),
@@ -345,9 +348,15 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
                           ),
                         ),
                       ),
+                      if (_error == 'storage_unavailable')
+                        TextButton.icon(
+                          onPressed: _load,
+                          icon: const Icon(Icons.refresh_rounded),
+                          label: Text(en ? 'Retry' : 'Réessayer'),
+                        ),
                     ],
                     const SizedBox(height: 14),
-                    if (_items.isEmpty)
+                    if (_items.isEmpty && _error != 'storage_unavailable')
                       Card(
                         child: Padding(
                           padding: const EdgeInsets.all(18),
@@ -497,8 +506,8 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
     switch (code) {
       case 'storage_unavailable':
         return en
-            ? 'Secure storage is not available on this device.'
-            : 'Le stockage sécurisé n’est pas disponible sur cet appareil.';
+            ? 'The secure vault could not be read. Existing entries have not been changed.'
+            : 'Le coffre sécurisé n’a pas pu être lu. Les entrées existantes n’ont pas été modifiées.';
       case 'save_failed':
         return en
             ? 'Unable to save this item in the secure vault.'

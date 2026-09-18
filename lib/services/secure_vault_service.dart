@@ -56,12 +56,18 @@ class SecureVaultService {
     if (decoded is! List) {
       throw const FormatException('Invalid secure vault data');
     }
-    return decoded
-        .whereType<Map>()
-        .map((item) => SecureVaultItem.fromJson(Map<String, dynamic>.from(item)))
-        .where((item) => item.id.isNotEmpty && item.title.isNotEmpty)
-        .toList()
-      ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+    final items = <SecureVaultItem>[];
+    for (final entry in decoded) {
+      if (entry is! Map) {
+        throw const FormatException('Invalid secure vault entry');
+      }
+      final item = SecureVaultItem.fromJson(Map<String, dynamic>.from(entry));
+      if (item.id.isEmpty || item.title.isEmpty) {
+        throw const FormatException('Incomplete secure vault entry');
+      }
+      items.add(item);
+    }
+    return items..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
   }
 
   Future<void> saveAll(List<SecureVaultItem> items) async {
