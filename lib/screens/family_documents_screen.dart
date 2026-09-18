@@ -157,8 +157,9 @@ class _FamilyDocumentsScreenState extends State<FamilyDocumentsScreen>
       ),
     );
     if (result == null) return;
-    setState(() => _plan = result);
-    await _storage.saveFamilyPlan(result);
+    final merged = <String, String>{..._plan, ...result};
+    setState(() => _plan = merged);
+    await _storage.saveFamilyPlan(merged);
   }
 
   Future<void> _toggleDocument(int index, bool value) async {
