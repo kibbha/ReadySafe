@@ -387,6 +387,8 @@ class OfficialSourcesScreen extends StatelessWidget {
     if (host.contains('gov.sm')) return 'Gov.sm — Polizia Civile';
     if (host.contains('gov.me')) return 'Government of Montenegro';
     if (host.contains('mup.gov.rs')) return 'Ministry of Interior — Serbia';
+    if (host.contains('rks-gov.net')) return 'Emergency Management Agency — Kosovo';
+    if (host.contains('dsns.gov.ua')) return 'State Emergency Service — Ukraine';
     if (host.contains('gov.uk')) return 'GOV.UK';
     return uri.host.replaceFirst('www.', '');
   }
