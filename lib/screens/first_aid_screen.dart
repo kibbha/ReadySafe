@@ -176,13 +176,7 @@ class _FirstAidScreenState extends State<FirstAidScreen> {
                       ? 2
                       : 1;
           final horizontal = width >= 760 ? 20.0 : 12.0;
-          final posterHeight = width >= 1280
-              ? 470.0
-              : width >= 900
-                  ? 485.0
-                  : width >= 560
-                      ? 500.0
-                      : 515.0;
+          final posterHeight = width >= 900 ? 410.0 : 420.0;
 
           return ListView(
             padding: EdgeInsets.fromLTRB(horizontal, 4, horizontal, 28),
@@ -460,10 +454,10 @@ class _PosterGuideCard extends StatelessWidget {
                 ),
               ),
               Expanded(
-                flex: 7,
+                flex: 4,
                 child: Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.fromLTRB(18, 13, 18, 8),
+                  padding: const EdgeInsets.fromLTRB(12, 5, 12, 3),
                   decoration: const BoxDecoration(
                     color: Color(0xffeff8f6),
                     border: Border(
@@ -474,10 +468,10 @@ class _PosterGuideCard extends StatelessWidget {
                 ),
               ),
               Expanded(
-                flex: 8,
+                flex: 9,
                 child: Container(
                   color: const Color(0xfffffcf5),
-                  padding: const EdgeInsets.fromLTRB(10, 8, 10, 7),
+                  padding: const EdgeInsets.fromLTRB(9, 5, 9, 4),
                   child: Column(
                     children: [
                       for (var i = 0; i < steps.length; i++)
@@ -554,8 +548,8 @@ class _PosterMiniStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        margin: const EdgeInsets.symmetric(vertical: 2),
-        padding: const EdgeInsets.fromLTRB(8, 5, 6, 5),
+        margin: const EdgeInsets.symmetric(vertical: 1),
+        padding: const EdgeInsets.fromLTRB(7, 3, 5, 3),
         decoration: BoxDecoration(
           color: number.isOdd ? const Color(0xffffffff) : const Color(0xfff7f1e7),
           borderRadius: BorderRadius.circular(12),
@@ -565,8 +559,8 @@ class _PosterMiniStep extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              width: 27,
-              height: 27,
+              width: 24,
+              height: 24,
               alignment: Alignment.center,
               decoration: const BoxDecoration(
                 color: Color(0xff087f83),
@@ -597,8 +591,8 @@ class _PosterMiniStep extends StatelessWidget {
             ),
             const SizedBox(width: 6),
             SizedBox(
-              width: 54,
-              height: 54,
+              width: 42,
+              height: 42,
               child: SvgPicture.asset(illustrationAsset, fit: BoxFit.contain),
             ),
           ],
@@ -1033,6 +1027,7 @@ class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScree
     final t = AppLocalizations.of(context);
     final en = Localizations.localeOf(context).languageCode == 'en';
     final emergencyNumber = _emergencyNumber(context);
+    final compact = MediaQuery.sizeOf(context).width < 380;
 
     return Scaffold(
       backgroundColor: const Color(0xfff4f9f8),
@@ -1105,7 +1100,9 @@ class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScree
                         ),
                         const SizedBox(height: 8),
                         Container(
-                          height: 330,
+                          height: (MediaQuery.sizeOf(context).height * .28)
+                              .clamp(140.0, 240.0)
+                              .toDouble(),
                           width: double.infinity,
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
@@ -1181,7 +1178,7 @@ class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScree
                     child: OutlinedButton.icon(
                       onPressed: index == 0 ? null : () => _go(index - 1),
                       icon: const Icon(Icons.arrow_back_rounded),
-                      label: Text(en ? 'Previous' : 'Précédent'),
+                      label: Text(compact ? (en ? 'Back' : 'Préc.') : (en ? 'Previous' : 'Précédent')),
                     ),
                   ),
                   const SizedBox(width: 7),
@@ -1203,7 +1200,7 @@ class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScree
                       onPressed: index == widget.guide.steps.length - 1 ? null : () => _go(index + 1),
                       iconAlignment: IconAlignment.end,
                       icon: const Icon(Icons.arrow_forward_rounded),
-                      label: Text(en ? 'Next' : 'Suivant'),
+                      label: Text(compact ? (en ? 'Next' : 'Suiv.') : (en ? 'Next' : 'Suivant')),
                     ),
                   ),
                 ],
