@@ -12,7 +12,9 @@ import 'first_aid_screen.dart';
 import 'guide_list_screen.dart';
 import 'home_safety_screen.dart';
 import 'maintenance_screen.dart';
+import 'medical_continuity_screen.dart';
 import 'offline_readiness_screen.dart';
+import 'pet_emergency_screen.dart';
 import 'official_sources_screen.dart';
 import 'power_outage_screen.dart';
 import 'preparedness_review_screen.dart';
@@ -142,6 +144,12 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
       'domicile': _SearchHit('Préparation', 'Sécurité du domicile', Icons.home_work_rounded, HomeSafetyScreen()),
       'gaz': _SearchHit('Préparation', 'Sécurité du domicile', Icons.settings_input_component_rounded, HomeSafetyScreen()),
       'électricité': _SearchHit('Préparation', 'Sécurité du domicile', Icons.electrical_services_rounded, HomeSafetyScreen()),
+      'médicament': _SearchHit('Préparation', 'Continuité médicale', Icons.medical_services_rounded, MedicalContinuityScreen()),
+      'ordonnance': _SearchHit('Préparation', 'Continuité médicale', Icons.medical_services_rounded, MedicalContinuityScreen()),
+      'appareil médical': _SearchHit('Préparation', 'Continuité médicale', Icons.medical_services_rounded, MedicalContinuityScreen()),
+      'dialyse': _SearchHit('Préparation', 'Continuité médicale', Icons.medical_services_rounded, MedicalContinuityScreen()),
+      'animal': _SearchHit('Famille', 'Animaux en urgence', Icons.pets_rounded, PetEmergencyScreen()),
+      'vétérinaire': _SearchHit('Famille', 'Animaux en urgence', Icons.pets_rounded, PetEmergencyScreen()),
       'accessibilité': _SearchHit('Famille', 'Besoins spécifiques', Icons.accessibility_new_rounded, SupportNeedsScreen()),
       'mobilité': _SearchHit('Famille', 'Besoins spécifiques', Icons.accessible_forward_rounded, SupportNeedsScreen()),
       'audition': _SearchHit('Famille', 'Besoins spécifiques', Icons.hearing_rounded, SupportNeedsScreen()),
