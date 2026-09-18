@@ -11,6 +11,7 @@ import 'guided_emergency_screen.dart';
 import 'maintenance_screen.dart';
 import 'offline_readiness_screen.dart';
 import 'online_maps_screen.dart';
+import 'preparedness_review_screen.dart';
 import 'settings_screen.dart';
 import 'safety_tools_screen.dart';
 import 'survival_hub_screen.dart';
@@ -144,6 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       const SizedBox(height: 12),
                       _EmergencyBanner(
+                        en: en,
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(builder: (_) => const GuidedEmergencyScreen()),
@@ -154,9 +156,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      _ScoreCard(score: _score),
+                      _ScoreCard(
+                        score: _score,
+                        en: en,
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const PreparednessReviewScreen()),
+                        ).then((_) => _refreshScore()),
+                      ),
                       const SizedBox(height: 18),
-                      const Text('Essentiels', style: TextStyle(fontSize: 19, fontWeight: FontWeight.w900)),
+                      Text(en ? 'Essentials' : 'Essentiels', style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w900)),
                       const SizedBox(height: 9),
                       GridView.builder(
                         shrinkWrap: true,
@@ -173,15 +182,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(height: 18),
                       Row(
                         children: [
-                          const Expanded(
-                            child: Text('Actions rapides', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
+                          Expanded(
+                            child: Text(en ? 'Quick actions' : 'Actions rapides', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
                           ),
                           TextButton(
                             onPressed: () => Navigator.push(
                               context,
                               MaterialPageRoute(builder: (_) => const GlobalSearchScreen()),
                             ),
-                            child: const Text('Voir tout'),
+                            child: Text(en ? 'See all' : 'Voir tout'),
                           ),
                         ],
                       ),
@@ -192,32 +201,32 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           _QuickAction(
                             icon: Icons.phone_in_talk_rounded,
-                            label: 'Numéros SOS',
+                            label: en ? 'SOS numbers' : 'Numéros SOS',
                             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EmergencyScreen())),
                           ),
                           _QuickAction(
                             icon: Icons.favorite_rounded,
-                            label: 'RCP adulte',
+                            label: en ? 'Adult CPR' : 'RCP adulte',
                             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FirstAidScreen())),
                           ),
                           _QuickAction(
                             icon: Icons.map_rounded,
-                            label: 'Repères',
+                            label: en ? 'Landmarks' : 'Repères',
                             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const OnlineMapsScreen())),
                           ),
                           _QuickAction(
                             icon: Icons.sos_rounded,
-                            label: 'Outils SOS',
+                            label: en ? 'SOS tools' : 'Outils SOS',
                             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SafetyToolsScreen())),
                           ),
                           _QuickAction(
                             icon: Icons.event_repeat_rounded,
-                            label: 'Rappels',
+                            label: en ? 'Reminders' : 'Rappels',
                             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MaintenanceScreen())),
                           ),
                           _QuickAction(
                             icon: Icons.offline_bolt_rounded,
-                            label: 'Hors ligne',
+                            label: en ? 'Offline' : 'Hors ligne',
                             onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(builder: (_) => const OfflineReadinessScreen()),
@@ -232,14 +241,16 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: const Color(0xffeaf6f4),
                           borderRadius: BorderRadius.circular(18),
                         ),
-                        child: const Row(
+                        child: Row(
                           children: [
-                            Icon(Icons.shield_outlined, color: Color(0xff087f83)),
-                            SizedBox(width: 10),
+                            const Icon(Icons.shield_outlined, color: Color(0xff087f83)),
+                            const SizedBox(width: 10),
                             Expanded(
                               child: Text(
-                                'ReadySafe rassemble urgence, premiers secours, préparation, famille et repères dans une seule app.',
-                                style: TextStyle(fontWeight: FontWeight.w800, height: 1.35),
+                                en
+                                    ? 'ReadySafe brings emergency guidance, first aid, preparedness, family planning and landmarks into one app.'
+                                    : 'ReadySafe rassemble urgence, premiers secours, préparation, famille et repères dans une seule app.',
+                                style: const TextStyle(fontWeight: FontWeight.w800, height: 1.35),
                               ),
                             ),
                           ],
@@ -260,7 +271,8 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class _EmergencyBanner extends StatelessWidget {
-  const _EmergencyBanner({required this.onTap, required this.onCall});
+  const _EmergencyBanner({required this.en, required this.onTap, required this.onCall});
+  final bool en;
   final VoidCallback onTap;
   final VoidCallback onCall;
 
@@ -275,32 +287,34 @@ class _EmergencyBanner extends StatelessWidget {
             InkWell(
               borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
               onTap: onTap,
-              child: const Padding(
-                padding: EdgeInsets.fromLTRB(16, 15, 16, 12),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 15, 16, 12),
                 child: Row(
                   children: [
-                    CircleAvatar(
+                    const CircleAvatar(
                       backgroundColor: Color(0x22ffffff),
                       child: Icon(Icons.sos_rounded, color: Colors.white),
                     ),
-                    SizedBox(width: 12),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'URGENCE — GUIDEZ-MOI',
-                            style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900),
+                            en ? 'EMERGENCY — GUIDE ME' : 'URGENCE — GUIDEZ-MOI',
+                            style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900),
                           ),
-                          SizedBox(height: 2),
+                          const SizedBox(height: 2),
                           Text(
-                            'Choisissez ce que vous observez et suivez le bon parcours.',
-                            style: TextStyle(color: Colors.white, fontSize: 12.5),
+                            en
+                                ? 'Choose what you observe and follow the right path.'
+                                : 'Choisissez ce que vous observez et suivez le bon parcours.',
+                            style: const TextStyle(color: Colors.white, fontSize: 12.5),
                           ),
                         ],
                       ),
                     ),
-                    Icon(Icons.arrow_forward_rounded, color: Colors.white),
+                    const Icon(Icons.arrow_forward_rounded, color: Colors.white),
                   ],
                 ),
               ),
@@ -316,7 +330,7 @@ class _EmergencyBanner extends StatelessWidget {
                 ),
                 onPressed: onCall,
                 icon: const Icon(Icons.call_rounded),
-                label: const Text('Voir les numéros d’urgence'),
+                label: Text(en ? 'Emergency numbers' : 'Voir les numéros d’urgence'),
               ),
             ),
           ],
@@ -325,12 +339,17 @@ class _EmergencyBanner extends StatelessWidget {
 }
 
 class _ScoreCard extends StatelessWidget {
-  const _ScoreCard({required this.score});
+  const _ScoreCard({required this.score, required this.en, required this.onTap});
   final int score;
+  final bool en;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) => Card(
-        child: Padding(
+        child: InkWell(
+          borderRadius: BorderRadius.circular(18),
+          onTap: onTap,
+          child: Padding(
           padding: const EdgeInsets.all(14),
           child: Row(
             children: [
@@ -355,14 +374,20 @@ class _ScoreCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Niveau de préparation', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
+                    Text(en ? 'Preparedness level' : 'Niveau de préparation', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
                     const SizedBox(height: 3),
                     Text(
-                      score >= 75
-                          ? 'Bon niveau. Continuez à vérifier vos informations.'
-                          : score >= 40
-                              ? 'Préparation en cours. Quelques essentiels restent à compléter.'
-                              : 'Commencez par le kit, les contacts et le point de rassemblement.',
+                      en
+                          ? (score >= 75
+                              ? 'Good level. Keep your information and supplies up to date.'
+                              : score >= 40
+                                  ? 'Preparedness is progressing. A few essentials still need attention.'
+                                  : 'Start with your kit, contacts and meeting point.')
+                          : (score >= 75
+                              ? 'Bon niveau. Continuez à vérifier vos informations.'
+                              : score >= 40
+                                  ? 'Préparation en cours. Quelques essentiels restent à compléter.'
+                                  : 'Commencez par le kit, les contacts et le point de rassemblement.'),
                       style: const TextStyle(color: Color(0xff65747a), height: 1.3),
                     ),
                   ],
@@ -371,7 +396,8 @@ class _ScoreCard extends StatelessWidget {
             ],
           ),
         ),
-      );
+      ),
+    );
 }
 
 class _HomeModule {
