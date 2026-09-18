@@ -33,6 +33,7 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
   final _storage = LocalStorageService();
   int _ready = 0;
   int _total = kitItems.length;
+  String _section = 'prepare';
 
   @override
   void initState() {
@@ -70,6 +71,7 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.backpack_rounded,
         const Color(0xff087f83),
         const ChecklistScreen(kit: true),
+        'prepare',
       ),
       _Module(
         'Kits spécialisés',
@@ -77,6 +79,7 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.inventory_2_rounded,
         const Color(0xff147343),
         const SpecialKitsScreen(),
+        'prepare',
       ),
       _Module(
         'Check-lists',
@@ -84,6 +87,7 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.fact_check_rounded,
         const Color(0xffb7833f),
         const ChecklistScreen(kit: false),
+        'prepare',
       ),
       _Module(
         'Eau & nourriture',
@@ -91,6 +95,7 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.water_drop_rounded,
         const Color(0xff2087c7),
         const CalculatorScreen(),
+        'prepare',
       ),
       _Module(
         'Eau sûre en urgence',
@@ -98,6 +103,7 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.local_drink_rounded,
         const Color(0xff237fc7),
         const WaterSafetyScreen(),
+        'act',
       ),
       _Module(
         'Hygiène & assainissement',
@@ -105,6 +111,7 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.sanitizer_rounded,
         const Color(0xff087f83),
         const SanitationHygieneScreen(),
+        'act',
       ),
       _Module(
         'Panne électrique',
@@ -112,6 +119,7 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.power_off_rounded,
         const Color(0xffb7833f),
         const PowerOutageScreen(),
+        'act',
       ),
       _Module(
         'Risques & catastrophes',
@@ -119,6 +127,7 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.thunderstorm_rounded,
         const Color(0xffd16a32),
         const GuideListScreen(kind: GuideKind.disasters),
+        'act',
       ),
       _Module(
         'Conseils de survie',
@@ -126,6 +135,7 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.menu_book_rounded,
         const Color(0xff4c6d72),
         const GuideListScreen(kind: GuideKind.emergencies),
+        'act',
       ),
       _Module(
         'Communication familiale',
@@ -133,6 +143,7 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.connect_without_contact_rounded,
         const Color(0xff0f7c7f),
         const CommunicationPlanScreen(),
+        'prepare',
       ),
       _Module(
         'Coffre sécurisé',
@@ -140,6 +151,7 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.lock_rounded,
         const Color(0xff6750a4),
         const SecureVaultScreen(),
+        'prepare',
       ),
       _Module(
         'Sécurité du domicile',
@@ -147,6 +159,7 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.home_work_rounded,
         const Color(0xff4c6d72),
         const HomeSafetyScreen(),
+        'prepare',
       ),
       _Module(
         'Besoins spécifiques',
@@ -154,6 +167,7 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.accessibility_new_rounded,
         const Color(0xff6750a4),
         const SupportNeedsScreen(),
+        'prepare',
       ),
       _Module(
         'Préparation hors ligne',
@@ -161,6 +175,7 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.offline_bolt_rounded,
         const Color(0xff087f83),
         const OfflineReadinessScreen(),
+        'prepare',
       ),
       _Module(
         'Outils d’urgence',
@@ -168,6 +183,7 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.handyman_rounded,
         const Color(0xffd92d36),
         const SafetyToolsScreen(),
+        'act',
       ),
       _Module(
         'Alertes officielles',
@@ -175,6 +191,7 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.campaign_rounded,
         const Color(0xffd16a32),
         const OfficialSourcesScreen(),
+        'act',
       ),
       _Module(
         'Après l’urgence',
@@ -182,6 +199,7 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.restore_rounded,
         const Color(0xff147343),
         const RecoveryScreen(),
+        'recover',
       ),
       _Module(
         'Entretien & rappels',
@@ -189,6 +207,7 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.event_repeat_rounded,
         const Color(0xffb7833f),
         const MaintenanceScreen(),
+        'prepare',
       ),
       _Module(
         'Revue de préparation',
@@ -196,6 +215,7 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.fact_check_rounded,
         const Color(0xff087f83),
         const PreparednessReviewScreen(),
+        'prepare',
       ),
       _Module(
         'Formation & exercices',
@@ -203,8 +223,10 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.school_rounded,
         const Color(0xff6750a4),
         const TrainingScreen(),
+        'learn',
       ),
     ];
+    final visibleModules = modules.where((module) => module.group == _section).toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -298,10 +320,25 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
                 ),
               ),
               const SizedBox(height: 18),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _sectionChip('prepare', 'Préparer', Icons.backpack_outlined),
+                    _sectionChip('act', 'Agir', Icons.flash_on_rounded),
+                    _sectionChip('recover', 'Après', Icons.restore_rounded),
+                    _sectionChip('learn', 'Apprendre', Icons.school_outlined),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
               Row(
                 children: [
-                  const Expanded(
-                    child: Text('Essentiels', style: TextStyle(fontSize: 19, fontWeight: FontWeight.w900)),
+                  Expanded(
+                    child: Text(
+                      _sectionTitle(),
+                      style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w900),
+                    ),
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
@@ -309,11 +346,14 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
                       color: const Color(0xffe8f4f2),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Row(
+                    child: Row(
                       children: [
-                        Icon(Icons.offline_bolt_rounded, size: 16, color: Color(0xff087f83)),
-                        SizedBox(width: 4),
-                        Text('disponible hors ligne', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800)),
+                        const Icon(Icons.grid_view_rounded, size: 16, color: Color(0xff087f83)),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${visibleModules.length}',
+                          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900),
+                        ),
                       ],
                     ),
                   ),
@@ -323,14 +363,14 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
               GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: modules.length,
+                itemCount: visibleModules.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: columns,
                   mainAxisExtent: wide ? 166 : 154,
                   crossAxisSpacing: 11,
                   mainAxisSpacing: 11,
                 ),
-                itemBuilder: (context, index) => _ModuleCard(module: modules[index]),
+                itemBuilder: (context, index) => _ModuleCard(module: visibleModules[index]),
               ),
               const SizedBox(height: 18),
               const Text('Réflexes rapides', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
@@ -362,6 +402,30 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
     );
   }
 
+  String _sectionTitle() {
+    switch (_section) {
+      case 'act':
+        return 'Agir pendant une urgence';
+      case 'recover':
+        return 'Après l’urgence';
+      case 'learn':
+        return 'Formation & exercices';
+      default:
+        return 'Préparer le foyer';
+    }
+  }
+
+  Widget _sectionChip(String id, String label, IconData icon) => Padding(
+        padding: const EdgeInsets.only(right: 7),
+        child: ChoiceChip(
+          selected: _section == id,
+          showCheckmark: false,
+          avatar: Icon(icon, size: 17),
+          label: Text(label),
+          onSelected: (_) => setState(() => _section = id),
+        ),
+      );
+
   Widget _tip(IconData icon, String title, String body) => Card(
         margin: const EdgeInsets.only(bottom: 8),
         child: ListTile(
@@ -376,12 +440,13 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
 }
 
 class _Module {
-  const _Module(this.title, this.subtitle, this.icon, this.color, this.page);
+  const _Module(this.title, this.subtitle, this.icon, this.color, this.page, this.group);
   final String title;
   final String subtitle;
   final IconData icon;
   final Color color;
   final Widget page;
+  final String group;
 }
 
 class _ModuleCard extends StatelessWidget {
