@@ -12,4 +12,41 @@ void main() {
       'pets': 0,
     });
   });
+
+  test('communication plan persists locally', () async {
+    SharedPreferences.setMockInitialValues({});
+    final storage = LocalStorageService();
+    await storage.saveCommunicationPlan({
+      'outOfAreaContact': 'Contact test',
+      'outOfAreaPhone': '+41000000000',
+      'schoolWork': 'École',
+      'reconnectNotes': 'Point B',
+      'safeMessage': 'Je suis en sécurité.',
+    });
+
+    final plan = await storage.communicationPlan();
+    expect(plan['outOfAreaContact'], 'Contact test');
+    expect(plan['outOfAreaPhone'], '+41000000000');
+    expect(plan['safeMessage'], 'Je suis en sécurité.');
+  });
+
+  test('personal safety markers persist locally', () async {
+    SharedPreferences.setMockInitialValues({});
+    final storage = LocalStorageService();
+    await storage.saveSafetyMarkers([
+      {
+        'id': 'test',
+        'name': 'Point famille',
+        'note': 'Rassemblement',
+        'lat': 46.20,
+        'lng': 6.14,
+        'kind': 'meeting',
+      },
+    ]);
+
+    final markers = await storage.safetyMarkers();
+    expect(markers, hasLength(1));
+    expect(markers.first['name'], 'Point famille');
+    expect(markers.first['kind'], 'meeting');
+  });
 }
