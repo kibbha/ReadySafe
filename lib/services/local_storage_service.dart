@@ -25,6 +25,7 @@ class LocalStorageService {
   static const _homeSafetyChecksKey = 'home_safety_checks_v3';
   static const _offlineChecksKey = 'offline_readiness_checks_v3';
   static const _maintenanceDatesKey = 'maintenance_dates_v3';
+  static const _recoveryLogKey = 'recovery_log_v3';
 
   Future<SharedPreferences> get _prefs => SharedPreferences.getInstance();
 
@@ -322,6 +323,36 @@ class LocalStorageService {
       }),
     );
   }
+
+  Future<Map<String, String>> recoveryLog() async {
+    const defaults = <String, String>{
+      'eventDate': '',
+      'eventType': '',
+      'location': '',
+      'peopleStatus': '',
+      'damageNotes': '',
+      'actionsTaken': '',
+      'insurance': '',
+      'caseNumber': '',
+      'contacts': '',
+      'followUp': '',
+    };
+    try {
+      final raw = (await _prefs).getString(_recoveryLogKey);
+      if (raw == null) return Map<String, String>.from(defaults);
+      final decoded = jsonDecode(raw);
+      if (decoded is! Map) return Map<String, String>.from(defaults);
+      return {
+        for (final entry in defaults.entries)
+          entry.key: '${decoded[entry.key] ?? entry.value}',
+      };
+    } catch (_) {
+      return Map<String, String>.from(defaults);
+    }
+  }
+
+  Future<void> saveRecoveryLog(Map<String, String> value) async =>
+      (await _prefs).setString(_recoveryLogKey, jsonEncode(value));
 
   Future<int> preparednessScore() async {
     final stock = await kitStock();
