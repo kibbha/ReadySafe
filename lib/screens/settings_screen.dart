@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../app/app_scope.dart';
 import '../app/localizations.dart';
 import '../data/country_repository.dart';
@@ -6,12 +7,14 @@ import '../widgets/country_picker.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context);
     final app = AppScope.of(context);
     final residence = app.residenceCountry;
     final active = app.activeCountry;
+
     return Scaffold(
       appBar: AppBar(title: Text(strings.get('settings'))),
       body: SafeArea(
@@ -118,7 +121,65 @@ class SettingsScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
+                const Text(
+                  'Accessibilité',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+                ),
+                const SizedBox(height: 6),
+                Card(
+                  child: Column(
+                    children: [
+                      SwitchListTile(
+                        title: const Text(
+                          'Texte agrandi',
+                          style: TextStyle(fontWeight: FontWeight.w800),
+                        ),
+                        subtitle: const Text(
+                          'Augmente la taille globale du texte et des principales commandes.',
+                        ),
+                        secondary: const Icon(Icons.text_fields_rounded),
+                        value: app.settings.largeText,
+                        onChanged: app.setLargeText,
+                      ),
+                      const Divider(height: 1),
+                      SwitchListTile(
+                        title: const Text(
+                          'Contraste renforcé',
+                          style: TextStyle(fontWeight: FontWeight.w800),
+                        ),
+                        subtitle: const Text(
+                          'Renforce bordures, textes et éléments interactifs.',
+                        ),
+                        secondary: const Icon(Icons.contrast_rounded),
+                        value: app.settings.highContrast,
+                        onChanged: app.setHighContrast,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xffeaf6f4),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(Icons.accessibility_new_rounded, color: Color(0xff087f83)),
+                      SizedBox(width: 9),
+                      Expanded(
+                        child: Text(
+                          'ReadySafe reste utilisable avec les réglages d’accessibilité du téléphone. Les modes ci-dessus renforcent en plus l’interface interne de l’application.',
+                          style: TextStyle(height: 1.35, fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 18),
                 Text(
                   '${CountryRepository.supported.length} ${strings.get('europe_filter')}',
                   textAlign: TextAlign.center,
