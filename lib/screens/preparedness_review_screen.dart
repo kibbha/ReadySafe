@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import '../services/local_storage_service.dart';
 import 'communication_plan_screen.dart';
 import 'family_documents_screen.dart';
+import 'family_reunification_screen.dart';
 import 'medical_continuity_screen.dart';
 import 'online_maps_screen.dart';
 import 'pet_emergency_screen.dart';
+import 'vehicle_emergency_screen.dart';
 import 'survival_hub_screen.dart';
 
 class PreparednessReviewScreen extends StatefulWidget {
@@ -85,6 +87,22 @@ class _PreparednessReviewScreenState extends State<PreparednessReviewScreen> {
           ? 'Children, older adults, medicines, disabilities and pets are considered.'
           : 'Enfants, seniors, traitements, handicap et animaux sont pris en compte.',
       Icons.accessible_forward_rounded,
+    ),
+    _ReviewItem(
+      'reunification',
+      en ? 'Family reunification' : 'Réunification familiale',
+      en
+          ? 'Meeting places, child pickup and the out-of-area contact are ready.'
+          : 'Les rendez-vous, la récupération des enfants et le contact extérieur sont prêts.',
+      Icons.family_restroom_rounded,
+    ),
+    _ReviewItem(
+      'vehicle',
+      en ? 'Vehicle emergency' : 'Urgence véhicule',
+      en
+          ? 'Vehicle kit, signalling and a backup route have been checked.'
+          : 'Le kit véhicule, la signalisation et un itinéraire de secours ont été vérifiés.',
+      Icons.directions_car_rounded,
     ),
     _ReviewItem(
       'medical',
@@ -297,6 +315,22 @@ class _PreparednessReviewScreenState extends State<PreparednessReviewScreen> {
                       () => Navigator.push(
                         context,
                         MaterialPageRoute(builder: (_) => const CommunicationPlanScreen()),
+                      ),
+                    ),
+                    _QuickLink(
+                      en ? 'Reunification' : 'Réunification',
+                      Icons.family_restroom_rounded,
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const FamilyReunificationScreen()),
+                      ),
+                    ),
+                    _QuickLink(
+                      en ? 'Vehicle' : 'Véhicule',
+                      Icons.directions_car_rounded,
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const VehicleEmergencyScreen()),
                       ),
                     ),
                     _QuickLink(
