@@ -16,6 +16,8 @@ void main() {
       'LI': {'112', '117', '118', '144'},
       'GE': {'112'},
       'MD': {'112'},
+      'AL': {'112'},
+      'MK': {'112'},
     };
 
     for (final entry in expected.entries) {
