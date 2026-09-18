@@ -1,7 +1,7 @@
 name: readysafe
 description: ReadySafe is an emergency preparedness companion with online maps and offline-ready emergency guidance.
 publish_to: none
-version: 2.4.0+6
+version: 3.0.0+7
 
 environment:
   sdk: ^3.11.3
