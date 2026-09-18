@@ -10,8 +10,13 @@ class OfficialSourcesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final en = Localizations.localeOf(context).languageCode == 'en';
     final country = AppScope.of(context).activeCountry;
-    final code = country?.isoCode ?? 'CH';
-    final sources = _sourcesFor(code);
+    final code = country?.isoCode ?? '—';
+    final curated = country == null
+        ? const <_OfficialSource>[]
+        : _sourcesFor(country.isoCode);
+    final sources = curated.isNotEmpty
+        ? curated
+        : _fallbackSources(country?.sources ?? const <Uri>[]);
 
     return Scaffold(
       backgroundColor: const Color(0xfff7faf9),
@@ -92,12 +97,45 @@ class OfficialSourcesScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              ...sources.map(
-                (source) => _SourceCard(
-                  source: source,
-                  en: en,
+              if (sources.isEmpty)
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: const Color(0xfffff4c7),
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(
+                      color: const Color(0xffffdf75),
+                    ),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(
+                        Icons.info_outline_rounded,
+                        color: Color(0xff9a6a00),
+                      ),
+                      const SizedBox(width: 9),
+                      Expanded(
+                        child: Text(
+                          en
+                              ? 'No country-specific official warning source has been verified and bundled for this profile yet. ReadySafe therefore does not invent or redirect to an unofficial substitute.'
+                              : 'Aucune source officielle d’alerte spécifique à ce profil pays n’a encore été vérifiée et intégrée. ReadySafe n’invente donc pas de lien de remplacement non officiel.',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w800,
+                            height: 1.35,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              else
+                ...sources.map(
+                  (source) => _SourceCard(
+                    source: source,
+                    en: en,
+                  ),
                 ),
-              ),
               const SizedBox(height: 14),
               Container(
                 padding: const EdgeInsets.all(13),
@@ -306,16 +344,36 @@ class OfficialSourcesScreen extends StatelessWidget {
           ),
         ];
       default:
-        return const [
-          _OfficialSource(
-            '112 Europe',
-            'Informations générales sur le numéro d’urgence européen 112.',
-            'Official European information about the 112 emergency number.',
-            'https://digital-strategy.ec.europa.eu/en/policies/112',
-            Icons.phone_in_talk_rounded,
-          ),
-        ];
+        return const [];
     }
+  }
+
+  static List<_OfficialSource> _fallbackSources(List<Uri> uris) {
+    return [
+      for (final uri in uris)
+        _OfficialSource(
+          _sourceTitle(uri),
+          'Référence officielle vérifiée pour ce profil pays.',
+          'Verified official reference for this country profile.',
+          uri.toString(),
+          uri.host.contains('europa.eu')
+              ? Icons.phone_in_talk_rounded
+              : Icons.verified_user_outlined,
+        ),
+    ];
+  }
+
+  static String _sourceTitle(Uri uri) {
+    final host = uri.host.toLowerCase();
+    if (host.contains('europa.eu')) return '112 Europe';
+    if (host.contains('bakom.admin.ch')) return 'OFCOM / BAKOM';
+    if (host.contains('rega.ch')) return 'Rega';
+    if (host.contains('service-public.fr')) return 'Service-Public.fr';
+    if (host.contains('112.be')) return '112 Belgique';
+    if (host.contains('bbk.bund.de')) return 'BBK';
+    if (host.contains('interno.gov.it')) return 'Ministero dell’Interno';
+    if (host.contains('gov.uk')) return 'GOV.UK';
+    return uri.host.replaceFirst('www.', '');
   }
 }
 
