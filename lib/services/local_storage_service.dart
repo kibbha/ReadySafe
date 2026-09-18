@@ -24,6 +24,7 @@ class LocalStorageService {
   static const _homeSafetyKey = 'home_safety_v3';
   static const _homeSafetyChecksKey = 'home_safety_checks_v3';
   static const _offlineChecksKey = 'offline_readiness_checks_v3';
+  static const _maintenanceDatesKey = 'maintenance_dates_v3';
 
   Future<SharedPreferences> get _prefs => SharedPreferences.getInstance();
 
@@ -289,6 +290,35 @@ class LocalStorageService {
 
   Future<void> saveOfflineReadinessChecks(Set<String> values) async =>
       (await _prefs).setStringList(_offlineChecksKey, values.toList());
+
+  Future<Map<String, DateTime>> maintenanceDates() async {
+    try {
+      final raw = (await _prefs).getString(_maintenanceDatesKey);
+      if (raw == null) return {};
+      final decoded = jsonDecode(raw);
+      if (decoded is! Map) return {};
+      final result = <String, DateTime>{};
+      for (final entry in decoded.entries) {
+        final date = DateTime.tryParse('${entry.value}');
+        if (date != null) result['${entry.key}'] = date;
+      }
+      return result;
+    } catch (_) {
+      return {};
+    }
+  }
+
+  Future<void> saveMaintenanceDate(String id, DateTime value) async {
+    final dates = await maintenanceDates();
+    dates[id] = value;
+    await (await _prefs).setString(
+      _maintenanceDatesKey,
+      jsonEncode({
+        for (final entry in dates.entries)
+          entry.key: entry.value.toIso8601String(),
+      }),
+    );
+  }
 
   Future<int> preparednessScore() async {
     final stock = await kitStock();
