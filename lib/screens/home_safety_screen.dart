@@ -94,13 +94,16 @@ class _HomeSafetyScreenState extends State<HomeSafetyScreen> {
   Future<void> _load() async {
     final plan = await _storage.homeSafetyPlan();
     final checks = await _storage.homeSafetyChecks();
+
     if (!mounted) return;
+
     _water.text = plan['waterShutoff'] ?? '';
     _gas.text = plan['gasShutoff'] ?? '';
     _electric.text = plan['electricPanel'] ?? '';
     _primaryExit.text = plan['primaryExit'] ?? '';
     _secondaryExit.text = plan['secondaryExit'] ?? '';
     _safeRoom.text = plan['safeRoom'] ?? '';
+
     setState(() {
       _checks = checks;
       _loading = false;
@@ -116,9 +119,13 @@ class _HomeSafetyScreenState extends State<HomeSafetyScreen> {
       'secondaryExit': _secondaryExit.text.trim(),
       'safeRoom': _safeRoom.text.trim(),
     });
+
     await _storage.saveHomeSafetyChecks(_checks);
+
     if (!mounted) return;
+
     setState(() => _saved = true);
+
     Future<void>.delayed(const Duration(seconds: 2), () {
       if (mounted) setState(() => _saved = false);
     });
@@ -126,180 +133,278 @@ class _HomeSafetyScreenState extends State<HomeSafetyScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final en = Localizations.localeOf(context).languageCode == 'en';
     final ready = _checks.length;
-    final progress = _checkItems.isEmpty ? 0.0 : ready / _checkItems.length;
+    final progress =
+        _checkItems.isEmpty ? 0.0 : ready / _checkItems.length;
 
     return Scaffold(
       backgroundColor: const Color(0xfff7faf9),
       appBar: AppBar(
-        title: const Text('Sécurité du domicile'),
+        title: Text(en ? 'Home safety' : 'Sécurité du domicile'),
         actions: [
           TextButton.icon(
             onPressed: _loading ? null : _save,
-            icon: Icon(_saved ? Icons.check_rounded : Icons.save_outlined),
-            label: Text(_saved ? 'Enregistré' : 'Enregistrer'),
+            icon: Icon(
+              _saved ? Icons.check_rounded : Icons.save_outlined,
+            ),
+            label: Text(
+              _saved
+                  ? (en ? 'Saved' : 'Enregistré')
+                  : (en ? 'Save' : 'Enregistrer'),
+            ),
           ),
         ],
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              padding: const EdgeInsets.fromLTRB(14, 4, 14, 28),
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xffe4f3f0), Color(0xfffff4e8)],
-                    ),
-                    borderRadius: BorderRadius.circular(22),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Row(
+          : Align(
+              alignment: Alignment.topCenter,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 860),
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(14, 4, 14, 28),
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [
+                            Color(0xffe4f3f0),
+                            Color(0xfffff4e8),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(22),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          CircleAvatar(
-                            backgroundColor: Color(0xff087f83),
-                            child: Icon(Icons.home_work_rounded, color: Colors.white),
+                          Row(
+                            children: [
+                              const CircleAvatar(
+                                backgroundColor: Color(0xff087f83),
+                                child: Icon(
+                                  Icons.home_work_rounded,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  en
+                                      ? 'Identify key points before you need them'
+                                      : 'Repérer avant d’en avoir besoin',
+                                  style: const TextStyle(
+                                    fontSize: 19,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              'Repérer avant d’en avoir besoin',
-                              style: TextStyle(fontSize: 19, fontWeight: FontWeight.w900),
+                          const SizedBox(height: 10),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: LinearProgressIndicator(
+                              value: progress,
+                              minHeight: 8,
+                              backgroundColor: Colors.white,
+                              color: const Color(0xff087f83),
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            en
+                                ? '$ready / ${_checkItems.length} safety points checked'
+                                : '$ready / ${_checkItems.length} points vérifiés',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w900,
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 10),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: LinearProgressIndicator(
-                          value: progress,
-                          minHeight: 8,
-                          backgroundColor: Colors.white,
-                          color: const Color(0xff087f83),
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      Text(
-                        '$ready / ${_checkItems.length} points vérifiés',
-                        style: const TextStyle(fontWeight: FontWeight.w900),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 14),
-                const Text(
-                  'Repères techniques',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
-                ),
-                const SizedBox(height: 7),
-                _Field(
-                  controller: _water,
-                  icon: Icons.water_drop_outlined,
-                  label: 'Arrivée d’eau',
-                  hint: 'Ex. placard technique, sous-sol…',
-                ),
-                _Field(
-                  controller: _gas,
-                  icon: Icons.local_fire_department_outlined,
-                  label: 'Arrivée de gaz',
-                  hint: 'Laisser vide si non concerné',
-                ),
-                _Field(
-                  controller: _electric,
-                  icon: Icons.electrical_services_outlined,
-                  label: 'Tableau électrique',
-                  hint: 'Ex. entrée, cave…',
-                ),
-                const SizedBox(height: 12),
-                const Text(
-                  'Sorties et zone sûre',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
-                ),
-                const SizedBox(height: 7),
-                _Field(
-                  controller: _primaryExit,
-                  icon: Icons.exit_to_app_rounded,
-                  label: 'Sortie principale',
-                  hint: 'Ex. porte d’entrée',
-                ),
-                _Field(
-                  controller: _secondaryExit,
-                  icon: Icons.alt_route_rounded,
-                  label: 'Sortie alternative',
-                  hint: 'Ex. cour, balcon accessible, autre escalier…',
-                ),
-                _Field(
-                  controller: _safeRoom,
-                  icon: Icons.shield_outlined,
-                  label: 'Zone intérieure la plus sûre',
-                  hint: 'À définir selon les risques locaux et le logement',
-                ),
-                const SizedBox(height: 14),
-                const Text(
-                  'Checklist sécurité',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
-                ),
-                const SizedBox(height: 7),
-                ..._checkItems.map((item) {
-                  final checked = _checks.contains(item.id);
-                  return Card(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    child: CheckboxListTile(
-                      value: checked,
-                      onChanged: (value) {
-                        setState(() {
-                          (value ?? false)
-                              ? _checks.add(item.id)
-                              : _checks.remove(item.id);
-                        });
-                      },
-                      secondary: CircleAvatar(
-                        backgroundColor: checked
-                            ? const Color(0xffdff2ed)
-                            : const Color(0xfffff2df),
-                        child: Icon(
-                          item.icon,
-                          color: checked
-                              ? const Color(0xff087f83)
-                              : const Color(0xffb7833f),
-                        ),
-                      ),
-                      title: Text(
-                        item.title,
-                        style: const TextStyle(fontWeight: FontWeight.w900),
-                      ),
-                      subtitle: Text(item.subtitle),
                     ),
-                  );
-                }),
-                const SizedBox(height: 10),
-                Container(
-                  padding: const EdgeInsets.all(13),
-                  decoration: BoxDecoration(
-                    color: const Color(0xffffeeee),
-                    borderRadius: BorderRadius.circular(17),
-                  ),
-                  child: const Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(Icons.warning_amber_rounded, color: Color(0xffd92d36)),
-                      SizedBox(width: 9),
-                      Expanded(
-                        child: Text(
-                          'Repérer une vanne ou un tableau ne signifie pas qu’il faut les manipuler pendant une urgence. Coupez un réseau uniquement si les autorités, un professionnel ou la situation l’exigent et si vous savez le faire sans danger.',
-                          style: TextStyle(fontWeight: FontWeight.w700, height: 1.35),
-                        ),
+                    const SizedBox(height: 14),
+                    Text(
+                      en ? 'Utility locations' : 'Repères techniques',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 7),
+                    _Field(
+                      controller: _water,
+                      icon: Icons.water_drop_outlined,
+                      label: en ? 'Water shutoff' : 'Arrivée d’eau',
+                      hint: en
+                          ? 'E.g. utility closet, basement…'
+                          : 'Ex. placard technique, sous-sol…',
+                    ),
+                    _Field(
+                      controller: _gas,
+                      icon: Icons.local_fire_department_outlined,
+                      label: en ? 'Gas shutoff' : 'Arrivée de gaz',
+                      hint: en
+                          ? 'Leave blank if not applicable'
+                          : 'Laisser vide si non concerné',
+                    ),
+                    _Field(
+                      controller: _electric,
+                      icon: Icons.electrical_services_outlined,
+                      label: en ? 'Electrical panel' : 'Tableau électrique',
+                      hint: en
+                          ? 'E.g. entrance, basement…'
+                          : 'Ex. entrée, cave…',
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      en ? 'Exits & safe indoor area' : 'Sorties et zone sûre',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    const SizedBox(height: 7),
+                    _Field(
+                      controller: _primaryExit,
+                      icon: Icons.exit_to_app_rounded,
+                      label: en ? 'Primary exit' : 'Sortie principale',
+                      hint: en ? 'E.g. front door' : 'Ex. porte d’entrée',
+                    ),
+                    _Field(
+                      controller: _secondaryExit,
+                      icon: Icons.alt_route_rounded,
+                      label: en ? 'Alternative exit' : 'Sortie alternative',
+                      hint: en
+                          ? 'E.g. courtyard, accessible balcony, other stairs…'
+                          : 'Ex. cour, balcon accessible, autre escalier…',
+                    ),
+                    _Field(
+                      controller: _safeRoom,
+                      icon: Icons.shield_outlined,
+                      label: en
+                          ? 'Safest indoor area'
+                          : 'Zone intérieure la plus sûre',
+                      hint: en
+                          ? 'Define according to local hazards and the building'
+                          : 'À définir selon les risques locaux et le logement',
+                    ),
+                    const SizedBox(height: 14),
+                    Text(
+                      en ? 'Safety checklist' : 'Checklist sécurité',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    const SizedBox(height: 7),
+                    ..._checkItems.map((item) {
+                      final checked = _checks.contains(item.id);
+
+                      return Card(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        child: CheckboxListTile(
+                          value: checked,
+                          onChanged: (value) {
+                            setState(() {
+                              (value ?? false)
+                                  ? _checks.add(item.id)
+                                  : _checks.remove(item.id);
+                            });
+                          },
+                          secondary: CircleAvatar(
+                            backgroundColor: checked
+                                ? const Color(0xffdff2ed)
+                                : const Color(0xfffff2df),
+                            child: Icon(
+                              item.icon,
+                              color: checked
+                                  ? const Color(0xff087f83)
+                                  : const Color(0xffb7833f),
+                            ),
+                          ),
+                          title: Text(
+                            en ? _titleEn(item.id) : item.title,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                          subtitle: Text(
+                            en ? _subtitleEn(item.id) : item.subtitle,
+                          ),
+                        ),
+                      );
+                    }),
+                    const SizedBox(height: 10),
+                    Container(
+                      padding: const EdgeInsets.all(13),
+                      decoration: BoxDecoration(
+                        color: const Color(0xffffeeee),
+                        borderRadius: BorderRadius.circular(17),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(
+                            Icons.warning_amber_rounded,
+                            color: Color(0xffd92d36),
+                          ),
+                          const SizedBox(width: 9),
+                          Expanded(
+                            child: Text(
+                              en
+                                  ? 'Knowing where a valve or electrical panel is does not mean it should be operated during an emergency. Shut off a utility only when authorities, a qualified professional or the situation requires it and you know how to do so safely.'
+                                  : 'Repérer une vanne ou un tableau ne signifie pas qu’il faut les manipuler pendant une urgence. Coupez un réseau uniquement si les autorités, un professionnel ou la situation l’exigent et si vous savez le faire sans danger.',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w700,
+                                height: 1.35,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
     );
+  }
+
+  String _titleEn(String id) {
+    return const {
+          'smoke': 'Smoke alarms',
+          'co': 'Carbon-monoxide detection',
+          'extinguisher': 'Fire extinguisher / fire blanket',
+          'flashlight': 'Emergency lighting',
+          'keys': 'Accessible keys',
+          'routes': 'Two possible exits',
+          'utilities': 'Utility shutoffs identified',
+          'assembly': 'Outdoor meeting point',
+        }[id] ??
+        id;
+  }
+
+  String _subtitleEn(String id) {
+    return const {
+          'smoke': 'Installed, accessible and tested regularly.',
+          'co':
+              'Planned where the building or fuel-burning equipment makes it relevant.',
+          'extinguisher':
+              'Available when appropriate and household members understand its intended use.',
+          'flashlight':
+              'A light can be reached without crossing the home in darkness.',
+          'keys':
+              'Exit keys and useful spare keys are known and accessible.',
+          'routes':
+              'A primary route and an alternative exit have been identified.',
+          'utilities':
+              'Water, gas and electricity locations are known without assuming they must be shut off.',
+          'assembly':
+              'A meeting point outside the building has been defined.',
+        }[id] ??
+        '';
   }
 }
 
@@ -331,7 +436,13 @@ class _Field extends StatelessWidget {
 }
 
 class _SafetyCheck {
-  const _SafetyCheck(this.id, this.title, this.subtitle, this.icon);
+  const _SafetyCheck(
+    this.id,
+    this.title,
+    this.subtitle,
+    this.icon,
+  );
+
   final String id;
   final String title;
   final String subtitle;
