@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'emergency_food_safety_screen.dart';
 import 'family_documents_screen.dart';
 import 'official_sources_screen.dart';
 import 'online_maps_screen.dart';
@@ -122,6 +123,14 @@ class RecoveryScreen extends StatelessWidget {
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const OnlineMapsScreen()),
+                ),
+              ),
+              _ActionChip(
+                icon: Icons.restaurant_rounded,
+                label: 'Aliments',
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const EmergencyFoodSafetyScreen()),
                 ),
               ),
               _ActionChip(
