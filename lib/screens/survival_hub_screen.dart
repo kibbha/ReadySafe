@@ -55,18 +55,50 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
 
   Future<void> _load() async {
     final stock = await _storage.kitStock();
+    final family = await _storage.family();
+
+    final people = (family['adults'] ?? 0) +
+        (family['children'] ?? 0) +
+        (family['care'] ?? 0);
+    final children = family['children'] ?? 0;
+    final pets = family['pets'] ?? 0;
+
+    num targetFor(item) {
+      final base = item.recommendedQuantity;
+      if (base == null) return 0;
+
+      final unit = item.unit ?? '';
+      if (unit.contains('/ personne') || unit.contains('par personne')) {
+        return base * (people == 0 ? 1 : people);
+      }
+      if (unit.contains('/ enfant')) {
+        return base * children;
+      }
+      if (unit.contains('/ animal')) {
+        return base * pets;
+      }
+      return base;
+    }
+
     var ready = 0;
+
     for (final item in kitItems) {
       final entry = stock[item.id];
       if (entry == null || entry.isExpired) continue;
-      final target = item.recommendedQuantity;
-      if (target == null) {
+
+      if (item.recommendedQuantity == null) {
         if (entry.quantityOwned > 0) ready++;
-      } else if (entry.quantityOwned >= target) {
+        continue;
+      }
+
+      final target = targetFor(item);
+      if (target <= 0 || entry.quantityOwned >= target) {
         ready++;
       }
     }
+
     if (!mounted) return;
+
     setState(() {
       _ready = ready;
       _total = kitItems.length;
@@ -359,9 +391,20 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
       body: LayoutBuilder(
         builder: (context, constraints) {
           final wide = constraints.maxWidth >= 760;
-          final columns = wide ? 3 : 2;
+          final columns = constraints.maxWidth >= 1040
+              ? 4
+              : constraints.maxWidth >= 760
+                  ? 3
+                  : constraints.maxWidth >= 520
+                      ? 2
+                      : 1;
           return ListView(
-            padding: EdgeInsets.fromLTRB(wide ? 24 : 14, 4, wide ? 24 : 14, 28),
+            padding: EdgeInsets.fromLTRB(
+              wide ? 24 : 14,
+              4,
+              wide ? 24 : 14,
+              28,
+            ),
             children: [
               Container(
                 padding: const EdgeInsets.all(18),
@@ -487,7 +530,11 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
                   crossAxisSpacing: 11,
                   mainAxisSpacing: 11,
                 ),
-                itemBuilder: (context, index) => _ModuleCard(module: visibleModules[index]),
+                itemBuilder: (context, index) => _ModuleCard(
+                  module: visibleModules[index],
+                  compact: columns == 1,
+                  onReturn: _load,
+                ),
               ),
               const SizedBox(height: 18),
               Text(en ? 'Quick reminders' : 'Réflexes rapides', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
@@ -567,8 +614,15 @@ class _Module {
 }
 
 class _ModuleCard extends StatelessWidget {
-  const _ModuleCard({required this.module});
+  const _ModuleCard({
+    required this.module,
+    required this.compact,
+    required this.onReturn,
+  });
+
   final _Module module;
+  final bool compact;
+  final Future<void> Function() onReturn;
 
   @override
   Widget build(BuildContext context) => Material(
@@ -576,44 +630,102 @@ class _ModuleCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => module.page),
-          ),
+          onTap: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => module.page),
+            );
+            await onReturn();
+          },
           child: Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               border: Border.all(color: const Color(0xffdbe6e7)),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 46,
-                  height: 46,
-                  decoration: BoxDecoration(
-                    color: module.color.withValues(alpha: .12),
-                    borderRadius: BorderRadius.circular(14),
+            child: compact
+                ? Row(
+                    children: [
+                      Container(
+                        width: 46,
+                        height: 46,
+                        decoration: BoxDecoration(
+                          color: module.color.withValues(alpha: .12),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Icon(module.icon, color: module.color),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              module.title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 15.5,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              module.subtitle,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 11.5,
+                                color: Color(0xff65747a),
+                                height: 1.22,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(
+                        Icons.chevron_right_rounded,
+                        color: Color(0xff87969a),
+                      ),
+                    ],
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 46,
+                        height: 46,
+                        decoration: BoxDecoration(
+                          color: module.color.withValues(alpha: .12),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Icon(module.icon, color: module.color),
+                      ),
+                      const Spacer(),
+                      Text(
+                        module.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 15.5,
+                          fontWeight: FontWeight.w900,
+                          height: 1.05,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        module.subtitle,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 11.5,
+                          color: Color(0xff65747a),
+                          height: 1.22,
+                        ),
+                      ),
+                    ],
                   ),
-                  child: Icon(module.icon, color: module.color),
-                ),
-                const Spacer(),
-                Text(
-                  module.title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 15.5, fontWeight: FontWeight.w900, height: 1.05),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  module.subtitle,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 11.5, color: Color(0xff65747a), height: 1.22),
-                ),
-              ],
-            ),
           ),
         ),
       );
