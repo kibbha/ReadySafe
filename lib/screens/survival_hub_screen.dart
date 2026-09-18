@@ -5,6 +5,7 @@ import '../services/local_storage_service.dart';
 import 'calculator_screen.dart';
 import 'checklist_screen.dart';
 import 'guide_list_screen.dart';
+import 'leave_now_screen.dart';
 import 'training_screen.dart';
 
 class SurvivalHubScreen extends StatefulWidget {
@@ -158,6 +159,30 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
                       ),
                     ),
                   ],
+                ),
+              ),
+              const SizedBox(height: 14),
+              Material(
+                color: const Color(0xffd92d36),
+                borderRadius: BorderRadius.circular(20),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(20),
+                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const LeaveNowScreen())),
+                  child: const Padding(
+                    padding: EdgeInsets.all(15),
+                    child: Row(
+                      children: [
+                        CircleAvatar(backgroundColor: Color(0x22ffffff), child: Icon(Icons.directions_run_rounded, color: Colors.white)),
+                        SizedBox(width: 12),
+                        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text('JE DOIS PARTIR MAINTENANT', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900)),
+                          SizedBox(height: 2),
+                          Text('Checklist d’évacuation immédiate', style: TextStyle(color: Colors.white)),
+                        ])),
+                        Icon(Icons.arrow_forward_rounded, color: Colors.white),
+                      ],
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 18),
