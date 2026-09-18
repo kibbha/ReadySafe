@@ -378,6 +378,8 @@ class OfficialSourcesScreen extends StatelessWidget {
     if (host == '112.is' || host.endsWith('.112.is')) return '112 Iceland';
     if (host.contains('112.gov.tr')) return '112 Türkiye';
     if (host.contains('llv.li')) return 'Liechtensteinische Landesverwaltung';
+    if (host.contains('112.gov.ge')) return '112 Georgia';
+    if (host.contains('gov.md')) return 'Government of Moldova';
     if (host.contains('gov.uk')) return 'GOV.UK';
     return uri.host.replaceFirst('www.', '');
   }
