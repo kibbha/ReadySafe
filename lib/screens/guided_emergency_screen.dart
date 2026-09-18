@@ -5,6 +5,7 @@ import '../data/content.dart';
 import '../data/first_aid_repository.dart';
 import '../models/first_aid_guide.dart';
 import '../models/guide.dart';
+import 'emergency_food_safety_screen.dart';
 import 'emergency_screen.dart';
 import 'first_aid_screen.dart';
 import 'guide_list_screen.dart';
@@ -298,6 +299,12 @@ class GuidedEmergencyScreen extends StatelessWidget {
         en ? 'Boiling, treatment and contamination guidance' : 'Ébullition, traitement et contamination',
         Icons.local_drink_rounded,
         () => _openPage(context, const WaterSafetyScreen()),
+      ),
+      _Situation(
+        en ? 'Food may be unsafe' : 'Les aliments peuvent être impropres',
+        en ? 'Power outage, thawing or flood contamination' : 'Panne, décongélation ou contamination par les eaux',
+        Icons.restaurant_rounded,
+        () => _openPage(context, const EmergencyFoodSafetyScreen()),
       ),
       _Situation(
         en ? 'Sanitation is disrupted' : 'L’hygiène devient difficile',
