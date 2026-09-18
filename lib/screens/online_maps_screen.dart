@@ -843,6 +843,21 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
   }
 
   String _displayName(_Place place, bool en) {
+    if (place.community) {
+      switch (place.name) {
+        case 'Hospital / clinic':
+          return en ? 'Hospital / clinic' : 'Hôpital / clinique';
+        case 'Pharmacy':
+          return en ? 'Pharmacy' : 'Pharmacie';
+        case 'Drinking water':
+          return en ? 'Drinking water' : 'Eau potable';
+        case 'AED':
+          return en ? 'AED' : 'DAE';
+        case 'Police':
+          return 'Police';
+      }
+    }
+
     if (!en) return place.name;
 
     switch (place.name) {
@@ -968,6 +983,12 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                 }
 
                 await _syncMarkers();
+
+                if (position.zoom >= 10 &&
+                    !_poiZoneMatchesCamera &&
+                    !_poiLoading) {
+                  await _loadUsefulPlaces();
+                }
               }
             },
             compassEnabled: true,
