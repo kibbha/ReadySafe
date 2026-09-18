@@ -19,6 +19,7 @@ import 'pet_emergency_screen.dart';
 import 'power_outage_screen.dart';
 import 'preparedness_review_screen.dart';
 import 'recovery_screen.dart';
+import 'recovery_log_screen.dart';
 import 'safety_tools_screen.dart';
 import 'sanitation_hygiene_screen.dart';
 import 'secure_vault_screen.dart';
@@ -271,6 +272,14 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.restore_rounded,
         const Color(0xff147343),
         const RecoveryScreen(),
+        'recover',
+      ),
+      _Module(
+        en ? 'Recovery log' : 'Journal après urgence',
+        en ? 'Keep damage, contacts, case numbers and follow-up in one place' : 'Centraliser dégâts, contacts, dossiers et suites à donner',
+        Icons.assignment_outlined,
+        const Color(0xff6750a4),
+        const RecoveryLogScreen(),
         'recover',
       ),
       _Module(
