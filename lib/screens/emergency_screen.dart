@@ -29,6 +29,7 @@ class EmergencyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
+    final en = Localizations.localeOf(context).languageCode == 'en';
     final country = AppScope.of(context).activeCountry!;
     final caller = callService ?? DeviceEmergencyCallService();
     final callable = country.services.where((s) => s.isCallable).toList();
@@ -60,9 +61,29 @@ class EmergencyScreen extends StatelessWidget {
           if (primary != null) ...[const SizedBox(height: 14), _DangerHero(service: primary, callService: caller)],
           if (others.isNotEmpty) ...[
             const SizedBox(height: 16),
-            const Text('Numéros utiles', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
+            Text(en ? 'Useful numbers' : 'Numéros utiles', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
             const SizedBox(height: 9),
-            GridView.builder(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), itemCount: others.length, gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 1.18, crossAxisSpacing: 10, mainAxisSpacing: 10), itemBuilder: (_, i) => _EmergencyTile(service: others[i], icon: _icon(others[i]), callService: caller)),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final columns = constraints.maxWidth >= 760 ? 3 : 2;
+                return GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: others.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: columns,
+                    mainAxisExtent: 142,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                  ),
+                  itemBuilder: (_, i) => _EmergencyTile(
+                    service: others[i],
+                    icon: _icon(others[i]),
+                    callService: caller,
+                  ),
+                );
+              },
+            ),
           ],
           const SizedBox(height: 16),
           Card(child: Padding(padding: const EdgeInsets.all(14), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -83,10 +104,11 @@ class _DangerHero extends StatelessWidget {
   final EmergencyCallService callService;
   @override Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
+    final en = Localizations.localeOf(context).languageCode == 'en';
     return Container(padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: const Color(0xffffeded), borderRadius: BorderRadius.circular(20), border: Border.all(color: const Color(0xffffcaca))), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Row(children: [Container(width: 48, height: 48, decoration: BoxDecoration(color: Theme.of(context).colorScheme.error, borderRadius: BorderRadius.circular(14)), child: const Icon(Icons.phone_in_talk, color: Colors.white, size: 27)), const SizedBox(width: 12), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [const Text('DANGER IMMÉDIAT', style: TextStyle(fontSize: 12, letterSpacing: .4, fontWeight: FontWeight.w900, color: Color(0xff9d1c24))), Text('Appelez le ${service.number ?? ''}', style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w900)), Text(t.get(service.nameKey), style: const TextStyle(fontSize: 13, color: Color(0xff65747a)))]))]),
+      Row(children: [Container(width: 48, height: 48, decoration: BoxDecoration(color: Theme.of(context).colorScheme.error, borderRadius: BorderRadius.circular(14)), child: const Icon(Icons.phone_in_talk, color: Colors.white, size: 27)), const SizedBox(width: 12), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(en ? 'IMMEDIATE DANGER' : 'DANGER IMMÉDIAT', style: const TextStyle(fontSize: 12, letterSpacing: .4, fontWeight: FontWeight.w900, color: Color(0xff9d1c24))), Text(en ? 'Call ${service.number ?? ''}' : 'Appelez le ${service.number ?? ''}', style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w900)), Text(t.get(service.nameKey), style: const TextStyle(fontSize: 13, color: Color(0xff65747a)))]))]),
       const SizedBox(height: 13),
-      SizedBox(width: double.infinity, child: FilledButton.icon(style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error, minimumSize: const Size.fromHeight(48)), onPressed: () => _call(context, t, service, callService), icon: const Icon(Icons.call), label: Text('Appeler ${service.number ?? ''}', style: const TextStyle(fontWeight: FontWeight.w900)))),
+      SizedBox(width: double.infinity, child: FilledButton.icon(style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error, minimumSize: const Size.fromHeight(48)), onPressed: () => _call(context, t, service, callService), icon: const Icon(Icons.call), label: Text(en ? 'Call ${service.number ?? ''}' : 'Appeler ${service.number ?? ''}', style: const TextStyle(fontWeight: FontWeight.w900)))),
     ]));
   }
 }
