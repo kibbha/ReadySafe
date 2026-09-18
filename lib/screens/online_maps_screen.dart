@@ -351,12 +351,13 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
 
     return _Place(
       poi.name,
-      '',
+      poi.address,
       poi.latitude,
       poi.longitude,
       kind,
       id: poi.id,
-      community: true,
+      community: poi.trust == MapPoiTrust.community,
+      official: poi.trust == MapPoiTrust.official,
       sourceLabel: poi.sourceName,
       sourceUrl: poi.sourceUrl,
       openingHours: poi.openingHours,
@@ -493,7 +494,26 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                 ),
               ],
               const SizedBox(height: 10),
-              if (place.community)
+              if (place.official)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xffe6f4ef),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    en
+                        ? 'Institutional geodata supplied by the authority shown below. ReadySafe keeps the original source link.'
+                        : 'Géodonnée institutionnelle fournie par l’autorité indiquée ci-dessous. ReadySafe conserve le lien vers la source d’origine.',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      height: 1.3,
+                    ),
+                  ),
+                )
+              else if (place.community)
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(10),
@@ -552,57 +572,30 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                en ? 'Map data & trust' : 'Données cartographiques & confiance',
+                en ? 'Map data sources' : 'Sources de la carte',
                 style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
               ),
               const SizedBox(height: 10),
               Text(
                 en
-                    ? 'Hospitals, clinics, pharmacies, police, AEDs and drinking-water points are loaded from OpenStreetMap through the Overpass API and are labelled community data.'
-                    : 'Les hôpitaux, cliniques, pharmacies, postes de police, DAE et points d’eau potable sont chargés depuis OpenStreetMap via l’API Overpass et sont identifiés comme données communautaires.',
+                    ? 'In Geneva, ReadySafe prioritises institutional SITG datasets for hospitals and clinics, police stations, public-access AEDs and the official vaccination-pharmacy list.'
+                    : 'À Genève, ReadySafe donne la priorité aux jeux de données institutionnels du SITG pour les hôpitaux et cliniques, les postes de police, les DAE en libre accès et la liste officielle des pharmacies de vaccination.',
               ),
               const SizedBox(height: 8),
               Text(
                 en
-                    ? 'ReadySafe never turns community shelter or meeting-point tags into official emergency shelters. Official facilities are shown only when a verified authority feed is integrated for that territory.'
-                    : 'ReadySafe ne transforme jamais des données communautaires d’abri ou de rassemblement en infrastructures officielles. Elles ne seront affichées comme officielles que lorsqu’une source d’autorité vérifiée sera intégrée pour le territoire concerné.',
+                    ? 'OpenStreetMap is used only as a complementary community source, including categories for which no suitable authority feed has been integrated yet.'
+                    : 'OpenStreetMap n’est utilisé qu’en complément comme source communautaire, notamment pour les catégories dont aucune source d’autorité adaptée n’est encore intégrée.',
                 style: const TextStyle(fontWeight: FontWeight.w800),
               ),
               const SizedBox(height: 8),
               Text(
                 en
-                    ? 'Personal landmarks remain local to the device and are never presented as official.'
-                    : 'Les repères personnels restent stockés localement sur l’appareil et ne sont jamais présentés comme officiels.',
-              ),
-              const SizedBox(height: 12),
-              OutlinedButton.icon(
-                onPressed: () => launchUrl(
-                  Uri.parse('https://www.openstreetmap.org/copyright'),
-                  mode: LaunchMode.externalApplication,
-                ),
-                icon: const Icon(Icons.open_in_new_rounded),
-                label: const Text('© OpenStreetMap contributors'),
+                    ? 'ReadySafe never labels a shelter or drinking-water point as official without an authority dataset that explicitly supports that status.'
+                    : 'ReadySafe ne présente jamais un abri ou un point d’eau comme officiel sans jeu de données d’autorité qui confirme explicitement ce statut.',
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _copyCenterCoordinates(bool en) async {
-    final text =
-        '${_camera.target.latitude.toStringAsFixed(6)}, ${_camera.target.longitude.toStringAsFixed(6)}';
-
-    await Clipboard.setData(ClipboardData(text: text));
-
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          en
-              ? 'Map-center coordinates copied.'
-              : 'Coordonnées du centre de la carte copiées.',
         ),
       ),
     );
@@ -887,12 +880,23 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
     if (place.kind == _PlaceKind.city) {
       return en ? 'City' : 'Ville';
     }
+    if (place.official) {
+      final kind = _kindLabel(place.kind, en);
+      final source = place.sourceLabel.isEmpty
+          ? (en ? 'Institutional source' : 'Source institutionnelle')
+          : place.sourceLabel;
+      final address = place.subtitle.trim();
+      return address.isEmpty
+          ? (en ? '$kind · institutional · $source' : '$kind · institutionnel · $source')
+          : (en ? '$kind · institutional · $address' : '$kind · institutionnel · $address');
+    }
     if (place.community) {
       final kind = _kindLabel(place.kind, en);
       final source = place.sourceLabel.isEmpty ? 'OpenStreetMap' : place.sourceLabel;
-      return en
-          ? '$kind · $source · community'
-          : '$kind · $source · communautaire';
+      final address = place.subtitle.trim();
+      return address.isEmpty
+          ? (en ? '$kind · $source · community' : '$kind · $source · communautaire')
+          : (en ? '$kind · community · $address' : '$kind · communautaire · $address');
     }
     return place.subtitle;
   }
@@ -918,11 +922,6 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
       appBar: AppBar(
         title: Text(en ? 'Map & landmarks' : 'Carte & repères'),
         actions: [
-          IconButton(
-            tooltip: en ? 'Copy map-center coordinates' : 'Copier les coordonnées du centre',
-            onPressed: () => _copyCenterCoordinates(en),
-            icon: const Icon(Icons.my_location_outlined),
-          ),
           IconButton(
             tooltip: en ? 'Load useful places around map centre' : 'Charger les points utiles autour du centre',
             onPressed: _poiLoading ? null : () => _loadUsefulPlaces(force: true),
@@ -1039,8 +1038,8 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
                         child: Text(
                           en
-                              ? 'Online map · OpenStreetMap useful places are community data · personal landmarks stay local'
-                              : 'Carte en ligne · points utiles OpenStreetMap communautaires · repères personnels stockés localement',
+                              ? 'Authority data first · community data only as a complement'
+                              : 'Sources institutionnelles prioritaires · données communautaires en complément',
                           style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700),
                         ),
                       ),
@@ -1145,67 +1144,7 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 6),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      _NearbyAction(
-                        icon: Icons.local_hospital_rounded,
-                        label: en ? 'Hospitals' : 'Hôpitaux',
-                        onTap: () => _selectUsefulKind(_PlaceKind.health),
-                      ),
-                      _NearbyAction(
-                        icon: Icons.local_pharmacy_rounded,
-                        label: en ? 'Pharmacies' : 'Pharmacies',
-                        onTap: () => _selectUsefulKind(_PlaceKind.pharmacy),
-                      ),
-                      _NearbyAction(
-                        icon: Icons.emergency_rounded,
-                        label: en ? 'AED' : 'DAE',
-                        onTap: () => _selectUsefulKind(_PlaceKind.aid),
-                      ),
-                      _NearbyAction(
-                        icon: Icons.local_police_rounded,
-                        label: 'Police',
-                        onTap: () => _selectUsefulKind(_PlaceKind.police),
-                      ),
-                      _NearbyAction(
-                        icon: Icons.water_drop_rounded,
-                        label: en ? 'Drinking water' : 'Eau potable',
-                        onTap: () => _selectUsefulKind(_PlaceKind.water),
-                      ),
-                      _NearbyAction(
-                        icon: Icons.refresh_rounded,
-                        label: en ? 'Refresh area' : 'Actualiser la zone',
-                        onTap: _poiLoading ? null : () => _loadUsefulPlaces(force: true),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 9,
-                      vertical: 5,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: .92),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: Text(
-                      '${_camera.target.latitude.toStringAsFixed(4)}, '
-                      '${_camera.target.longitude.toStringAsFixed(4)}',
-                      style: const TextStyle(
-                        fontSize: 10.5,
-                        fontWeight: FontWeight.w800,
-                        color: Color(0xff52666b),
-                      ),
-                    ),
-                  ),
-                ),
+                const SizedBox(height: 4),
               ],
             ),
           ),
@@ -1540,32 +1479,6 @@ class _NearbySheet extends StatelessWidget {
       );
 }
 
-class _NearbyAction extends StatelessWidget {
-  const _NearbyAction({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String label;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(right: 6),
-        child: ActionChip(
-          avatar: Icon(
-            icon,
-            size: 18,
-            color: const Color(0xff087f83),
-          ),
-          label: Text(label),
-          onPressed: onTap,
-        ),
-      );
-}
-
 class _MapButton extends StatelessWidget {
   const _MapButton({
     required this.icon,
@@ -1599,6 +1512,7 @@ class _Place {
     this.kind, {
     this.personal = false,
     this.community = false,
+    this.official = false,
     this.id = '',
     this.sourceLabel = '',
     this.sourceUrl = '',
@@ -1613,6 +1527,7 @@ class _Place {
   final _PlaceKind kind;
   final bool personal;
   final bool community;
+  final bool official;
   final String id;
   final String sourceLabel;
   final String sourceUrl;

@@ -2,20 +2,15 @@ import 'package:flutter/material.dart';
 
 import '../app/app_scope.dart';
 import '../app/localizations.dart';
-import '../data/first_aid_repository.dart';
 import '../services/local_storage_service.dart';
 import 'emergency_screen.dart';
 import 'family_documents_screen.dart';
 import 'first_aid_screen.dart';
 import 'global_search_screen.dart';
 import 'guided_emergency_screen.dart';
-import 'leave_now_screen.dart';
-import 'maintenance_screen.dart';
-import 'offline_readiness_screen.dart';
 import 'online_maps_screen.dart';
 import 'preparedness_review_screen.dart';
 import 'settings_screen.dart';
-import 'safety_tools_screen.dart';
 import 'survival_hub_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -71,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       _HomeModule(
         en ? 'Map & landmarks' : 'Carte & repères',
-        en ? 'Shelters, health, water and safe places' : 'Abris, santé, eau et lieux sûrs',
+        en ? 'Official and personal useful places' : 'Repères utiles institutionnels et personnels',
         Icons.map_rounded,
         const Color(0xff147343),
         const OnlineMapsScreen(),
@@ -187,15 +182,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           MaterialPageRoute(builder: (_) => const EmergencyScreen()),
                         ),
                       ),
-                      const SizedBox(height: 12),
-                      _ScoreCard(
-                        score: _score,
-                        en: en,
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const PreparednessReviewScreen()),
-                        ).then((_) => _refreshScore()),
-                      ),
                       const SizedBox(height: 18),
                       Text(en ? 'Essentials' : 'Essentiels', style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w900)),
                       const SizedBox(height: 9),
@@ -214,102 +200,16 @@ class _HomeScreenState extends State<HomeScreen> {
                           onReturn: _refreshScore,
                         ),
                       ),
-                      const SizedBox(height: 18),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(en ? 'Quick actions' : 'Actions rapides', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
-                          ),
-                          TextButton(
-                            onPressed: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => const GlobalSearchScreen()),
-                            ),
-                            child: Text(en ? 'See all' : 'Voir tout'),
-                          ),
-                        ],
+                      const SizedBox(height: 14),
+                      _ScoreCard(
+                        score: _score,
+                        en: en,
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const PreparednessReviewScreen()),
+                        ).then((_) => _refreshScore()),
                       ),
-                      const SizedBox(height: 4),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          _QuickAction(
-                            icon: Icons.phone_in_talk_rounded,
-                            label: en ? 'SOS numbers' : 'Numéros SOS',
-                            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const EmergencyScreen())),
-                          ),
-                          _QuickAction(
-                            icon: Icons.favorite_rounded,
-                            label: en ? 'Adult CPR' : 'RCP adulte',
-                            onTap: () {
-                              final guide = firstAidGuides.firstWhere(
-                                (item) => item.id == 'cpr_adult',
-                                orElse: () => firstAidGuides.first,
-                              );
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => FirstAidDetailScreen(guide: guide),
-                                ),
-                              );
-                            },
-                          ),
-                          _QuickAction(
-                            icon: Icons.directions_run_rounded,
-                            label: en ? 'Leave now' : 'Partir maintenant',
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => const LeaveNowScreen()),
-                            ),
-                          ),
-                          _QuickAction(
-                            icon: Icons.map_rounded,
-                            label: en ? 'Landmarks' : 'Repères',
-                            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const OnlineMapsScreen())),
-                          ),
-                          _QuickAction(
-                            icon: Icons.sos_rounded,
-                            label: en ? 'SOS tools' : 'Outils SOS',
-                            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SafetyToolsScreen())),
-                          ),
-                          _QuickAction(
-                            icon: Icons.event_repeat_rounded,
-                            label: en ? 'Reminders' : 'Rappels',
-                            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MaintenanceScreen())),
-                          ),
-                          _QuickAction(
-                            icon: Icons.offline_bolt_rounded,
-                            label: en ? 'Offline' : 'Hors ligne',
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => const OfflineReadinessScreen()),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Container(
-                        padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          color: const Color(0xffeaf6f4),
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.shield_outlined, color: Color(0xff087f83)),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                en
-                                    ? 'ReadySafe brings emergency guidance, first aid, preparedness, family planning and landmarks into one app.'
-                                    : 'ReadySafe rassemble urgence, premiers secours, préparation, famille et repères dans une seule app.',
-                                style: const TextStyle(fontWeight: FontWeight.w800, height: 1.35),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      const SizedBox(height: 8),
                     ],
                   ),
                 ),

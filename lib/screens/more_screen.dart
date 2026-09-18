@@ -357,8 +357,8 @@ class MoreScreen extends StatelessWidget {
                       const SizedBox(height: 3),
                       Text(
                         en
-                            ? 'Everything that does not need to occupy the main navigation, organised by purpose.'
-                            : 'Tout ce qui n’a pas besoin d’occuper la navigation principale, organisé par usage.',
+                            ? 'Open a category only when you need it.'
+                            : 'Ouvrez seulement la catégorie dont vous avez besoin.',
                         style: const TextStyle(color: Color(0xff65747a), height: 1.3),
                       ),
                     ],
@@ -369,19 +369,40 @@ class MoreScreen extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           for (final section in sections) ...[
-            _SectionHeader(section: section),
-            const SizedBox(height: 7),
             Card(
-              child: Column(
+              margin: const EdgeInsets.only(bottom: 9),
+              clipBehavior: Clip.antiAlias,
+              child: ExpansionTile(
+                leading: CircleAvatar(
+                  backgroundColor: const Color(0xffe6f3f1),
+                  child: Icon(
+                    section.icon,
+                    color: const Color(0xff087f83),
+                    size: 20,
+                  ),
+                ),
+                title: Text(
+                  section.title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                subtitle: Text(
+                  section.subtitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 children: [
+                  const Divider(height: 1),
                   for (var i = 0; i < section.items.length; i++) ...[
                     _MoreTile(item: section.items[i]),
-                    if (i != section.items.length - 1) const Divider(height: 1),
+                    if (i != section.items.length - 1)
+                      const Divider(height: 1, indent: 64),
                   ],
                 ],
               ),
             ),
-            const SizedBox(height: 16),
           ],
             ],
           ),
@@ -389,39 +410,6 @@ class MoreScreen extends StatelessWidget {
       ),
     );
   }
-}
-
-class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({required this.section});
-  final _MoreSection section;
-
-  @override
-  Widget build(BuildContext context) => Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CircleAvatar(
-            radius: 18,
-            backgroundColor: const Color(0xffe6f3f1),
-            child: Icon(section.icon, size: 19, color: const Color(0xff087f83)),
-          ),
-          const SizedBox(width: 9),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  section.title,
-                  style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w900),
-                ),
-                Text(
-                  section.subtitle,
-                  style: const TextStyle(fontSize: 12, color: Color(0xff65747a)),
-                ),
-              ],
-            ),
-          ),
-        ],
-      );
 }
 
 class _MoreTile extends StatelessWidget {

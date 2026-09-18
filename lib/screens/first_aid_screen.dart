@@ -163,28 +163,28 @@ class _FirstAidScreenState extends State<FirstAidScreen> {
         builder: (context, constraints) {
           final width = constraints.maxWidth;
           final columns = width >= 1180
-              ? 4
-              : width >= 820
-                  ? 3
-                  : width >= 520
-                      ? 2
-                      : 1;
-          final horizontal = width >= 760 ? 20.0 : 12.0;
-          final posterHeight = columns >= 3
-              ? 520.0
-              : columns == 2
-                  ? 500.0
-                  : 520.0;
+              ? 5
+              : width >= 900
+                  ? 4
+                  : width >= 650
+                      ? 3
+                      : width >= 460
+                          ? 2
+                          : 1;
+          final horizontal = width >= 760 ? 16.0 : 10.0;
+          final posterHeight = columns >= 5
+              ? 405.0
+              : columns == 4
+                  ? 430.0
+                  : columns == 3
+                      ? 455.0
+                      : columns == 2
+                          ? 480.0
+                          : 505.0;
 
           return ListView(
             padding: EdgeInsets.fromLTRB(horizontal, 4, horizontal, 28),
             children: [
-              _FirstAidHeader(
-                title: _aidText(context, 'first_aid_header'),
-                subtitle: _aidText(context, 'first_aid_header_body'),
-                emergencyNumber: _emergencyNumber(context),
-              ),
-              const SizedBox(height: 10),
               TextField(
                 controller: _searchController,
                 onChanged: (value) => setState(() => _query = value),
@@ -308,74 +308,6 @@ class _FirstAidScreenState extends State<FirstAidScreen> {
       );
 }
 
-class _FirstAidHeader extends StatelessWidget {
-  const _FirstAidHeader({
-    required this.title,
-    required this.subtitle,
-    required this.emergencyNumber,
-  });
-
-  final String title;
-  final String subtitle;
-  final String? emergencyNumber;
-
-  @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.fromLTRB(14, 13, 12, 13),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xffe5f4f1), Color(0xfffff5e8)],
-          ),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xffd7e8e5)),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: const Color(0xff087f83),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: const Icon(Icons.volunteer_activism_rounded, color: Colors.white, size: 28),
-            ),
-            const SizedBox(width: 11),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(fontSize: 12, color: Color(0xff607075), fontWeight: FontWeight.w700),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
-              decoration: BoxDecoration(
-                color: const Color(0xffffe8e8),
-                borderRadius: BorderRadius.circular(13),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.call_rounded, size: 15, color: Color(0xffd92d36)),
-                  const SizedBox(width: 4),
-                  Text(
-                    emergencyNumber ?? (Localizations.localeOf(context).languageCode == 'en' ? 'Numbers' : 'Numéros'),
-                    style: const TextStyle(color: Color(0xffd92d36), fontWeight: FontWeight.w900),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      );
-}
-
 class _PosterGuideCard extends StatelessWidget {
   const _PosterGuideCard({
     required this.guide,
@@ -422,8 +354,8 @@ class _PosterGuideCard extends StatelessWidget {
                 child: Row(
                   children: [
                     Container(
-                      width: 42,
-                      height: 42,
+                      width: 36,
+                      height: 36,
                       alignment: Alignment.center,
                       decoration: const BoxDecoration(
                         color: Colors.white,
@@ -433,7 +365,7 @@ class _PosterGuideCard extends StatelessWidget {
                           ? const Icon(
                               Icons.health_and_safety_rounded,
                               color: Color(0xff087f83),
-                              size: 23,
+                              size: 20,
                             )
                           : Text(
                               number.toString(),
@@ -441,7 +373,7 @@ class _PosterGuideCard extends StatelessWidget {
                                 color: critical
                                     ? const Color(0xffd92d36)
                                     : const Color(0xff087f83),
-                                fontSize: 22,
+                                fontSize: 19,
                                 fontWeight: FontWeight.w900,
                               ),
                             ),
@@ -457,7 +389,7 @@ class _PosterGuideCard extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 15.5,
+                              fontSize: 13.2,
                               height: 1.0,
                               letterSpacing: .1,
                               fontWeight: FontWeight.w900,
@@ -470,7 +402,7 @@ class _PosterGuideCard extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               color: Color(0xffd8f3ef),
-                              fontSize: 9.3,
+                              fontSize: 8.4,
                               letterSpacing: .2,
                               fontWeight: FontWeight.w800,
                             ),
@@ -526,7 +458,7 @@ class _PosterGuideCard extends StatelessWidget {
                                 ? 'Immediate danger: call $emergencyNumber'
                                 : 'Danger immédiat : appeler le $emergencyNumber'),
                         style: TextStyle(
-                          fontSize: 10.5,
+                          fontSize: 8.2,
                           color:
                               critical ? Colors.white : const Color(0xff6f4e00),
                           fontWeight: FontWeight.w900,
@@ -577,8 +509,8 @@ class _PosterMiniStep extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              width: 25,
-              height: 25,
+              width: 22,
+              height: 22,
               alignment: Alignment.center,
               decoration: const BoxDecoration(
                 color: Color(0xff087f83),
@@ -588,7 +520,7 @@ class _PosterMiniStep extends StatelessWidget {
                 number.toString(),
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 11.5,
+                  fontSize: 10.2,
                   fontWeight: FontWeight.w900,
                 ),
               ),
@@ -600,8 +532,8 @@ class _PosterMiniStep extends StatelessWidget {
                 maxLines: 4,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontSize: 10.7,
-                  height: 1.15,
+                  fontSize: 9.4,
+                  height: 1.12,
                   fontWeight: FontWeight.w700,
                   color: Color(0xff20383c),
                 ),
@@ -609,8 +541,8 @@ class _PosterMiniStep extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             SizedBox(
-              width: 78,
-              height: 76,
+              width: 58,
+              height: 56,
               child: SvgPicture.asset(
                 illustrationAsset,
                 fit: BoxFit.contain,
@@ -628,7 +560,7 @@ class _PosterBranding extends StatelessWidget {
   Widget build(BuildContext context) {
     final en = Localizations.localeOf(context).languageCode == 'en';
     return Container(
-      height: 28,
+      height: 23,
       alignment: Alignment.center,
       color: Colors.white,
       child: Row(
@@ -637,7 +569,7 @@ class _PosterBranding extends StatelessWidget {
           const Icon(
             Icons.health_and_safety_rounded,
             color: Color(0xff087f83),
-            size: 16,
+            size: 14,
           ),
           const SizedBox(width: 4),
           Flexible(
@@ -646,7 +578,7 @@ class _PosterBranding extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                fontSize: 9.2,
+                fontSize: 8.2,
                 color: Color(0xff087f83),
                 fontWeight: FontWeight.w900,
               ),
@@ -709,7 +641,7 @@ class FirstAidDetailScreen extends StatelessWidget {
           return Align(
             alignment: Alignment.topCenter,
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 430),
+              constraints: const BoxConstraints(maxWidth: 400),
               child: ListView(
                 padding: EdgeInsets.fromLTRB(wide ? 24 : 12, 4, wide ? 24 : 12, 26),
                 children: [
@@ -887,7 +819,7 @@ class _PosterDetailPanel extends StatelessWidget {
                         subtitle,
                         style: const TextStyle(
                           color: Color(0xffd8f3ef),
-                          fontSize: 10.5,
+                          fontSize: 8.2,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
@@ -985,7 +917,7 @@ class _PosterFullStep extends StatelessWidget {
           children: [
             Container(
               width: 28,
-              height: 28,
+              height: 23,
               alignment: Alignment.center,
               decoration: const BoxDecoration(
                 color: Color(0xff087f83),

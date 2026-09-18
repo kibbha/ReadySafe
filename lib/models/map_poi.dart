@@ -23,6 +23,7 @@ class MapPoi {
     required this.sourceUrl,
     required this.distanceMeters,
     this.openingHours = '',
+    this.address = '',
   });
 
   final String id;
@@ -35,6 +36,7 @@ class MapPoi {
   final String sourceUrl;
   final double distanceMeters;
   final String openingHours;
+  final String address;
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -47,6 +49,7 @@ class MapPoi {
         'sourceUrl': sourceUrl,
         'distanceMeters': distanceMeters,
         'openingHours': openingHours,
+        'address': address,
       };
 
   factory MapPoi.fromJson(Map<String, dynamic> json) => MapPoi(
@@ -66,6 +69,7 @@ class MapPoi {
         sourceUrl: '${json['sourceUrl'] ?? ''}',
         distanceMeters: (json['distanceMeters'] as num?)?.toDouble() ?? 0,
         openingHours: '${json['openingHours'] ?? ''}',
+        address: '${json['address'] ?? ''}',
       );
 }
 
