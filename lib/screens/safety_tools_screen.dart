@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../services/local_storage_service.dart';
 import 'communication_plan_screen.dart';
 import 'emergency_screen.dart';
+import 'family_reunification_screen.dart';
 import 'online_maps_screen.dart';
 
 class SafetyToolsScreen extends StatefulWidget {
@@ -94,14 +95,33 @@ class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
         ),
       ),
       _Tool(
+        en ? 'Family emergency card' : 'Carte famille urgence',
+        en
+            ? 'Meeting points, pickup person and reconnection information.'
+            : 'Rendez-vous, personne autorisée et informations de reconnexion.',
+        Icons.badge_outlined,
+        const Color(0xff6750a4),
+        () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const FamilyReunificationScreen(),
+          ),
+        ),
+      ),
+      _Tool(
         en ? 'Communication plan' : 'Plan de communication',
         en ? 'Contacts, reconnection and household instructions.' : 'Contacts, reconnexion et consignes famille.',
         Icons.connect_without_contact_rounded,
         const Color(0xff087f83),
-        () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const CommunicationPlanScreen()),
-        ),
+        () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const CommunicationPlanScreen(),
+            ),
+          );
+          await _load();
+        },
       ),
     ];
 
