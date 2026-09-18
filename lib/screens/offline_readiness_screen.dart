@@ -77,11 +77,12 @@ class _OfflineReadinessScreenState extends State<OfflineReadinessScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final en = Localizations.localeOf(context).languageCode == 'en';
     final progress = _manualChecks.isEmpty ? 0.0 : _checks.length / _manualChecks.length;
 
     return Scaffold(
       backgroundColor: const Color(0xfff7faf9),
-      appBar: AppBar(title: const Text('Préparation hors ligne')),
+      appBar: AppBar(title: Text(en ? 'Offline readiness' : 'Préparation hors ligne')),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : ListView(
@@ -98,17 +99,19 @@ class _OfflineReadinessScreenState extends State<OfflineReadinessScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Row(
+                      Row(
                         children: [
-                          CircleAvatar(
+                          const CircleAvatar(
                             backgroundColor: Color(0xff087f83),
                             child: Icon(Icons.offline_bolt_rounded, color: Colors.white),
                           ),
-                          SizedBox(width: 12),
+                          const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              'ReadySafe doit rester utile quand le réseau tombe',
-                              style: TextStyle(fontSize: 19, fontWeight: FontWeight.w900),
+                              en
+                                  ? 'ReadySafe should remain useful when networks fail'
+                                  : 'ReadySafe doit rester utile quand le réseau tombe',
+                              style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w900),
                             ),
                           ),
                         ],
@@ -125,70 +128,72 @@ class _OfflineReadinessScreenState extends State<OfflineReadinessScreen> {
                       ),
                       const SizedBox(height: 5),
                       Text(
-                        '${_checks.length} / ${_manualChecks.length} sauvegardes externes prêtes',
+                        en
+                            ? '${_checks.length} / ${_manualChecks.length} offline backups ready'
+                            : '${_checks.length} / ${_manualChecks.length} sauvegardes externes prêtes',
                         style: const TextStyle(fontWeight: FontWeight.w900),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 14),
-                const Text(
-                  'Disponible directement dans l’application',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+                Text(
+                  en ? 'Available directly in the app' : 'Disponible directement dans l’application',
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
                 ),
                 const SizedBox(height: 7),
-                const _Capability(
+                _Capability(
                   icon: Icons.health_and_safety_rounded,
-                  title: 'Premiers secours',
-                  subtitle: 'Fiches, illustrations et mode pas à pas embarqués.',
+                  title: en ? 'First aid' : 'Premiers secours',
+                  subtitle: en ? 'Guides, illustrations and step-by-step mode are bundled.' : 'Fiches, illustrations et mode pas à pas embarqués.',
                   available: true,
                 ),
-                const _Capability(
+                _Capability(
                   icon: Icons.backpack_rounded,
-                  title: 'Kits & check-lists',
-                  subtitle: 'Listes et progression stockées localement.',
+                  title: en ? 'Kits & checklists' : 'Kits & check-lists',
+                  subtitle: en ? 'Lists and progress are stored locally.' : 'Listes et progression stockées localement.',
                   available: true,
                 ),
-                const _Capability(
+                _Capability(
                   icon: Icons.family_restroom_rounded,
-                  title: 'Famille, contacts et plans',
-                  subtitle: 'Informations enregistrées localement sur l’appareil.',
+                  title: en ? 'Family, contacts & plans' : 'Famille, contacts et plans',
+                  subtitle: en ? 'Information is stored locally on the device.' : 'Informations enregistrées localement sur l’appareil.',
                   available: true,
                 ),
-                const _Capability(
+                _Capability(
                   icon: Icons.inventory_2_rounded,
-                  title: 'Kits spécialisés',
-                  subtitle: 'Évacuation, voiture, voyage, enfants, animaux et extérieur.',
+                  title: en ? 'Specialized kits' : 'Kits spécialisés',
+                  subtitle: en ? 'Evacuation, vehicle, travel, children, pets and outdoor.' : 'Évacuation, voiture, voyage, enfants, animaux et extérieur.',
                   available: true,
                 ),
-                const _Capability(
+                _Capability(
                   icon: Icons.warning_amber_rounded,
-                  title: 'Guides risques & catastrophes',
-                  subtitle: 'Consignes générales embarquées dans l’application.',
+                  title: en ? 'Risk & disaster guides' : 'Guides risques & catastrophes',
+                  subtitle: en ? 'General guidance is bundled in the app.' : 'Consignes générales embarquées dans l’application.',
                   available: true,
                 ),
                 const SizedBox(height: 12),
-                const Text(
-                  'Peut nécessiter une connexion',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+                Text(
+                  en ? 'May require connectivity' : 'Peut nécessiter une connexion',
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
                 ),
                 const SizedBox(height: 7),
-                const _Capability(
+                _Capability(
                   icon: Icons.map_rounded,
-                  title: 'Fond de carte',
-                  subtitle: 'Les repères personnels restent enregistrés, mais les tuiles cartographiques peuvent nécessiter Internet.',
+                  title: en ? 'Map background' : 'Fond de carte',
+                  subtitle: en ? 'Personal landmarks remain saved, but map tiles can require Internet access.' : 'Les repères personnels restent enregistrés, mais les tuiles cartographiques peuvent nécessiter Internet.',
                   available: false,
                 ),
-                const _Capability(
+                _Capability(
                   icon: Icons.campaign_rounded,
-                  title: 'Alertes & sources officielles',
-                  subtitle: 'Les liens officiels nécessitent généralement une connexion pour obtenir l’information à jour.',
+                  title: en ? 'Official alerts & sources' : 'Alertes & sources officielles',
+                  subtitle: en ? 'Official links generally need connectivity for current information.' : 'Les liens officiels nécessitent généralement une connexion pour obtenir l’information à jour.',
                   available: false,
                 ),
                 const SizedBox(height: 14),
-                const Text(
-                  'Plan B hors téléphone',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+                Text(
+                  en ? 'Backup outside the phone' : 'Plan B hors téléphone',
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
                 ),
                 const SizedBox(height: 7),
                 ..._manualChecks.map((item) {
@@ -210,10 +215,10 @@ class _OfflineReadinessScreenState extends State<OfflineReadinessScreen> {
                         ),
                       ),
                       title: Text(
-                        item.title,
+                        en ? _checkTitle(item.id) : item.title,
                         style: const TextStyle(fontWeight: FontWeight.w900),
                       ),
-                      subtitle: Text(item.subtitle),
+                      subtitle: Text(en ? _checkSubtitle(item.id) : item.subtitle),
                     ),
                   );
                 }),
@@ -224,15 +229,17 @@ class _OfflineReadinessScreenState extends State<OfflineReadinessScreen> {
                     color: const Color(0xfffff4c7),
                     borderRadius: BorderRadius.circular(17),
                   ),
-                  child: const Row(
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.info_outline_rounded, color: Color(0xff9a6a00)),
-                      SizedBox(width: 9),
+                      const Icon(Icons.info_outline_rounded, color: Color(0xff9a6a00)),
+                      const SizedBox(width: 9),
                       Expanded(
                         child: Text(
-                          'Le mode hors ligne ne remplace pas une radio, des copies papier, une batterie externe ni les systèmes d’alerte gouvernementaux du téléphone.',
-                          style: TextStyle(fontWeight: FontWeight.w700, height: 1.35),
+                          en
+                              ? 'Offline mode does not replace a radio, paper copies, a charged power bank or the phone’s government alert systems.'
+                              : 'Le mode hors ligne ne remplace pas une radio, des copies papier, une batterie externe ni les systèmes d’alerte gouvernementaux du téléphone.',
+                          style: const TextStyle(fontWeight: FontWeight.w700, height: 1.35),
                         ),
                       ),
                     ],
@@ -242,6 +249,30 @@ class _OfflineReadinessScreenState extends State<OfflineReadinessScreen> {
             ),
     );
   }
+}
+
+String _checkTitle(String id) {
+  return const {
+        'paper_contacts': 'Important contacts on paper',
+        'paper_plan': 'Family plan on paper',
+        'paper_map': 'Offline map or route',
+        'radio': 'Independent radio',
+        'power': 'Power bank',
+        'emergency_numbers': 'Emergency numbers known',
+      }[id] ??
+      id;
+}
+
+String _checkSubtitle(String id) {
+  return const {
+        'paper_contacts': 'At least one copy exists outside the phone.',
+        'paper_plan': 'Meeting point, out-of-area contact and core instructions are written down.',
+        'paper_map': 'A backup exists if the online map cannot be used.',
+        'radio': 'A battery, hand-crank or other independent radio is available.',
+        'power': 'A charged power bank and useful cables are ready.',
+        'emergency_numbers': 'Essential numbers are known or written down offline.',
+      }[id] ??
+      '';
 }
 
 class _Capability extends StatelessWidget {
