@@ -17,6 +17,8 @@ class LocalStorageService {
   static const _planKey = 'family_plan_v3';
   static const _communicationKey = 'communication_plan_v3';
   static const _safetyMarkersKey = 'personal_safety_markers_v3';
+  static const _reviewDateKey = 'preparedness_review_date_v3';
+  static const _reviewChecksKey = 'preparedness_review_checks_v3';
 
   Future<SharedPreferences> get _prefs => SharedPreferences.getInstance();
 
@@ -188,6 +190,30 @@ class LocalStorageService {
 
   Future<void> saveSafetyMarkers(List<Map<String, dynamic>> markers) async =>
       (await _prefs).setString(_safetyMarkersKey, jsonEncode(markers));
+
+  Future<DateTime?> preparednessReviewDate() async {
+    try {
+      final raw = (await _prefs).getString(_reviewDateKey);
+      if (raw == null) return null;
+      return DateTime.tryParse(raw);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> savePreparednessReviewDate(DateTime value) async =>
+      (await _prefs).setString(_reviewDateKey, value.toIso8601String());
+
+  Future<Set<String>> preparednessReviewChecks() async {
+    try {
+      return (await _prefs).getStringList(_reviewChecksKey)?.toSet() ?? {};
+    } catch (_) {
+      return {};
+    }
+  }
+
+  Future<void> savePreparednessReviewChecks(Set<String> values) async =>
+      (await _prefs).setStringList(_reviewChecksKey, values.toList());
 
   Future<int> preparednessScore() async {
     final stock = await kitStock();
