@@ -74,6 +74,24 @@ void main() {
     );
   });
 
+  test('gas leak guidance avoids ignition sources and re-entry', () {
+    final gas = disasterGuides.firstWhere(
+      (guide) => guide.id == 'gas_leak',
+    );
+
+    final combined = [
+      gas.immediate,
+      gas.avoid,
+      ...gas.steps,
+      gas.callHelp,
+      gas.evacuate,
+    ].join(' ').toLowerCase();
+
+    expect(combined, contains('interrupteur'));
+    expect(combined, contains('flamme'));
+    expect(combined, contains('ne rentrez pas'));
+  });
+
   test('essential step-by-step first-aid guides remain available', () {
     const expectedIds = {
       'cpr_adult',
