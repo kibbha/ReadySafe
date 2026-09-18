@@ -162,19 +162,19 @@ class _FirstAidScreenState extends State<FirstAidScreen> {
       body: LayoutBuilder(
         builder: (context, constraints) {
           final width = constraints.maxWidth;
-          final columns = width >= 1500
-              ? 5
-              : width >= 1050
+          final columns = width >= 1180
+              ? 4
+              : width >= 820
                   ? 3
-                  : width >= 640
+                  : width >= 520
                       ? 2
                       : 1;
           final horizontal = width >= 760 ? 20.0 : 12.0;
           final posterHeight = columns >= 3
-              ? 610.0
+              ? 520.0
               : columns == 2
-                  ? 575.0
-                  : 545.0;
+                  ? 500.0
+                  : 520.0;
 
           return ListView(
             padding: EdgeInsets.fromLTRB(horizontal, 4, horizontal, 28),
@@ -709,7 +709,7 @@ class FirstAidDetailScreen extends StatelessWidget {
           return Align(
             alignment: Alignment.topCenter,
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 520),
+              constraints: const BoxConstraints(maxWidth: 430),
               child: ListView(
                 padding: EdgeInsets.fromLTRB(wide ? 24 : 12, 4, wide ? 24 : 12, 26),
                 children: [
@@ -833,7 +833,7 @@ class _PosterDetailPanel extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xfffffff9),
         border: Border.all(color: const Color(0xff58afa5), width: 1.5),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(6),
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(
