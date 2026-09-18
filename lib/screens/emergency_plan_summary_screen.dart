@@ -19,6 +19,10 @@ class _EmergencyPlanSummaryScreenState extends State<EmergencyPlanSummaryScreen>
   Map<String, String> _plan = {};
   Map<String, String> _communication = {};
   List<Map<String, dynamic>> _markers = [];
+  Set<String> _supportNeeds = {};
+  Set<String> _homeSafetyChecks = {};
+  Set<String> _offlineChecks = {};
+  DateTime? _reviewDate;
   bool _loading = true;
 
   @override
@@ -34,6 +38,10 @@ class _EmergencyPlanSummaryScreenState extends State<EmergencyPlanSummaryScreen>
     final plan = await _storage.familyPlan();
     final communication = await _storage.communicationPlan();
     final markers = await _storage.safetyMarkers();
+    final supportNeeds = await _storage.supportNeeds();
+    final homeSafetyChecks = await _storage.homeSafetyChecks();
+    final offlineChecks = await _storage.offlineReadinessChecks();
+    final reviewDate = await _storage.preparednessReviewDate();
 
     if (!mounted) return;
     setState(() {
@@ -43,6 +51,10 @@ class _EmergencyPlanSummaryScreenState extends State<EmergencyPlanSummaryScreen>
       _plan = plan;
       _communication = communication;
       _markers = markers;
+      _supportNeeds = supportNeeds;
+      _homeSafetyChecks = homeSafetyChecks;
+      _offlineChecks = offlineChecks;
+      _reviewDate = reviewDate;
       _loading = false;
     });
   }
@@ -100,11 +112,23 @@ class _EmergencyPlanSummaryScreenState extends State<EmergencyPlanSummaryScreen>
 
     buffer
       ..writeln()
+      ..writeln('PRÉPARATION COMPLÉMENTAIRE')
+      ..writeln('Besoins spécifiques pris en compte : ${_supportNeeds.length}')
+      ..writeln('Sécurité domicile : ${_homeSafetyChecks.length} point(s) vérifié(s)')
+      ..writeln('Plan B hors ligne : ${_offlineChecks.length} point(s) prêt(s)')
+      ..writeln('Dernière revue : ${_reviewDate == null ? 'Non renseignée' : _formatDate(_reviewDate!)}')
+      ..writeln()
       ..writeln('Message rapide : ${_communication['safeMessage'] ?? 'Je suis en sécurité.'}')
       ..writeln()
       ..writeln('Les consignes officielles et celles des services d’urgence priment toujours.');
 
     return buffer.toString();
+  }
+
+  String _formatDate(DateTime value) {
+    final d = value.day.toString().padLeft(2, '0');
+    final m = value.month.toString().padLeft(2, '0');
+    return '$d.$m.${value.year}';
   }
 
   Future<void> _copyPlan() async {
@@ -205,6 +229,34 @@ class _EmergencyPlanSummaryScreenState extends State<EmergencyPlanSummaryScreen>
                   title: 'Repères personnels',
                   value: '${_markers.length} repère(s) enregistré(s)',
                   color: const Color(0xff237fc7),
+                ),
+                _SummaryCard(
+                  icon: Icons.accessibility_new_rounded,
+                  title: 'Besoins spécifiques',
+                  value: _supportNeeds.isEmpty
+                      ? 'Aucun besoin particulier enregistré'
+                      : '${_supportNeeds.length} besoin(s) pris en compte',
+                  color: const Color(0xff6750a4),
+                ),
+                _SummaryCard(
+                  icon: Icons.home_work_rounded,
+                  title: 'Sécurité domicile',
+                  value: '${_homeSafetyChecks.length} point(s) vérifié(s)',
+                  color: const Color(0xff4c6d72),
+                ),
+                _SummaryCard(
+                  icon: Icons.offline_bolt_rounded,
+                  title: 'Plan B hors ligne',
+                  value: '${_offlineChecks.length} sauvegarde(s) externe(s) prête(s)',
+                  color: const Color(0xff087f83),
+                ),
+                _SummaryCard(
+                  icon: Icons.fact_check_rounded,
+                  title: 'Dernière revue',
+                  value: _reviewDate == null
+                      ? 'Non renseignée'
+                      : _formatDate(_reviewDate!),
+                  color: const Color(0xff147343),
                 ),
                 const SizedBox(height: 12),
                 const Text(
