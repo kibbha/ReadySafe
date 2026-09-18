@@ -4,6 +4,7 @@ import '../app/app_scope.dart';
 import '../app/localizations.dart';
 import '../data/country_repository.dart';
 import '../widgets/country_picker.dart';
+import 'diagnostics_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -184,6 +185,36 @@ class SettingsScreen extends StatelessWidget {
                         ),
                       ),
                     ],
+                  ),
+                ),
+                const SizedBox(height: 22),
+                Text(
+                  en ? 'Diagnostics' : 'Diagnostic',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                const SizedBox(height: 6),
+                Card(
+                  child: ListTile(
+                    leading: const CircleAvatar(
+                      backgroundColor: Color(0xffe4f2f0),
+                      child: Icon(Icons.health_and_safety_outlined, color: Color(0xff087f83)),
+                    ),
+                    title: Text(
+                      en ? 'ReadySafe self-check' : 'Auto-contrôle ReadySafe',
+                      style: const TextStyle(fontWeight: FontWeight.w900),
+                    ),
+                    subtitle: Text(
+                      en
+                          ? 'Check emergency data, illustrations, offline storage and secure-vault services.'
+                          : 'Vérifier données d’urgence, illustrations, stockage hors ligne et coffre sécurisé.',
+                    ),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const DiagnosticsScreen()),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 18),
