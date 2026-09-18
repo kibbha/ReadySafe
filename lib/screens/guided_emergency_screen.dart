@@ -222,7 +222,7 @@ class GuidedEmergencyScreen extends StatelessWidget {
                 itemCount: situations.length + 1,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: wide ? 3 : 2,
-                  childAspectRatio: wide ? 1.35 : 1.02,
+                  mainAxisExtent: wide ? 158 : 146,
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
                 ),
