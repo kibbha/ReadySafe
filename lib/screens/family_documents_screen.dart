@@ -5,6 +5,7 @@ import '../services/local_storage_service.dart';
 import 'communication_plan_screen.dart';
 import 'emergency_plan_summary_screen.dart';
 import 'family_screen.dart';
+import 'family_reunification_screen.dart';
 import 'medical_continuity_screen.dart';
 import 'pet_emergency_screen.dart';
 import 'secure_vault_screen.dart';
@@ -272,6 +273,22 @@ class _FamilyDocumentsScreenState extends State<FamilyDocumentsScreen>
                   ],
                 ),
               ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Card(
+            child: ListTile(
+              leading: const CircleAvatar(
+                backgroundColor: Color(0xffe4f2f0),
+                child: Icon(Icons.family_restroom_rounded, color: Color(0xff087f83)),
+              ),
+              title: const Text('Réunification familiale', style: TextStyle(fontWeight: FontWeight.w900)),
+              subtitle: const Text('Rendez-vous, récupération des enfants et carte famille urgence'),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const FamilyReunificationScreen()),
+              ).then((_) => _load()),
             ),
           ),
           const SizedBox(height: 12),
