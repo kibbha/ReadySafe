@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../services/local_storage_service.dart';
+import '../services/secure_vault_service.dart';
 
 class EmergencyPlanSummaryScreen extends StatefulWidget {
   const EmergencyPlanSummaryScreen({super.key});
@@ -12,6 +13,7 @@ class EmergencyPlanSummaryScreen extends StatefulWidget {
 
 class _EmergencyPlanSummaryScreenState extends State<EmergencyPlanSummaryScreen> {
   final _storage = LocalStorageService();
+  final _vault = SecureVaultService();
 
   Map<String, int> _family = const {'adults': 1, 'children': 0, 'care': 0, 'pets': 0};
   List<Map<String, String>> _contacts = [];
@@ -23,6 +25,7 @@ class _EmergencyPlanSummaryScreenState extends State<EmergencyPlanSummaryScreen>
   Set<String> _homeSafetyChecks = {};
   Set<String> _offlineChecks = {};
   DateTime? _reviewDate;
+  int _vaultCount = 0;
   bool _loading = true;
 
   @override
@@ -42,6 +45,7 @@ class _EmergencyPlanSummaryScreenState extends State<EmergencyPlanSummaryScreen>
     final homeSafetyChecks = await _storage.homeSafetyChecks();
     final offlineChecks = await _storage.offlineReadinessChecks();
     final reviewDate = await _storage.preparednessReviewDate();
+    final vaultCount = await _vault.count();
 
     if (!mounted) return;
     setState(() {
@@ -55,6 +59,7 @@ class _EmergencyPlanSummaryScreenState extends State<EmergencyPlanSummaryScreen>
       _homeSafetyChecks = homeSafetyChecks;
       _offlineChecks = offlineChecks;
       _reviewDate = reviewDate;
+      _vaultCount = vaultCount;
       _loading = false;
     });
   }
@@ -116,6 +121,7 @@ class _EmergencyPlanSummaryScreenState extends State<EmergencyPlanSummaryScreen>
       ..writeln('Besoins spécifiques pris en compte : ${_supportNeeds.length}')
       ..writeln('Sécurité domicile : ${_homeSafetyChecks.length} point(s) vérifié(s)')
       ..writeln('Plan B hors ligne : ${_offlineChecks.length} point(s) prêt(s)')
+      ..writeln('Entrées du coffre sécurisé : $_vaultCount')
       ..writeln('Dernière revue : ${_reviewDate == null ? 'Non renseignée' : _formatDate(_reviewDate!)}')
       ..writeln()
       ..writeln('Message rapide : ${_communication['safeMessage'] ?? 'Je suis en sécurité.'}')
@@ -249,6 +255,12 @@ class _EmergencyPlanSummaryScreenState extends State<EmergencyPlanSummaryScreen>
                   title: 'Plan B hors ligne',
                   value: '${_offlineChecks.length} sauvegarde(s) externe(s) prête(s)',
                   color: const Color(0xff087f83),
+                ),
+                _SummaryCard(
+                  icon: Icons.lock_rounded,
+                  title: 'Coffre sécurisé',
+                  value: '$_vaultCount entrée(s) chiffrée(s)',
+                  color: const Color(0xff6750a4),
                 ),
                 _SummaryCard(
                   icon: Icons.fact_check_rounded,
