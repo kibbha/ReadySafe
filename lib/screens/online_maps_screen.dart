@@ -328,14 +328,14 @@ class _NearbySheet extends StatelessWidget {
   final Future<void> Function(_Place place, {double zoom}) onTap;
 
   @override
-  Widget build(BuildContext context) => Container(
-        constraints: const BoxConstraints(maxHeight: 188),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: .97),
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: const [BoxShadow(blurRadius: 16, color: Color(0x22000000))],
-        ),
-        child: places.isEmpty
+  Widget build(BuildContext context) => Material(
+        color: Colors.white.withValues(alpha: .97),
+        elevation: 4,
+        borderRadius: BorderRadius.circular(20),
+        clipBehavior: Clip.antiAlias,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxHeight: 188),
+          child: places.isEmpty
             ? const Padding(
                 padding: EdgeInsets.all(16),
                 child: Row(
@@ -394,6 +394,7 @@ class _NearbySheet extends StatelessWidget {
                   ),
                 ],
               ),
+        ),
       );
 }
 
