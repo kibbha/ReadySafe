@@ -18,6 +18,7 @@ import 'pet_emergency_screen.dart';
 import 'offline_readiness_screen.dart';
 import 'recovery_screen.dart';
 import 'safety_tools_screen.dart';
+import 'smoke_air_quality_screen.dart';
 import 'sanitation_hygiene_screen.dart';
 import 'water_safety_screen.dart';
 
@@ -232,6 +233,12 @@ class GuidedEmergencyScreen extends StatelessWidget {
         en ? 'Vegetation fire or smoke nearby' : 'Feu de végétation ou fumée à proximité',
         Icons.forest_rounded,
         () => _openHazard(context, 'wildfire'),
+      ),
+      _Situation(
+        en ? 'Smoke / bad air quality' : 'Fumée / air dégradé',
+        en ? 'Smoke entering the home or unhealthy outdoor air' : 'Fumée dans le logement ou air extérieur dégradé',
+        Icons.air_rounded,
+        () => _openPage(context, const SmokeAirQualityScreen()),
       ),
       _Situation(
         en ? 'Power outage' : 'Panne électrique',
