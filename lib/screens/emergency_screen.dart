@@ -17,6 +17,8 @@ class EmergencyScreen extends StatelessWidget {
     if (key.contains('fire')) return Icons.local_fire_department_outlined;
     if (key.contains('ambulance') || key.contains('medical')) return Icons.emergency_outlined;
     if (key.contains('poison')) return Icons.science_outlined;
+    if (key.contains('gas')) return Icons.warning_amber_outlined;
+    if (key.contains('rescue')) return Icons.health_and_safety_outlined;
     if (key.contains('youth')) return Icons.child_care_outlined;
     if (key.contains('help')) return Icons.support_agent_outlined;
     return Icons.sos_outlined;
