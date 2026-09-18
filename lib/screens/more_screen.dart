@@ -5,6 +5,7 @@ import 'emergency_screen.dart';
 import 'communication_plan_screen.dart';
 import 'emergency_plan_summary_screen.dart';
 import 'family_documents_screen.dart';
+import 'family_reunification_screen.dart';
 import 'first_aid_screen.dart';
 import 'guide_list_screen.dart';
 import 'home_safety_screen.dart';
@@ -21,6 +22,7 @@ import 'secure_vault_screen.dart';
 import 'settings_screen.dart';
 import 'support_needs_screen.dart';
 import 'training_screen.dart';
+import 'vehicle_emergency_screen.dart';
 
 class MoreScreen extends StatelessWidget {
   const MoreScreen({super.key});
@@ -47,6 +49,12 @@ class MoreScreen extends StatelessWidget {
         en ? 'Encrypted references and sensitive emergency notes' : 'Références chiffrées et notes sensibles',
         Icons.lock_rounded,
         const SecureVaultScreen(),
+      ),
+      _MoreItem(
+        en ? 'Family reunification' : 'Réunification familiale',
+        en ? 'Meeting places, child pickup and family emergency card' : 'Rendez-vous, récupération des enfants et carte urgence',
+        Icons.family_restroom_rounded,
+        const FamilyReunificationScreen(),
       ),
       _MoreItem(
         en ? 'Family & documents' : 'Famille & documents',
@@ -95,6 +103,12 @@ class MoreScreen extends StatelessWidget {
         en ? 'Blackout, evacuation and shelter guidance' : 'Panne, évacuation, confinement et réflexes utiles',
         Icons.menu_book_rounded,
         const GuideListScreen(kind: GuideKind.emergencies),
+      ),
+      _MoreItem(
+        en ? 'Vehicle emergency' : 'Urgence véhicule',
+        en ? 'Breakdown, crash, weather and roadside preparedness' : 'Panne, accident, météo et préparation routière',
+        Icons.directions_car_rounded,
+        const VehicleEmergencyScreen(),
       ),
       _MoreItem(
         en ? 'Power outage' : 'Panne électrique',
