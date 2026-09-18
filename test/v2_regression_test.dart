@@ -4,6 +4,13 @@ import 'package:readysafe/data/first_aid_repository.dart';
 import 'package:readysafe/screens/guide_list_screen.dart';
 
 void main() {
+  test('first aid never proposes a number for an unverified country', () {
+    final pending = CountryRepository.byCode('AM')!;
+    expect(pending.verifiedOn, isNull);
+    expect(pending.preferredEmergencyNumber, isNull);
+    expect(CountryRepository.byCode('CH')!.preferredEmergencyNumber, '144');
+  });
+
   test('verified emergency numbers remain available after main merge', () {
     final expected = <String, Set<String>>{
       'FR': {'112', '15', '17', '18', '114'},

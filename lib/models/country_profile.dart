@@ -43,4 +43,18 @@ class CountryProfile {
   final String region;
 
   bool get hasVerifiedNumbers => services.any((service) => service.isCallable);
+
+  /// A displayed emergency number must always come from a callable service.
+  String? get preferredEmergencyNumber {
+    for (final service in services) {
+      if (service.isCallable &&
+          (service.id == 'medical' || service.nameKey.contains('ambulance'))) {
+        return service.number;
+      }
+    }
+    for (final service in services) {
+      if (service.isCallable) return service.number;
+    }
+    return null;
+  }
 }

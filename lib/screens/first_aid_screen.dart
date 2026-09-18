@@ -5,7 +5,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../app/app_scope.dart';
 import '../app/localizations.dart';
 import '../data/first_aid_repository.dart';
-import '../models/country_profile.dart';
 import '../models/first_aid_guide.dart';
 import 'emergency_screen.dart';
 
@@ -67,21 +66,8 @@ String _aidText(BuildContext context, String key) {
   return (en ? english : fr)[key] ?? t.get(key);
 }
 
-String _emergencyNumber(BuildContext context) {
-  final country = AppScope.of(context).activeCountry!;
-  EmergencyService? preferred;
-  for (final service in country.services) {
-    if (!service.isCallable) continue;
-    if (service.id == 'medical' || service.nameKey.contains('ambulance')) {
-      preferred = service;
-      break;
-    }
-  }
-  if (preferred != null && preferred.number != null) return preferred.number!;
-  for (final service in country.services) {
-    if (service.isCallable && service.number != null) return service.number!;
-  }
-  return '112';
+String? _emergencyNumber(BuildContext context) {
+  return AppScope.of(context).activeCountry?.preferredEmergencyNumber;
 }
 
 String _posterTag(String id, bool en) {
@@ -303,7 +289,7 @@ class _FirstAidHeader extends StatelessWidget {
 
   final String title;
   final String subtitle;
-  final String emergencyNumber;
+  final String? emergencyNumber;
 
   @override
   Widget build(BuildContext context) => Container(
@@ -351,7 +337,7 @@ class _FirstAidHeader extends StatelessWidget {
                   const Icon(Icons.call_rounded, size: 15, color: Color(0xffd92d36)),
                   const SizedBox(width: 4),
                   Text(
-                    emergencyNumber,
+                    emergencyNumber ?? (Localizations.localeOf(context).languageCode == 'en' ? 'Numbers' : 'Numéros'),
                     style: const TextStyle(color: Color(0xffd92d36), fontWeight: FontWeight.w900),
                   ),
                 ],
@@ -376,7 +362,7 @@ class _PosterGuideCard extends StatelessWidget {
   final int? number;
   final String title;
   final String subtitle;
-  final String emergencyNumber;
+  final String? emergencyNumber;
   final VoidCallback onTap;
 
   @override
@@ -520,9 +506,9 @@ class _PosterGuideCard extends StatelessWidget {
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
-                        en
-                            ? 'Severe situation: call $emergencyNumber'
-                            : 'Situation grave : appeler le $emergencyNumber',
+                        emergencyNumber == null
+                            ? (en ? 'Severe situation: see emergency numbers' : 'Situation grave : consulter les numéros d’urgence')
+                            : (en ? 'Severe situation: call $emergencyNumber' : 'Situation grave : appeler le $emergencyNumber'),
                         style: const TextStyle(
                           fontSize: 11.2,
                           color: Color(0xff9f1d25),
@@ -762,7 +748,9 @@ class FirstAidDetailScreen extends StatelessWidget {
                             const SizedBox(width: 10),
                             Expanded(
                               child: Text(
-                                en ? 'EMERGENCY — CALL $emergencyNumber' : 'URGENCE — APPELER LE $emergencyNumber',
+                                emergencyNumber == null
+                                    ? (en ? 'EMERGENCY — NUMBERS UNVERIFIED' : 'URGENCE — NUMÉROS NON VÉRIFIÉS')
+                                    : (en ? 'EMERGENCY — CALL $emergencyNumber' : 'URGENCE — APPELER LE $emergencyNumber'),
                                 style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w900),
                               ),
                             ),
@@ -1207,7 +1195,7 @@ class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScree
                       MaterialPageRoute(builder: (_) => const EmergencyScreen()),
                     ),
                     icon: const Icon(Icons.call_rounded),
-                    label: Text(emergencyNumber),
+                    label: Text(emergencyNumber ?? (en ? 'Numbers' : 'Numéros')),
                   ),
                   const SizedBox(width: 7),
                   Expanded(
