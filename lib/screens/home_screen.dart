@@ -10,6 +10,7 @@ import 'global_search_screen.dart';
 import 'guided_emergency_screen.dart';
 import 'online_maps_screen.dart';
 import 'settings_screen.dart';
+import 'safety_tools_screen.dart';
 import 'survival_hub_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -203,10 +204,15 @@ class _HomeScreenState extends State<HomeScreen> {
                             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const OnlineMapsScreen())),
                           ),
                           _QuickAction(
+                            icon: Icons.sos_rounded,
+                            label: 'Outils SOS',
+                            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SafetyToolsScreen())),
+                          ),
+                          _QuickAction(
                             icon: Icons.offline_bolt_rounded,
                             label: 'Hors ligne',
                             onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Les fiches, kits, contacts et plans restent disponibles hors ligne.')),
+                              const SnackBar(content: Text('Les fiches, kits, contacts, plans et repères personnels restent disponibles hors ligne.')),
                             ),
                           ),
                         ],
