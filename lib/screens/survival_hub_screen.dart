@@ -11,6 +11,7 @@ import 'official_sources_screen.dart';
 import 'preparedness_review_screen.dart';
 import 'recovery_screen.dart';
 import 'safety_tools_screen.dart';
+import 'special_kits_screen.dart';
 import 'training_screen.dart';
 
 class SurvivalHubScreen extends StatefulWidget {
@@ -61,6 +62,13 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.backpack_rounded,
         const Color(0xff087f83),
         const ChecklistScreen(kit: true),
+      ),
+      _Module(
+        'Kits spécialisés',
+        'Évacuation, voiture, voyage, enfant, animaux et extérieur',
+        Icons.inventory_2_rounded,
+        const Color(0xff147343),
+        const SpecialKitsScreen(),
       ),
       _Module(
         'Check-lists',
