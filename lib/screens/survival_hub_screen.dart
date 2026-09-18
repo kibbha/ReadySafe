@@ -28,6 +28,7 @@ import 'smoke_air_quality_screen.dart';
 import 'special_kits_screen.dart';
 import 'support_needs_screen.dart';
 import 'training_screen.dart';
+import 'travel_emergency_screen.dart';
 import 'tsunami_safety_screen.dart';
 import 'vehicle_emergency_screen.dart';
 import 'volcano_safety_screen.dart';
@@ -83,6 +84,14 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.backpack_rounded,
         const Color(0xff087f83),
         const ChecklistScreen(kit: true),
+        'prepare',
+      ),
+      _Module(
+        en ? 'Travel emergency' : 'Urgence en voyage',
+        en ? 'Local emergency numbers, consular references and travel continuity' : 'Numéros locaux, références consulaires et continuité du voyage',
+        Icons.luggage_rounded,
+        const Color(0xff6750a4),
+        const TravelEmergencyScreen(),
         'prepare',
       ),
       _Module(
