@@ -4,6 +4,7 @@ import 'emergency_food_safety_screen.dart';
 import 'family_documents_screen.dart';
 import 'official_sources_screen.dart';
 import 'online_maps_screen.dart';
+import 'recovery_log_screen.dart';
 
 class RecoveryScreen extends StatelessWidget {
   const RecoveryScreen({super.key});
@@ -131,6 +132,14 @@ class RecoveryScreen extends StatelessWidget {
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const EmergencyFoodSafetyScreen()),
+                ),
+              ),
+              _ActionChip(
+                icon: Icons.assignment_outlined,
+                label: 'Journal après urgence',
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const RecoveryLogScreen()),
                 ),
               ),
               _ActionChip(
