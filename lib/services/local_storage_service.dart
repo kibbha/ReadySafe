@@ -135,22 +135,25 @@ class LocalStorageService {
       (await _prefs).setString(_documentsKey, jsonEncode(docs));
 
   Future<Map<String, String>> familyPlan() async {
+    const defaults = <String, String>{
+      'meetingPoint': '',
+      'backupMeetingPoint': '',
+      'outsideAreaMeetingPoint': '',
+      'authorizedPickup': '',
+      'childInstructions': '',
+      'notes': '',
+    };
     try {
       final raw = (await _prefs).getString(_planKey);
-      if (raw == null) {
-        return {
-          'meetingPoint': '',
-          'backupMeetingPoint': '',
-          'notes': '',
-        };
-      }
+      if (raw == null) return Map<String, String>.from(defaults);
       final decoded = jsonDecode(raw);
-      if (decoded is! Map) return {'meetingPoint': '', 'backupMeetingPoint': '', 'notes': ''};
-      return <String, String>{
-        for (final entry in decoded.entries) '${entry.key}': '${entry.value ?? ''}',
+      if (decoded is! Map) return Map<String, String>.from(defaults);
+      return {
+        for (final entry in defaults.entries)
+          entry.key: '${decoded[entry.key] ?? entry.value}',
       };
     } catch (_) {
-      return {'meetingPoint': '', 'backupMeetingPoint': '', 'notes': ''};
+      return Map<String, String>.from(defaults);
     }
   }
 
