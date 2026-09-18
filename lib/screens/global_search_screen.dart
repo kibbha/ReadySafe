@@ -30,6 +30,7 @@ import 'smoke_air_quality_screen.dart';
 import 'special_kits_screen.dart';
 import 'support_needs_screen.dart';
 import 'vehicle_emergency_screen.dart';
+import 'volcano_safety_screen.dart';
 import 'water_safety_screen.dart';
 import 'online_maps_screen.dart';
 import 'survival_hub_screen.dart';
@@ -160,6 +161,13 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
       'monoxyde': _SearchHit('Risques', 'Monoxyde de carbone', Icons.warning_amber_rounded, CarbonMonoxideScreen()),
       'co': _SearchHit('Risques', 'Monoxyde de carbone', Icons.warning_amber_rounded, CarbonMonoxideScreen()),
       'groupe électrogène': _SearchHit('Risques', 'Monoxyde de carbone', Icons.warning_amber_rounded, CarbonMonoxideScreen()),
+      'orage': _SearchHit('Risques', 'Orage & foudre', Icons.thunderstorm_rounded, LightningSafetyScreen()),
+      'foudre': _SearchHit('Risques', 'Orage & foudre', Icons.thunderstorm_rounded, LightningSafetyScreen()),
+      'grêle': _SearchHit('Risques', 'Orage & foudre', Icons.thunderstorm_rounded, LightningSafetyScreen()),
+      'tsunami': _SearchHit('Risques', 'Tsunami', Icons.waves_rounded, TsunamiSafetyScreen()),
+      'retrait de la mer': _SearchHit('Risques', 'Tsunami', Icons.waves_rounded, TsunamiSafetyScreen()),
+      'volcan': _SearchHit('Risques', 'Volcan & cendres', Icons.volcano_rounded, VolcanoSafetyScreen()),
+      'cendres volcaniques': _SearchHit('Risques', 'Volcan & cendres', Icons.volcano_rounded, VolcanoSafetyScreen()),
       'avalanche': _SearchHit('Risques', 'Sécurité avalanche', Icons.landscape_rounded, AvalancheSafetyScreen()),
       'rega': _SearchHit('Risques', 'Sécurité avalanche', Icons.landscape_rounded, AvalancheSafetyScreen()),
       'panne électrique': _SearchHit('Préparation', 'Panne électrique', Icons.power_off_rounded, PowerOutageScreen()),
