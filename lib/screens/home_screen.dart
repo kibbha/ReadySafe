@@ -8,6 +8,7 @@ import 'family_documents_screen.dart';
 import 'first_aid_screen.dart';
 import 'global_search_screen.dart';
 import 'guided_emergency_screen.dart';
+import 'maintenance_screen.dart';
 import 'offline_readiness_screen.dart';
 import 'online_maps_screen.dart';
 import 'settings_screen.dart';
@@ -208,6 +209,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             icon: Icons.sos_rounded,
                             label: 'Outils SOS',
                             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SafetyToolsScreen())),
+                          ),
+                          _QuickAction(
+                            icon: Icons.event_repeat_rounded,
+                            label: 'Rappels',
+                            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MaintenanceScreen())),
                           ),
                           _QuickAction(
                             icon: Icons.offline_bolt_rounded,
