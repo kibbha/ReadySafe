@@ -70,6 +70,26 @@ class TrainingScreen extends StatelessWidget {
           en ? 'Review the post-shaking meeting point.' : 'Revoir le point de rassemblement après les secousses.',
         ],
       ),
+      _Drill(
+        en ? 'Medical continuity' : 'Continuité médicale',
+        en ? 'Test how essential treatment continues during an outage or evacuation.' : 'Tester comment les soins indispensables continuent pendant une panne ou une évacuation.',
+        Icons.medical_services_outlined,
+        [
+          en ? 'Locate medicines, prescriptions and essential consumables.' : 'Retrouver médicaments, ordonnances et consommables essentiels.',
+          en ? 'Check backup power for any essential medical device.' : 'Vérifier l’alimentation de secours des appareils médicaux indispensables.',
+          en ? 'Confirm who to contact if treatment or refrigeration is interrupted.' : 'Confirmer qui contacter si un traitement ou la chaîne du froid est interrompu.',
+        ],
+      ),
+      _Drill(
+        en ? 'Pet evacuation' : 'Évacuation avec animaux',
+        en ? 'Practise leaving safely with animals and their essential supplies.' : 'S’entraîner à partir avec les animaux et leur matériel indispensable.',
+        Icons.pets_outlined,
+        [
+          en ? 'Locate carrier, lead or harness immediately.' : 'Retrouver immédiatement caisse, laisse ou harnais.',
+          en ? 'Confirm the pet kit and identification are ready.' : 'Vérifier que le kit et l’identification sont prêts.',
+          en ? 'Review the planned pet-friendly destination or helper.' : 'Revoir le lieu d’accueil compatible ou la personne relais.',
+        ],
+      ),
     ];
 
     return Scaffold(
