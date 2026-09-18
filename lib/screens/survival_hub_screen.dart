@@ -141,7 +141,7 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '${_ready} / ${_total} éléments de base prêts',
+                            '$_ready / $_total éléments de base prêts',
                             style: const TextStyle(fontWeight: FontWeight.w800, color: Color(0xff52666b)),
                           ),
                           const SizedBox(height: 8),
