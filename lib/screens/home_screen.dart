@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 
 import '../app/app_scope.dart';
 import '../app/localizations.dart';
+import '../data/first_aid_repository.dart';
 import '../services/local_storage_service.dart';
 import 'emergency_screen.dart';
 import 'family_documents_screen.dart';
 import 'first_aid_screen.dart';
 import 'global_search_screen.dart';
 import 'guided_emergency_screen.dart';
+import 'leave_now_screen.dart';
 import 'maintenance_screen.dart';
 import 'offline_readiness_screen.dart';
 import 'online_maps_screen.dart';
@@ -177,7 +179,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           crossAxisSpacing: 10,
                           mainAxisSpacing: 10,
                         ),
-                        itemBuilder: (context, index) => _ModuleCard(module: modules[index]),
+                        itemBuilder: (context, index) => _ModuleCard(
+                          module: modules[index],
+                          onReturn: _refreshScore,
+                        ),
                       ),
                       const SizedBox(height: 18),
                       Row(
@@ -207,7 +212,26 @@ class _HomeScreenState extends State<HomeScreen> {
                           _QuickAction(
                             icon: Icons.favorite_rounded,
                             label: en ? 'Adult CPR' : 'RCP adulte',
-                            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FirstAidScreen())),
+                            onTap: () {
+                              final guide = firstAidGuides.firstWhere(
+                                (item) => item.id == 'cpr_adult',
+                                orElse: () => firstAidGuides.first,
+                              );
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => FirstAidDetailScreen(guide: guide),
+                                ),
+                              );
+                            },
+                          ),
+                          _QuickAction(
+                            icon: Icons.directions_run_rounded,
+                            label: en ? 'Leave now' : 'Partir maintenant',
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const LeaveNowScreen()),
+                            ),
                           ),
                           _QuickAction(
                             icon: Icons.map_rounded,
@@ -410,8 +434,13 @@ class _HomeModule {
 }
 
 class _ModuleCard extends StatelessWidget {
-  const _ModuleCard({required this.module});
+  const _ModuleCard({
+    required this.module,
+    required this.onReturn,
+  });
+
   final _HomeModule module;
+  final Future<void> Function() onReturn;
 
   @override
   Widget build(BuildContext context) => Material(
@@ -419,7 +448,13 @@ class _ModuleCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
-          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => module.page)),
+          onTap: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => module.page),
+            );
+            await onReturn();
+          },
           child: Container(
             padding: const EdgeInsets.all(13),
             decoration: BoxDecoration(
