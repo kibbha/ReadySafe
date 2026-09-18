@@ -17,7 +17,7 @@ class GuideListScreen extends StatelessWidget {
     final en = Localizations.localeOf(context).languageCode == 'en';
     final isDisaster = kind == GuideKind.disasters;
     final rawGuides = isDisaster ? disasterGuides : emergencyGuides;
-    final guides = rawGuides.map((guide) => _localizedGuide(guide, en)).toList();
+    final guides = rawGuides.map((guide) => localizedGuide(guide, en)).toList();
 
     return Scaffold(
       backgroundColor: const Color(0xfff7faf9),
@@ -473,7 +473,7 @@ class _Block extends StatelessWidget {
       );
 }
 
-Guide _localizedGuide(Guide guide, bool en) {
+Guide localizedGuide(Guide guide, bool en) {
   if (!en) return guide;
 
   final data = _englishGuides[guide.id];
