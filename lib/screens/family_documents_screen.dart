@@ -201,7 +201,7 @@ class _FamilyDocumentsScreenState extends State<FamilyDocumentsScreen>
           _hero(
             icon: Icons.family_restroom_rounded,
             title: 'Votre foyer',
-            subtitle: '${_people} personne(s) · ${_family['pets'] ?? 0} animal(aux)',
+            subtitle: '$_people personne(s) · ${_family['pets'] ?? 0} animal(aux)',
             actionLabel: 'Modifier',
             onTap: () async {
               await Navigator.push(
@@ -340,7 +340,7 @@ class _FamilyDocumentsScreenState extends State<FamilyDocumentsScreen>
           _hero(
             icon: Icons.folder_copy_rounded,
             title: 'Documents essentiels',
-            subtitle: '${readyDocs} / ${_documents.length} catégories préparées',
+            subtitle: '$readyDocs / ${_documents.length} catégories préparées',
             actionLabel: 'Hors ligne',
             onTap: () {},
           ),
