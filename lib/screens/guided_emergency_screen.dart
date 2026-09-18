@@ -5,6 +5,8 @@ import '../data/content.dart';
 import '../data/first_aid_repository.dart';
 import '../models/first_aid_guide.dart';
 import '../models/guide.dart';
+import 'avalanche_safety_screen.dart';
+import 'carbon_monoxide_screen.dart';
 import 'emergency_food_safety_screen.dart';
 import 'emergency_screen.dart';
 import 'first_aid_screen.dart';
@@ -245,6 +247,19 @@ class GuidedEmergencyScreen extends StatelessWidget {
         en ? 'Loss of power or prolonged blackout' : 'Coupure ou panne prolongée',
         Icons.power_off_rounded,
         () => _openPage(context, const PowerOutageScreen()),
+      ),
+      _Situation(
+        en ? 'Possible carbon monoxide' : 'Suspicion de monoxyde de carbone',
+        en ? 'Fuel-burning device, generator or unexplained symptoms' : 'Appareil à combustion, groupe électrogène ou symptômes inexpliqués',
+        Icons.warning_amber_rounded,
+        () => _openPage(context, const CarbonMonoxideScreen()),
+        urgentColor: const Color(0xffd92d36),
+      ),
+      _Situation(
+        en ? 'Avalanche danger' : 'Danger d’avalanche',
+        en ? 'Avalanche terrain, burial or official avalanche warning' : 'Terrain avalancheux, ensevelissement ou alerte officielle',
+        Icons.landscape_rounded,
+        () => _openPage(context, const AvalancheSafetyScreen()),
       ),
       _Situation(
         en ? 'Industrial / chemical incident' : 'Accident industriel / chimique',
