@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../data/content.dart';
+import '../models/checklist_item.dart';
 import '../services/local_storage_service.dart';
 import 'avalanche_safety_screen.dart';
 import 'calculator_screen.dart';
@@ -63,7 +64,7 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
     final children = family['children'] ?? 0;
     final pets = family['pets'] ?? 0;
 
-    num targetFor(item) {
+    num targetFor(ChecklistItem item) {
       final base = item.recommendedQuantity;
       if (base == null) return 0;
 
