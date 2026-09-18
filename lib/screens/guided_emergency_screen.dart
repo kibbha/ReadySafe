@@ -15,6 +15,7 @@ import 'power_outage_screen.dart';
 import 'offline_readiness_screen.dart';
 import 'recovery_screen.dart';
 import 'safety_tools_screen.dart';
+import 'water_safety_screen.dart';
 
 class GuidedEmergencyScreen extends StatelessWidget {
   const GuidedEmergencyScreen({super.key});
@@ -258,6 +259,12 @@ class GuidedEmergencyScreen extends StatelessWidget {
         en ? 'Exits, utilities and home safety plan' : 'Sorties, installations et plan de sécurité du domicile',
         Icons.home_work_rounded,
         () => _openPage(context, const HomeSafetyScreen()),
+      ),
+      _Situation(
+        en ? 'Tap water may be unsafe' : 'L’eau peut ne plus être potable',
+        en ? 'Boiling, treatment and contamination guidance' : 'Ébullition, traitement et contamination',
+        Icons.local_drink_rounded,
+        () => _openPage(context, const WaterSafetyScreen()),
       ),
       _Situation(
         en ? 'No network / Internet' : 'Pas de réseau / Internet',
