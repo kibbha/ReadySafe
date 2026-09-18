@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../app/localizations.dart';
-import 'calculator_screen.dart';
-import 'checklist_screen.dart';
-import 'family_screen.dart';
+import 'emergency_screen.dart';
+import 'family_documents_screen.dart';
+import 'first_aid_screen.dart';
 import 'guide_list_screen.dart';
-import 'online_maps_screen.dart';
 import 'settings_screen.dart';
 import 'training_screen.dart';
 
@@ -16,39 +15,117 @@ class MoreScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
     final en = Localizations.localeOf(context).languageCode == 'en';
-    final items = [
-      (en ? 'Maps' : 'Cartes', Icons.map_outlined, const OnlineMapsScreen()),
-      (en ? 'Training' : 'Entraînement', Icons.school_outlined, const TrainingScreen()),
-      (t.get('disasters'), Icons.thunderstorm_outlined, const GuideListScreen(kind: GuideKind.disasters)),
-      (t.get('kit'), Icons.backpack_outlined, const ChecklistScreen(kit: true)),
-      (t.get('checklists'), Icons.checklist, const ChecklistScreen(kit: false)),
-      (t.get('waterFood'), Icons.water_drop_outlined, const CalculatorScreen()),
-      (t.get('family'), Icons.family_restroom, const FamilyScreen()),
-      (t.get('settings'), Icons.settings_outlined, const SettingsScreen()),
+    final items = <_MoreItem>[
+      _MoreItem(
+        en ? 'First aid' : 'Premiers secours',
+        en ? 'Visual guides and step-by-step mode' : 'Fiches visuelles et mode pas à pas',
+        Icons.health_and_safety_rounded,
+        const FirstAidScreen(),
+      ),
+      _MoreItem(
+        en ? 'Family & documents' : 'Famille & documents',
+        en ? 'Contacts, plans and document checklist' : 'Contacts, plan familial et documents',
+        Icons.family_restroom_rounded,
+        const FamilyDocumentsScreen(),
+      ),
+      _MoreItem(
+        en ? 'Emergency numbers' : 'Numéros d’urgence',
+        en ? 'Official numbers for the active country' : 'Numéros officiels du pays actif',
+        Icons.phone_in_talk_rounded,
+        const EmergencyScreen(),
+      ),
+      _MoreItem(
+        en ? 'Risks & disasters' : 'Risques & catastrophes',
+        en ? 'Before, during and after major events' : 'Avant, pendant et après les situations majeures',
+        Icons.thunderstorm_rounded,
+        const GuideListScreen(kind: GuideKind.disasters),
+      ),
+      _MoreItem(
+        en ? 'Survival advice' : 'Ressources & conseils',
+        en ? 'Blackout, evacuation and shelter guidance' : 'Panne, évacuation, confinement et réflexes utiles',
+        Icons.menu_book_rounded,
+        const GuideListScreen(kind: GuideKind.emergencies),
+      ),
+      _MoreItem(
+        en ? 'Training' : 'Formation & exercices',
+        en ? 'Practise and refresh your knowledge' : 'Réviser et tester votre préparation',
+        Icons.school_rounded,
+        const TrainingScreen(),
+      ),
+      _MoreItem(
+        t.get('settings'),
+        en ? 'Country, language and travel mode' : 'Pays, langue et mode voyage',
+        Icons.settings_outlined,
+        const SettingsScreen(),
+      ),
     ];
 
     return Scaffold(
       appBar: AppBar(title: Text(t.get('more'))),
       body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: items
-            .map(
-              (item) => Card(
-                margin: const EdgeInsets.only(bottom: 9),
-                child: ListTile(
-                  minTileHeight: 64,
-                  leading: Icon(item.$2),
-                  title: Text(item.$1, style: const TextStyle(fontWeight: FontWeight.w800)),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => item.$3),
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 28),
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xffe5f4f1), Color(0xfffff4e8)],
+              ),
+              borderRadius: BorderRadius.circular(22),
+            ),
+            child: const Row(
+              children: [
+                CircleAvatar(
+                  backgroundColor: Color(0xff087f83),
+                  child: Icon(Icons.shield_rounded, color: Colors.white),
+                ),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Centre ReadySafe', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
+                      SizedBox(height: 2),
+                      Text(
+                        'Premiers secours, préparation, famille, ressources et paramètres.',
+                        style: TextStyle(color: Color(0xff65747a)),
+                      ),
+                    ],
                   ),
                 ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 14),
+          ...items.map(
+            (item) => Card(
+              margin: const EdgeInsets.only(bottom: 8),
+              child: ListTile(
+                minTileHeight: 70,
+                leading: CircleAvatar(
+                  backgroundColor: const Color(0xffe7f3f1),
+                  child: Icon(item.icon, color: const Color(0xff087f83)),
+                ),
+                title: Text(item.title, style: const TextStyle(fontWeight: FontWeight.w900)),
+                subtitle: Text(item.subtitle),
+                trailing: const Icon(Icons.chevron_right_rounded),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => item.page),
+                ),
               ),
-            )
-            .toList(),
+            ),
+          ),
+        ],
       ),
     );
   }
+}
+
+class _MoreItem {
+  const _MoreItem(this.title, this.subtitle, this.icon, this.page);
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final Widget page;
 }
