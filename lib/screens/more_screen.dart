@@ -8,12 +8,14 @@ import 'family_documents_screen.dart';
 import 'first_aid_screen.dart';
 import 'guide_list_screen.dart';
 import 'home_safety_screen.dart';
+import 'maintenance_screen.dart';
 import 'offline_readiness_screen.dart';
 import 'official_sources_screen.dart';
 import 'power_outage_screen.dart';
 import 'preparedness_review_screen.dart';
 import 'recovery_screen.dart';
 import 'safety_tools_screen.dart';
+import 'secure_vault_screen.dart';
 import 'settings_screen.dart';
 import 'support_needs_screen.dart';
 import 'training_screen.dart';
@@ -37,6 +39,12 @@ class MoreScreen extends StatelessWidget {
         en ? 'One summary of household contacts, meeting points and documents' : 'Résumé du foyer, contacts, rassemblement et documents',
         Icons.assignment_turned_in_rounded,
         const EmergencyPlanSummaryScreen(),
+      ),
+      _MoreItem(
+        en ? 'Secure vault' : 'Coffre sécurisé',
+        en ? 'Encrypted references and sensitive emergency notes' : 'Références chiffrées et notes sensibles',
+        Icons.lock_rounded,
+        const SecureVaultScreen(),
       ),
       _MoreItem(
         en ? 'Family & documents' : 'Famille & documents',
@@ -109,6 +117,12 @@ class MoreScreen extends StatelessWidget {
         en ? 'Check what remains useful without connectivity' : 'Vérifier ce qui reste utile sans connexion',
         Icons.offline_bolt_rounded,
         const OfflineReadinessScreen(),
+      ),
+      _MoreItem(
+        en ? 'Maintenance & reminders' : 'Entretien & rappels',
+        en ? 'Expiry dates and periodic preparedness checks' : 'Péremptions et vérifications périodiques',
+        Icons.event_repeat_rounded,
+        const MaintenanceScreen(),
       ),
       _MoreItem(
         en ? 'Preparedness review' : 'Revue de préparation',
