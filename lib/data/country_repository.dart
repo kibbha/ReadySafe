@@ -55,6 +55,8 @@ class CountryRepository {
     'SM':[Uri.parse('https://www.gov.sm/pub2/GovSM/poliziacivile/')],
     'ME':[Uri.parse('https://www.gov.me/clanak/dan-jedinstvenog-evropskog-broja-za-pozive-u-hitnim-situacijama-112-2')],
     'RS':[Uri.parse('https://www.mup.gov.rs/wps/wcm/connect/4331209d-e5f1-4f3e-82c8-17cae77c84d3/2024-07-01-projekat%2Bturista%2B-%2Bverzija%2Bna%2Bengleskom.pdf?CVID=p1L0AXD&MOD=AJPERES')],
+    'XK':[Uri.parse('https://ame.rks-gov.net/post/en-us/88/communication-for-the-public')],
+    'UA':[Uri.parse('https://bezpeka.dsns.gov.ua/contacts')],
   };
 
   static final Map<String,List<EmergencyService>> _verifiedServices = {
@@ -117,6 +119,19 @@ class CountryRepository {
       _service('police','service_police','192','service_rs_police_desc'),
       _service('fire','service_fire','193','service_rs_fire_desc'),
       _service('medical','service_ambulance','194','service_rs_ambulance_desc'),
+    ],
+    'XK':[
+      _service('general','service_emergency','112','service_xk_112_desc'),
+      _service('police','service_police','192','service_xk_police_desc'),
+      _service('fire','service_fire','193','service_xk_fire_desc'),
+      _service('medical','service_ambulance','194','service_xk_ambulance_desc'),
+    ],
+    'UA':[
+      _service('general','service_emergency','112','service_ua_112_desc'),
+      _service('rescue','service_rescue','101','service_ua_rescue_desc'),
+      _service('police','service_police','102','service_ua_police_desc'),
+      _service('medical','service_ambulance','103','service_ua_ambulance_desc'),
+      _service('gas','service_gas_emergency','104','service_ua_gas_desc'),
     ],
     'CH':[
       _service('eu','service_emergency','112','service_112_desc'),
