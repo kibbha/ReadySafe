@@ -20,6 +20,7 @@ import 'recovery_screen.dart';
 import 'safety_tools_screen.dart';
 import 'sanitation_hygiene_screen.dart';
 import 'secure_vault_screen.dart';
+import 'smoke_air_quality_screen.dart';
 import 'special_kits_screen.dart';
 import 'support_needs_screen.dart';
 import 'training_screen.dart';
@@ -122,6 +123,14 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.restaurant_rounded,
         const Color(0xffb7833f),
         const EmergencyFoodSafetyScreen(),
+        'act',
+      ),
+      _Module(
+        'Fumée & qualité de l’air',
+        'Pièce à air plus propre, filtration et exposition à la fumée',
+        Icons.air_rounded,
+        const Color(0xffd16a32),
+        const SmokeAirQualityScreen(),
         'act',
       ),
       _Module(
