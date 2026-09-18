@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import '../services/local_storage_service.dart';
 import 'communication_plan_screen.dart';
 import 'family_documents_screen.dart';
+import 'medical_continuity_screen.dart';
 import 'online_maps_screen.dart';
+import 'pet_emergency_screen.dart';
 import 'survival_hub_screen.dart';
 
 class PreparednessReviewScreen extends StatefulWidget {
@@ -67,6 +69,18 @@ class _PreparednessReviewScreenState extends State<PreparednessReviewScreen> {
       'Besoins particuliers',
       'Enfants, seniors, traitements, handicap et animaux sont pris en compte.',
       Icons.accessible_forward_rounded,
+    ),
+    _ReviewItem(
+      'medical',
+      'Continuité médicale',
+      'Traitements, appareils, chaîne du froid et soins réguliers ont un plan de secours.',
+      Icons.medical_services_rounded,
+    ),
+    _ReviewItem(
+      'pets',
+      'Animaux',
+      'Transport, identification, matériel et hébergement ont été envisagés si nécessaire.',
+      Icons.pets_rounded,
     ),
     _ReviewItem(
       'practice',
@@ -249,6 +263,22 @@ class _PreparednessReviewScreenState extends State<PreparednessReviewScreen> {
                       () => Navigator.push(
                         context,
                         MaterialPageRoute(builder: (_) => const CommunicationPlanScreen()),
+                      ),
+                    ),
+                    _QuickLink(
+                      'Santé',
+                      Icons.medical_services_rounded,
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const MedicalContinuityScreen()),
+                      ),
+                    ),
+                    _QuickLink(
+                      'Animaux',
+                      Icons.pets_rounded,
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const PetEmergencyScreen()),
                       ),
                     ),
                     _QuickLink(
