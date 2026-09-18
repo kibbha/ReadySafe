@@ -9,6 +9,7 @@ import 'avalanche_safety_screen.dart';
 import 'carbon_monoxide_screen.dart';
 import 'emergency_food_safety_screen.dart';
 import 'emergency_screen.dart';
+import 'family_reunification_screen.dart';
 import 'first_aid_screen.dart';
 import 'guide_list_screen.dart';
 import 'home_safety_screen.dart';
@@ -22,6 +23,7 @@ import 'recovery_screen.dart';
 import 'safety_tools_screen.dart';
 import 'smoke_air_quality_screen.dart';
 import 'sanitation_hygiene_screen.dart';
+import 'vehicle_emergency_screen.dart';
 import 'water_safety_screen.dart';
 
 class GuidedEmergencyScreen extends StatelessWidget {
@@ -339,6 +341,18 @@ class GuidedEmergencyScreen extends StatelessWidget {
         en ? 'Medicine, refrigeration, power or regular care continuity' : 'Traitement, froid, énergie ou continuité des soins',
         Icons.medical_services_rounded,
         () => _openPage(context, const MedicalContinuityScreen()),
+      ),
+      _Situation(
+        en ? 'Family is separated' : 'La famille est séparée',
+        en ? 'Meeting places, child pickup and reconnection plan' : 'Rendez-vous, récupération des enfants et reconnexion',
+        Icons.family_restroom_rounded,
+        () => _openPage(context, const FamilyReunificationScreen()),
+      ),
+      _Situation(
+        en ? 'Vehicle breakdown / crash' : 'Panne ou accident de véhicule',
+        en ? 'Roadside safety, severe weather and flooded roads' : 'Sécurité routière, météo sévère et routes inondées',
+        Icons.directions_car_rounded,
+        () => _openPage(context, const VehicleEmergencyScreen()),
       ),
       _Situation(
         en ? 'Pet needs evacuation help' : 'Un animal doit être évacué',
