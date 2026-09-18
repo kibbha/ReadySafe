@@ -120,8 +120,16 @@ class FirstAidScreen extends StatefulWidget {
 }
 
 class _FirstAidScreenState extends State<FirstAidScreen> {
+  final _searchController = TextEditingController();
+
   String _query = '';
   String _filter = 'all';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   bool _matchesAge(String id) {
     if (_filter == 'all') return true;
@@ -200,6 +208,7 @@ class _FirstAidScreenState extends State<FirstAidScreen> {
               ),
               const SizedBox(height: 10),
               TextField(
+                controller: _searchController,
                 onChanged: (value) => setState(() => _query = value),
                 textInputAction: TextInputAction.search,
                 decoration: InputDecoration(
@@ -208,7 +217,10 @@ class _FirstAidScreenState extends State<FirstAidScreen> {
                   suffixIcon: _query.isEmpty
                       ? null
                       : IconButton(
-                          onPressed: () => setState(() => _query = ''),
+                          onPressed: () {
+                            _searchController.clear();
+                            setState(() => _query = '');
+                          },
                           icon: const Icon(Icons.close_rounded),
                         ),
                 ),
