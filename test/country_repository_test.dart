@@ -21,6 +21,21 @@ void main() {
       }
     },
   );
+  test('unverified country profiles remain non-callable by design', () {
+    final pending = CountryRepository.supported.where(
+      (country) => !country.hasVerifiedNumbers,
+    );
+
+    expect(pending, isNotEmpty);
+    for (final country in pending) {
+      expect(country.verifiedOn, isNull);
+      expect(
+        country.services.every((service) => !service.isCallable),
+        isTrue,
+      );
+    }
+  });
+
   test('verified countries retain official source references', () {
     for (final code in ['FR', 'BE', 'DE', 'IT']) {
       final country = CountryRepository.byCode(code)!;
