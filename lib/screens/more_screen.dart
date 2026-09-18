@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../app/localizations.dart';
 import 'emergency_screen.dart';
+import 'communication_plan_screen.dart';
 import 'family_documents_screen.dart';
 import 'first_aid_screen.dart';
 import 'guide_list_screen.dart';
+import 'safety_tools_screen.dart';
 import 'settings_screen.dart';
 import 'training_screen.dart';
 
@@ -27,6 +29,18 @@ class MoreScreen extends StatelessWidget {
         en ? 'Contacts, plans and document checklist' : 'Contacts, plan familial et documents',
         Icons.family_restroom_rounded,
         const FamilyDocumentsScreen(),
+      ),
+      _MoreItem(
+        en ? 'Emergency tools' : 'Outils d’urgence',
+        en ? 'SOS signal, messages, numbers and landmarks' : 'Signal SOS, messages, numéros et repères',
+        Icons.handyman_rounded,
+        const SafetyToolsScreen(),
+      ),
+      _MoreItem(
+        en ? 'Communication plan' : 'Plan de communication',
+        en ? 'Reconnect your household after an incident' : 'Contact extérieur, reconnexion et message rapide',
+        Icons.connect_without_contact_rounded,
+        const CommunicationPlanScreen(),
       ),
       _MoreItem(
         en ? 'Emergency numbers' : 'Numéros d’urgence',
