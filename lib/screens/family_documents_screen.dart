@@ -534,6 +534,38 @@ class _FamilyDocumentsScreenState extends State<FamilyDocumentsScreen>
             );
           }),
           const SizedBox(height: 12),
+          Card(
+            child: ListTile(
+              leading: const CircleAvatar(
+                backgroundColor: Color(0xffe9e5f5),
+                child: Icon(
+                  Icons.lock_rounded,
+                  color: Color(0xff6750a4),
+                ),
+              ),
+              title: Text(
+                en
+                    ? 'Secure document references'
+                    : 'Références documentaires sécurisées',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              subtitle: Text(
+                en
+                    ? 'Store useful numbers, locations and notes in the encrypted vault.'
+                    : 'Conserver numéros, emplacements et notes utiles dans le coffre chiffré.',
+              ),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const SecureVaultScreen(),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
