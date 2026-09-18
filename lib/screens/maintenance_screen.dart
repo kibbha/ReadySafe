@@ -126,6 +126,7 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final en = Localizations.localeOf(context).languageCode == 'en';
     final expiryItems = _expiryItems;
     final dueTasks = _tasks.where(_due).length;
     final reviewDue = _reviewDate == null ||
@@ -133,7 +134,7 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xfff7faf9),
-      appBar: AppBar(title: const Text('Entretien & rappels')),
+      appBar: AppBar(title: Text(en ? 'Maintenance & reminders' : 'Entretien & rappels')),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : ListView(
@@ -158,13 +159,15 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'Une préparation utile doit rester à jour',
-                              style: TextStyle(fontSize: 19, fontWeight: FontWeight.w900),
+                            Text(
+                              en ? 'Preparedness only works when it stays current' : 'Une préparation utile doit rester à jour',
+                              style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w900),
                             ),
                             const SizedBox(height: 5),
                             Text(
-                              '$dueTasks vérification(s) à faire · ${expiryItems.length} élément(s) à surveiller',
+                              en
+                                  ? '$dueTasks check(s) due · ${expiryItems.length} item(s) to review'
+                                  : '$dueTasks vérification(s) à faire · ${expiryItems.length} élément(s) à surveiller',
                               style: const TextStyle(
                                 color: Color(0xff65747a),
                                 fontWeight: FontWeight.w800,
@@ -182,7 +185,7 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
                     children: [
                       const Expanded(
                         child: Text(
-                          'Péremptions du kit',
+                          en ? 'Kit expiry dates' : 'Péremptions du kit',
                           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
                         ),
                       ),
@@ -193,7 +196,7 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
                             builder: (_) => const ChecklistScreen(kit: true),
                           ),
                         ).then((_) => _load()),
-                        child: const Text('Ouvrir le kit'),
+                        child: Text(en ? 'Open kit' : 'Ouvrir le kit'),
                       ),
                     ],
                   ),
@@ -217,29 +220,34 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
                           ),
                         ),
                         title: Text(
-                          entry.key.label,
+                          _kitLabel(entry.key, en),
                           style: const TextStyle(fontWeight: FontWeight.w900),
                         ),
                         subtitle: Text(
-                          'DLC : ${_date(entry.value.expiryDate!)} · '
-                          '${expired ? 'dépassée' : 'dans $remaining jour(s)'}',
+                          en
+                              ? 'Expiry: ${_date(entry.value.expiryDate!)} · '
+                                  '${expired ? 'expired' : 'in $remaining day(s)'}'
+                              : 'DLC : ${_date(entry.value.expiryDate!)} · '
+                                  '${expired ? 'dépassée' : 'dans $remaining jour(s)'}',
                         ),
                       ),
                     );
                   }),
                   const SizedBox(height: 14),
                 ],
-                const Text(
-                  'Vérifications périodiques',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+                Text(
+                  en ? 'Periodic checks' : 'Vérifications périodiques',
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
                 ),
                 const SizedBox(height: 7),
                 ..._tasks.map((task) {
                   final last = _dates[task.id];
                   final due = _due(task);
                   final lastLabel = last == null
-                      ? 'Jamais vérifié'
-                      : 'Dernière vérification : ${_date(last)}';
+                      ? (en ? 'Never checked' : 'Jamais vérifié')
+                      : (en
+                          ? 'Last checked: ${_date(last)}'
+                          : 'Dernière vérification : ${_date(last)}');
                   return Card(
                     margin: const EdgeInsets.only(bottom: 8),
                     child: ListTile(
@@ -256,13 +264,13 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
                         ),
                       ),
                       title: Text(
-                        task.title,
+                        _taskTitle(task, en),
                         style: const TextStyle(fontWeight: FontWeight.w900),
                       ),
-                      subtitle: Text('${task.subtitle}\n$lastLabel'),
+                      subtitle: Text('${_taskSubtitle(task, en)}\n$lastLabel'),
                       isThreeLine: true,
                       trailing: IconButton(
-                        tooltip: 'Vérifié aujourd’hui',
+                        tooltip: en ? 'Checked today' : 'Vérifié aujourd’hui',
                         onPressed: () => _markNow(task.id),
                         icon: Icon(
                           due ? Icons.check_circle_outline_rounded : Icons.check_circle_rounded,
@@ -286,14 +294,14 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
                             : const Color(0xff087f83),
                       ),
                     ),
-                    title: const Text(
-                      'Revue globale du plan',
-                      style: TextStyle(fontWeight: FontWeight.w900),
+                    title: Text(
+                      en ? 'Full preparedness review' : 'Revue globale du plan',
+                      style: const TextStyle(fontWeight: FontWeight.w900),
                     ),
                     subtitle: Text(
                       _reviewDate == null
-                          ? 'Aucune revue complète enregistrée.'
-                          : 'Dernière revue : ${_date(_reviewDate!)}',
+                          ? (en ? 'No full review saved yet.' : 'Aucune revue complète enregistrée.')
+                          : (en ? 'Last review: ${_date(_reviewDate!)}' : 'Dernière revue : ${_date(_reviewDate!)}'),
                     ),
                     trailing: const Icon(Icons.chevron_right_rounded),
                     onTap: () => Navigator.push(
@@ -311,15 +319,17 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
                     color: const Color(0xffeaf6f4),
                     borderRadius: BorderRadius.circular(17),
                   ),
-                  child: const Row(
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.notifications_none_rounded, color: Color(0xff087f83)),
-                      SizedBox(width: 9),
+                      const Icon(Icons.notifications_none_rounded, color: Color(0xff087f83)),
+                      const SizedBox(width: 9),
                       Expanded(
                         child: Text(
-                          'Ces rappels sont enregistrés dans ReadySafe et restent disponibles hors ligne. Consultez régulièrement cet écran pour vérifier les échéances et les éléments à renouveler.',
-                          style: TextStyle(fontWeight: FontWeight.w700, height: 1.35),
+                          en
+                              ? 'These reminders are stored in ReadySafe and remain available offline. Review this screen regularly for expiry dates and items that need renewal.'
+                              : 'Ces rappels sont enregistrés dans ReadySafe et restent disponibles hors ligne. Consultez régulièrement cet écran pour vérifier les échéances et les éléments à renouveler.',
+                          style: const TextStyle(fontWeight: FontWeight.w700, height: 1.35),
                         ),
                       ),
                     ],
@@ -329,6 +339,47 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
             ),
     );
   }
+}
+
+String _taskTitle(_MaintenanceTask task, bool en) {
+  if (!en) return task.title;
+  return const {
+        'powerbank': 'Power banks',
+        'radio': 'Radio & batteries',
+        'water': 'Water reserve',
+        'firstaid': 'First-aid kit',
+        'documents': 'Documents & contacts',
+        'routes': 'Routes & meeting points',
+      }[task.id] ??
+      task.title;
+}
+
+String _taskSubtitle(_MaintenanceTask task, bool en) {
+  if (!en) return task.subtitle;
+  return const {
+        'powerbank': 'Recharge backup batteries and check charging cables.',
+        'radio': 'Test the radio and replace batteries when needed.',
+        'water': 'Check containers, rotation and the condition of the water reserve.',
+        'firstaid': 'Review contents and replace expired or used supplies.',
+        'documents': 'Confirm references, contacts and copies are still current.',
+        'routes': 'Reconfirm the primary exit, alternative route and meeting point.',
+      }[task.id] ??
+      task.subtitle;
+}
+
+String _kitLabel(ChecklistItem item, bool en) {
+  if (!en) return item.label;
+  return const {
+        'water': 'Drinking water',
+        'food': 'Long-life food',
+        'pet_food': 'Pet food',
+        'medication': 'Essential personal medicines',
+        'firstaid': 'First-aid kit',
+        'disinfectant': 'Antiseptic / disinfectant',
+        'batteries': 'Spare batteries',
+        'children': 'Baby / child supplies',
+      }[item.id] ??
+      item.label;
 }
 
 class _MaintenanceTask {
