@@ -206,10 +206,12 @@ class _PetEmergencyScreenState extends State<PetEmergencyScreen> {
                         ),
                       ),
                       title: Text(
-                        item.title,
+                        en ? _petTitleEn(item.id) : item.title,
                         style: const TextStyle(fontWeight: FontWeight.w900),
                       ),
-                      subtitle: Text(item.subtitle),
+                      subtitle: Text(
+                        en ? _petSubtitleEn(item.id) : item.subtitle,
+                      ),
                     ),
                   );
                 }),
@@ -246,6 +248,36 @@ class _PetEmergencyScreenState extends State<PetEmergencyScreen> {
             ),
     );
   }
+}
+
+String _petTitleEn(String id) {
+  return const {
+        'id': 'Identification',
+        'carrier': 'Safe transport',
+        'food_water': 'Food & water',
+        'meds': 'Treatment & special needs',
+        'vet': 'Veterinarian',
+        'shelter': 'Pet-friendly shelter',
+        'documents': 'Documents',
+        'sanitation': 'Hygiene & waste',
+        'buddy': 'Backup helper',
+      }[id] ??
+      id;
+}
+
+String _petSubtitleEn(String id) {
+  return const {
+        'id': 'Microchip, tag or other identification is current with correct contact details.',
+        'carrier': 'Carrier, lead, harness or other suitable transport is immediately accessible.',
+        'food_water': 'An appropriate reserve and containers are included in the kit.',
+        'meds': 'Medicines, diet, equipment or other special care are prepared.',
+        'vet': 'Usual veterinarian and backup-care contact details are accessible.',
+        'shelter': 'At least one alternative exists if an emergency shelter does not accept pets.',
+        'documents': 'Health record, vaccinations, recent photo and useful information are available.',
+        'sanitation': 'Waste bags, litter or other hygiene needs are included in the evacuation plan.',
+        'buddy': 'A trusted person can collect or care for the pet if you are unavailable.',
+      }[id] ??
+      '';
 }
 
 class _PetItem {
