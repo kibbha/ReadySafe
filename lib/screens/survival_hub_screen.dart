@@ -4,6 +4,7 @@ import '../data/content.dart';
 import '../services/local_storage_service.dart';
 import 'calculator_screen.dart';
 import 'communication_plan_screen.dart';
+import 'emergency_food_safety_screen.dart';
 import 'checklist_screen.dart';
 import 'guide_list_screen.dart';
 import 'home_safety_screen.dart';
@@ -113,6 +114,14 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.sanitizer_rounded,
         const Color(0xff087f83),
         const SanitationHygieneScreen(),
+        'act',
+      ),
+      _Module(
+        'Sécurité alimentaire',
+        'Panne, froid, aliments décongelés et contamination par les eaux',
+        Icons.restaurant_rounded,
+        const Color(0xffb7833f),
+        const EmergencyFoodSafetyScreen(),
         'act',
       ),
       _Module(
