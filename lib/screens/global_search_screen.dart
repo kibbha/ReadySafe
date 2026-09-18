@@ -9,12 +9,14 @@ import 'family_documents_screen.dart';
 import 'first_aid_screen.dart';
 import 'guide_list_screen.dart';
 import 'home_safety_screen.dart';
+import 'maintenance_screen.dart';
 import 'offline_readiness_screen.dart';
 import 'official_sources_screen.dart';
 import 'power_outage_screen.dart';
 import 'preparedness_review_screen.dart';
 import 'recovery_screen.dart';
 import 'safety_tools_screen.dart';
+import 'secure_vault_screen.dart';
 import 'special_kits_screen.dart';
 import 'support_needs_screen.dart';
 import 'online_maps_screen.dart';
@@ -98,6 +100,9 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
       'check': _SearchHit('Kits & survie', 'Check-lists', Icons.fact_check_rounded, ChecklistScreen(kit: false)),
       'famille': _SearchHit('Famille', 'Famille & documents', Icons.family_restroom_rounded, FamilyDocumentsScreen()),
       'document': _SearchHit('Famille', 'Documents importants', Icons.folder_copy_rounded, FamilyDocumentsScreen()),
+      'coffre': _SearchHit('Famille', 'Coffre sécurisé', Icons.lock_rounded, SecureVaultScreen()),
+      'sécurisé': _SearchHit('Famille', 'Coffre sécurisé', Icons.lock_rounded, SecureVaultScreen()),
+      'reference': _SearchHit('Famille', 'Coffre sécurisé', Icons.lock_rounded, SecureVaultScreen()),
       'pharmacie': _SearchHit('Carte', 'Carte & repères', Icons.local_pharmacy_rounded, OnlineMapsScreen()),
       'hôpital': _SearchHit('Carte', 'Santé à proximité', Icons.local_hospital_rounded, OnlineMapsScreen()),
       'hopital': _SearchHit('Carte', 'Santé à proximité', Icons.local_hospital_rounded, OnlineMapsScreen()),
@@ -124,6 +129,9 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
       'audition': _SearchHit('Famille', 'Besoins spécifiques', Icons.hearing_rounded, SupportNeedsScreen()),
       'hors ligne': _SearchHit('Préparation', 'Préparation hors ligne', Icons.offline_bolt_rounded, OfflineReadinessScreen()),
       'offline': _SearchHit('Préparation', 'Préparation hors ligne', Icons.offline_bolt_rounded, OfflineReadinessScreen()),
+      'péremption': _SearchHit('Préparation', 'Entretien & rappels', Icons.event_repeat_rounded, MaintenanceScreen()),
+      'rappel': _SearchHit('Préparation', 'Entretien & rappels', Icons.event_repeat_rounded, MaintenanceScreen()),
+      'maintenance': _SearchHit('Préparation', 'Entretien & rappels', Icons.event_repeat_rounded, MaintenanceScreen()),
       'revue': _SearchHit('Préparation', 'Revue de préparation', Icons.fact_check_rounded, PreparednessReviewScreen()),
       'vérification': _SearchHit('Préparation', 'Revue de préparation', Icons.fact_check_rounded, PreparednessReviewScreen()),
     };
