@@ -67,6 +67,14 @@ String _aidText(BuildContext context, String key) {
   return (en ? english : fr)[key] ?? t.get(key);
 }
 
+bool _posterCritical(String id) => const {
+      'cpr_adult',
+      'choking_adult',
+      'bleeding',
+      'choking_infant',
+      'anaphylaxis',
+    }.contains(id);
+
 String? _emergencyNumber(BuildContext context) {
   return AppScope.of(context).activeCountry?.preferredEmergencyNumber;
 }
@@ -169,15 +177,19 @@ class _FirstAidScreenState extends State<FirstAidScreen> {
       body: LayoutBuilder(
         builder: (context, constraints) {
           final width = constraints.maxWidth;
-          final columns = width >= 1280
-              ? 4
-              : width >= 900
+          final columns = width >= 1500
+              ? 5
+              : width >= 1050
                   ? 3
-                  : width >= 560
+                  : width >= 640
                       ? 2
                       : 1;
           final horizontal = width >= 760 ? 20.0 : 12.0;
-          final posterHeight = width >= 900 ? 410.0 : 420.0;
+          final posterHeight = columns >= 3
+              ? 610.0
+              : columns == 2
+                  ? 575.0
+                  : 545.0;
 
           return ListView(
             padding: EdgeInsets.fromLTRB(horizontal, 4, horizontal, 28),
@@ -252,8 +264,44 @@ class _FirstAidScreenState extends State<FirstAidScreen> {
                   },
                 ),
               if (!browsingAll && extras.isNotEmpty) ...[
-                const SizedBox(height: 16),
-                _AdditionalGuides(guides: extras),
+                const SizedBox(height: 18),
+                Text(
+                  en ? 'MORE FIRST-AID POSTERS' : 'AUTRES FICHES PREMIERS SECOURS',
+                  style: const TextStyle(
+                    fontSize: 15,
+                    letterSpacing: .5,
+                    color: Color(0xff087f83),
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: extras.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: columns,
+                    mainAxisExtent: posterHeight,
+                    crossAxisSpacing: 9,
+                    mainAxisSpacing: 9,
+                  ),
+                  itemBuilder: (context, index) {
+                    final guide = extras[index];
+                    return _PosterGuideCard(
+                      guide: guide,
+                      number: null,
+                      title: t.get(guide.titleKey),
+                      subtitle: _posterTag(guide.id, en),
+                      emergencyNumber: _emergencyNumber(context),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => FirstAidDetailScreen(guide: guide),
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ],
               const SizedBox(height: 14),
               _MedicalNotice(text: t.get('medicalNotice')),
@@ -363,50 +411,57 @@ class _PosterGuideCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final en = Localizations.localeOf(context).languageCode == 'en';
-    final steps = guide.steps.take(3).toList();
-    final hero = guide.steps.first.illustrationAsset;
+    final steps = guide.steps.take(4).toList();
+    final critical = _posterCritical(guide.id);
 
     return Material(
-      color: const Color(0xfffffcf5),
-      elevation: 1.5,
-      shadowColor: const Color(0x22000000),
-      borderRadius: BorderRadius.circular(18),
+      color: const Color(0xfffffdf7),
+      elevation: 1,
+      shadowColor: const Color(0x26000000),
+      borderRadius: BorderRadius.circular(9),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: const Color(0xff7fc7bd), width: 1.3),
+            color: const Color(0xfffffdf7),
+            borderRadius: BorderRadius.circular(9),
+            border: Border.all(color: const Color(0xff58afa5), width: 1.4),
           ),
           child: Column(
             children: [
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.fromLTRB(13, 11, 12, 10),
+                padding: const EdgeInsets.fromLTRB(9, 8, 9, 7),
                 color: const Color(0xff087f83),
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    if (number != null)
-                      Container(
-                        width: 46,
-                        height: 46,
-                        alignment: Alignment.center,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Text(
-                          number.toString(),
-                          style: const TextStyle(
-                            color: Color(0xff087f83),
-                            fontWeight: FontWeight.w900,
-                            fontSize: 21,
-                          ),
-                        ),
+                    Container(
+                      width: 42,
+                      height: 42,
+                      alignment: Alignment.center,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
                       ),
-                    if (number != null) const SizedBox(width: 10),
+                      child: number == null
+                          ? const Icon(
+                              Icons.health_and_safety_rounded,
+                              color: Color(0xff087f83),
+                              size: 23,
+                            )
+                          : Text(
+                              number.toString(),
+                              style: TextStyle(
+                                color: critical
+                                    ? const Color(0xffd92d36)
+                                    : const Color(0xff087f83),
+                                fontSize: 22,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                    ),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -417,62 +472,34 @@ class _PosterGuideCard extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 16,
+                              fontSize: 15.5,
                               height: 1.0,
-                              letterSpacing: .2,
+                              letterSpacing: .1,
                               fontWeight: FontWeight.w900,
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 3),
                           Text(
                             subtitle,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
-                              color: Color(0xffdff7f2),
-                              fontSize: 10,
-                              letterSpacing: .25,
+                              color: Color(0xffd8f3ef),
+                              fontSize: 9.3,
+                              letterSpacing: .2,
                               fontWeight: FontWeight.w800,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
-                      decoration: BoxDecoration(
-                        color: const Color(0x22ffffff),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: const Icon(
-                        Icons.offline_pin_rounded,
-                        color: Colors.white,
-                        size: 18,
-                      ),
-                    ),
                   ],
                 ),
               ),
               Expanded(
-                flex: 4,
                 child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.fromLTRB(12, 5, 12, 3),
-                  decoration: const BoxDecoration(
-                    color: Color(0xffeff8f6),
-                    border: Border(
-                      bottom: BorderSide(color: Color(0xffd6ebe7)),
-                    ),
-                  ),
-                  child: SvgPicture.asset(hero, fit: BoxFit.contain),
-                ),
-              ),
-              Expanded(
-                flex: 9,
-                child: Container(
-                  color: const Color(0xfffffcf5),
-                  padding: const EdgeInsets.fromLTRB(9, 5, 9, 4),
+                  color: const Color(0xfffffff9),
+                  padding: const EdgeInsets.symmetric(horizontal: 7),
                   child: Column(
                     children: [
                       for (var i = 0; i < steps.length; i++)
@@ -481,6 +508,7 @@ class _PosterGuideCard extends StatelessWidget {
                             number: i + 1,
                             text: _aidText(context, steps[i].textKey),
                             illustrationAsset: steps[i].illustrationAsset,
+                            last: i == steps.length - 1,
                           ),
                         ),
                     ],
@@ -489,45 +517,46 @@ class _PosterGuideCard extends StatelessWidget {
               ),
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-                color: const Color(0xffffe61a),
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 7),
+                color: critical
+                    ? const Color(0xffe52b34)
+                    : const Color(0xffffdf35),
                 child: Row(
                   children: [
-                    const Icon(
-                      Icons.phone_in_talk_rounded,
-                      size: 17,
-                      color: Color(0xff9f1d25),
+                    Icon(
+                      critical
+                          ? Icons.warning_amber_rounded
+                          : Icons.info_outline_rounded,
+                      size: 18,
+                      color: critical ? Colors.white : const Color(0xff6f4e00),
                     ),
                     const SizedBox(width: 6),
                     Expanded(
                       child: Text(
                         emergencyNumber == null
-                            ? (en ? 'Severe situation: see emergency numbers' : 'Situation grave : consulter les numéros d’urgence')
-                            : (en ? 'Severe situation: call $emergencyNumber' : 'Situation grave : appeler le $emergencyNumber'),
-                        style: const TextStyle(
-                          fontSize: 11.2,
-                          color: Color(0xff9f1d25),
+                            ? (en
+                                ? 'Immediate danger: use verified emergency numbers'
+                                : 'Danger immédiat : utiliser les numéros d’urgence vérifiés')
+                            : (en
+                                ? 'Immediate danger: call $emergencyNumber'
+                                : 'Danger immédiat : appeler le $emergencyNumber'),
+                        style: TextStyle(
+                          fontSize: 10.5,
+                          color:
+                              critical ? Colors.white : const Color(0xff6f4e00),
                           fontWeight: FontWeight.w900,
                         ),
                       ),
                     ),
-                    Text(
-                      en ? 'OPEN' : 'OUVRIR',
-                      style: const TextStyle(
-                        fontSize: 10,
-                        color: Color(0xff6f161c),
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                    const SizedBox(width: 3),
-                    const Icon(
+                    Icon(
                       Icons.arrow_forward_rounded,
-                      size: 16,
-                      color: Color(0xff6f161c),
+                      size: 17,
+                      color: critical ? Colors.white : const Color(0xff6f4e00),
                     ),
                   ],
                 ),
               ),
+              const _PosterBranding(),
             ],
           ),
         ),
@@ -541,27 +570,30 @@ class _PosterMiniStep extends StatelessWidget {
     required this.number,
     required this.text,
     required this.illustrationAsset,
+    required this.last,
   });
 
   final int number;
   final String text;
   final String illustrationAsset;
+  final bool last;
 
   @override
   Widget build(BuildContext context) => Container(
-        margin: const EdgeInsets.symmetric(vertical: 1),
-        padding: const EdgeInsets.fromLTRB(7, 3, 5, 3),
+        padding: const EdgeInsets.fromLTRB(2, 5, 1, 5),
         decoration: BoxDecoration(
-          color: number.isOdd ? const Color(0xffffffff) : const Color(0xfff7f1e7),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xffebe1d1)),
+          border: Border(
+            bottom: last
+                ? BorderSide.none
+                : const BorderSide(color: Color(0xffd9e7e4)),
+          ),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              width: 24,
-              height: 24,
+              width: 25,
+              height: 25,
               alignment: Alignment.center,
               decoration: const BoxDecoration(
                 color: Color(0xff087f83),
@@ -571,73 +603,70 @@ class _PosterMiniStep extends StatelessWidget {
                 number.toString(),
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 12,
+                  fontSize: 11.5,
                   fontWeight: FontWeight.w900,
                 ),
               ),
             ),
-            const SizedBox(width: 7),
+            const SizedBox(width: 6),
             Expanded(
               child: Text(
                 text,
-                maxLines: 2,
+                maxLines: 4,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontSize: 11.2,
-                  height: 1.18,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xff263b40),
+                  fontSize: 10.7,
+                  height: 1.15,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xff20383c),
                 ),
               ),
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: 4),
             SizedBox(
-              width: 42,
-              height: 42,
-              child: SvgPicture.asset(illustrationAsset, fit: BoxFit.contain),
+              width: 78,
+              height: 76,
+              child: SvgPicture.asset(
+                illustrationAsset,
+                fit: BoxFit.contain,
+              ),
             ),
           ],
         ),
       );
 }
 
-class _AdditionalGuides extends StatelessWidget {
-  const _AdditionalGuides({required this.guides});
-  final List<FirstAidGuide> guides;
+class _PosterBranding extends StatelessWidget {
+  const _PosterBranding();
 
   @override
   Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context);
     final en = Localizations.localeOf(context).languageCode == 'en';
-
-    return Card(
-      child: ExpansionTile(
-        leading: const CircleAvatar(
-          backgroundColor: Color(0xffe5f3f1),
-          child: Icon(Icons.add_circle_outline_rounded, color: Color(0xff087f83)),
-        ),
-        title: Text(
-          en ? 'Additional first-aid guides' : 'Fiches complémentaires',
-          style: const TextStyle(fontWeight: FontWeight.w900),
-        ),
-        subtitle: Text(
-          en ? '${guides.length} additional situations' : '${guides.length} situations supplémentaires',
-        ),
+    return Container(
+      height: 28,
+      alignment: Alignment.center,
+      color: Colors.white,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          for (final guide in guides)
-            ListTile(
-              leading: const CircleAvatar(
-                backgroundColor: Color(0xffe5f3f1),
-                child: Icon(Icons.health_and_safety_outlined, color: Color(0xff087f83)),
-              ),
-              title: Text(t.get(guide.titleKey), style: const TextStyle(fontWeight: FontWeight.w800)),
-              subtitle: Text(t.get(guide.summaryKey), maxLines: 2, overflow: TextOverflow.ellipsis),
-              trailing: const Icon(Icons.chevron_right_rounded),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => FirstAidDetailScreen(guide: guide)),
+          const Icon(
+            Icons.health_and_safety_rounded,
+            color: Color(0xff087f83),
+            size: 16,
+          ),
+          const SizedBox(width: 4),
+          Flexible(
+            child: Text(
+              en ? 'ReadySafe · Be ready. Save lives.' : 'ReadySafe · Être prêt. Sauver des vies.',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 9.2,
+                color: Color(0xff087f83),
+                fontWeight: FontWeight.w900,
               ),
             ),
+          ),
         ],
       ),
     );
@@ -695,75 +724,23 @@ class FirstAidDetailScreen extends StatelessWidget {
           return Align(
             alignment: Alignment.topCenter,
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 980),
+              constraints: const BoxConstraints(maxWidth: 760),
               child: ListView(
                 padding: EdgeInsets.fromLTRB(wide ? 24 : 12, 4, wide ? 24 : 12, 26),
                 children: [
-                  _PosterDetailHeader(
+                  _PosterDetailPanel(
                     number: number,
                     title: t.get(guide.titleKey),
                     subtitle: _posterTag(guide.id, en),
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xffeaf6f4),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Icon(Icons.info_outline_rounded, color: Color(0xff087f83)),
-                        const SizedBox(width: 9),
-                        Expanded(
-                          child: Text(
-                            t.get(guide.summaryKey),
-                            style: const TextStyle(fontWeight: FontWeight.w800, height: 1.35),
-                          ),
-                        ),
-                      ],
+                    summary: t.get(guide.summaryKey),
+                    guide: guide,
+                    emergencyNumber: emergencyNumber,
+                    onEmergency: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const EmergencyScreen()),
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Material(
-                    color: const Color(0xffd92d36),
-                    borderRadius: BorderRadius.circular(15),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(15),
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const EmergencyScreen()),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.call_rounded, color: Colors.white, size: 28),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                emergencyNumber == null
-                                    ? (en ? 'EMERGENCY — NUMBERS UNVERIFIED' : 'URGENCE — NUMÉROS NON VÉRIFIÉS')
-                                    : (en ? 'EMERGENCY — CALL $emergencyNumber' : 'URGENCE — APPELER LE $emergencyNumber'),
-                                style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w900),
-                              ),
-                            ),
-                            const Icon(Icons.chevron_right_rounded, color: Colors.white),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 9),
-                  ...guide.steps.indexed.map(
-                    (entry) => _DetailStepCard(
-                      number: entry.$1 + 1,
-                      step: entry.$2,
-                      emphasizeCpr: guide.id == 'cpr_adult' && entry.$1 == 2,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 10),
                   _MedicalNotice(text: t.get('medicalNotice')),
                   const SizedBox(height: 8),
                   _ReferenceSources(
@@ -846,91 +823,212 @@ class _ReferenceSources extends StatelessWidget {
       );
 }
 
-class _PosterDetailHeader extends StatelessWidget {
-  const _PosterDetailHeader({
+class _PosterDetailPanel extends StatelessWidget {
+  const _PosterDetailPanel({
     required this.number,
     required this.title,
     required this.subtitle,
+    required this.summary,
+    required this.guide,
+    required this.emergencyNumber,
+    required this.onEmergency,
   });
 
   final int? number;
   final String title;
   final String subtitle;
+  final String summary;
+  final FirstAidGuide guide;
+  final String? emergencyNumber;
+  final VoidCallback onEmergency;
 
   @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.all(13),
-        decoration: BoxDecoration(
-          color: const Color(0xff087f83),
-          borderRadius: BorderRadius.circular(17),
-        ),
-        child: Row(
-          children: [
-            if (number != null)
-              Container(
-                width: 46,
-                height: 46,
-                alignment: Alignment.center,
-                decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                child: Text(
-                  number.toString(),
-                  style: const TextStyle(color: Color(0xff087f83), fontSize: 22, fontWeight: FontWeight.w900),
+  Widget build(BuildContext context) {
+    final en = Localizations.localeOf(context).languageCode == 'en';
+    final critical = _posterCritical(guide.id);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xfffffff9),
+        border: Border.all(color: const Color(0xff58afa5), width: 1.5),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(12, 10, 12, 9),
+            color: const Color(0xff087f83),
+            child: Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  alignment: Alignment.center,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: number == null
+                      ? const Icon(
+                          Icons.health_and_safety_rounded,
+                          color: Color(0xff087f83),
+                        )
+                      : Text(
+                          number.toString(),
+                          style: TextStyle(
+                            color: critical
+                                ? const Color(0xffd92d36)
+                                : const Color(0xff087f83),
+                            fontSize: 25,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
                 ),
-              ),
-            if (number != null) const SizedBox(width: 11),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title.toUpperCase(),
-                    style: const TextStyle(color: Colors.white, fontSize: 19, fontWeight: FontWeight.w900),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title.toUpperCase(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 21,
+                          height: 1.0,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        subtitle,
+                        style: const TextStyle(
+                          color: Color(0xffd8f3ef),
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(color: Color(0xffdff7f2), fontSize: 10, fontWeight: FontWeight.w800),
-                  ),
-                ],
+                ),
+              ],
+            ),
+          ),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(12, 9, 12, 9),
+            color: const Color(0xfff2f8f6),
+            child: Text(
+              summary,
+              style: const TextStyle(
+                fontSize: 13,
+                height: 1.3,
+                fontWeight: FontWeight.w800,
               ),
             ),
-            const Icon(Icons.health_and_safety_rounded, color: Colors.white, size: 30),
-          ],
-        ),
-      );
+          ),
+          for (final entry in guide.steps.indexed)
+            _PosterFullStep(
+              number: entry.$1 + 1,
+              step: entry.$2,
+              emphasizeCpr: guide.id == 'cpr_adult' && entry.$1 == 2,
+              last: entry.$1 == guide.steps.length - 1,
+            ),
+          Material(
+            color: critical
+                ? const Color(0xffe52b34)
+                : const Color(0xffffdf35),
+            child: InkWell(
+              onTap: onEmergency,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                child: Row(
+                  children: [
+                    Icon(
+                      critical
+                          ? Icons.warning_amber_rounded
+                          : Icons.phone_in_talk_rounded,
+                      color: critical ? Colors.white : const Color(0xff6f4e00),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        emergencyNumber == null
+                            ? (en
+                                ? 'IMMEDIATE DANGER — USE VERIFIED EMERGENCY NUMBERS'
+                                : 'DANGER IMMÉDIAT — UTILISER LES NUMÉROS D’URGENCE VÉRIFIÉS')
+                            : (en
+                                ? 'IMMEDIATE DANGER — CALL $emergencyNumber'
+                                : 'DANGER IMMÉDIAT — APPELER LE $emergencyNumber'),
+                        style: TextStyle(
+                          color:
+                              critical ? Colors.white : const Color(0xff6f4e00),
+                          fontWeight: FontWeight.w900,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_forward_rounded,
+                      color: critical ? Colors.white : const Color(0xff6f4e00),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const _PosterBranding(),
+        ],
+      ),
+    );
+  }
 }
 
-class _DetailStepCard extends StatelessWidget {
-  const _DetailStepCard({
+class _PosterFullStep extends StatelessWidget {
+  const _PosterFullStep({
     required this.number,
     required this.step,
     required this.emphasizeCpr,
+    required this.last,
   });
 
   final int number;
   final FirstAidStep step;
   final bool emphasizeCpr;
+  final bool last;
 
   @override
   Widget build(BuildContext context) => Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.fromLTRB(12, 10, 10, 10),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: const Color(0xffd3e6e3)),
+          color: number.isOdd
+              ? const Color(0xfffffff9)
+              : const Color(0xfff7f2e8),
+          border: Border(
+            bottom: last
+                ? BorderSide.none
+                : const BorderSide(color: Color(0xffd7e6e2)),
+          ),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              width: 33,
-              height: 33,
+              width: 31,
+              height: 31,
               alignment: Alignment.center,
-              decoration: const BoxDecoration(color: Color(0xff087f83), shape: BoxShape.circle),
+              decoration: const BoxDecoration(
+                color: Color(0xff087f83),
+                shape: BoxShape.circle,
+              ),
               child: Text(
                 number.toString(),
-                style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w900),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w900,
+                ),
               ),
             ),
             const SizedBox(width: 9),
@@ -940,7 +1038,11 @@ class _DetailStepCard extends StatelessWidget {
                 children: [
                   Text(
                     _aidText(context, step.textKey),
-                    style: const TextStyle(fontSize: 14.2, height: 1.28, fontWeight: FontWeight.w700),
+                    style: const TextStyle(
+                      fontSize: 14.2,
+                      height: 1.27,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   if (emphasizeCpr) ...[
                     const SizedBox(height: 7),
@@ -958,9 +1060,12 @@ class _DetailStepCard extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             SizedBox(
-              width: 112,
-              height: 96,
-              child: SvgPicture.asset(step.illustrationAsset, fit: BoxFit.contain),
+              width: 150,
+              height: 120,
+              child: SvgPicture.asset(
+                step.illustrationAsset,
+                fit: BoxFit.contain,
+              ),
             ),
           ],
         ),

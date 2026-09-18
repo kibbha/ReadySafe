@@ -7,7 +7,9 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../app/app_scope.dart';
 import '../core/search_text.dart';
+import '../models/map_poi.dart';
 import '../services/local_storage_service.dart';
+import '../services/map_poi_service.dart';
 
 enum _PlaceKind {
   shelter,
@@ -16,6 +18,7 @@ enum _PlaceKind {
   water,
   meeting,
   aid,
+  police,
   personal,
   city,
 }
@@ -84,6 +87,7 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
   };
 
   final _storage = LocalStorageService();
+  final _poiService = MapPoiService();
   final _search = TextEditingController();
 
   MapLibreMapController? _map;
@@ -93,6 +97,13 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
   bool _searchOpen = false;
   final List<Circle> _circles = [];
   List<_Place> _personalPlaces = [];
+  List<_Place> _communityPlaces = [];
+  bool _poiLoading = false;
+  String? _poiError;
+  DateTime? _poiUpdatedAt;
+  bool _poiFromCache = false;
+  bool _poiStale = false;
+  LatLng? _poiCenter;
 
   static const _places = <_Place>[
     _Place('Genève', 'Ville', 46.2044, 6.1432, _PlaceKind.city),
@@ -145,7 +156,11 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
     super.dispose();
   }
 
-  List<_Place> get _allPlaces => [..._places, ..._personalPlaces];
+  List<_Place> get _allPlaces => [
+        ..._places,
+        ..._communityPlaces,
+        ..._personalPlaces,
+      ];
 
   List<_Place> get _searchResults {
     final en = Localizations.localeOf(context).languageCode == 'en';
@@ -154,6 +169,7 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
     if (q.isEmpty) {
       return [
         ..._personalPlaces,
+        ..._communityPlaces.take(8),
         ..._places.where((place) => place.kind == _PlaceKind.city).take(8),
       ];
     }
@@ -264,20 +280,28 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
     if (!mounted) return;
     setState(() => _searchOpen = false);
     await _syncMarkers();
+    if (place.kind == _PlaceKind.city) {
+      await _loadUsefulPlaces();
+    }
   }
 
   Future<void> _setFilter(_PlaceKind? value) async {
     setState(() => _filter = value);
+    if (value != null &&
+        value != _PlaceKind.personal &&
+        value != _PlaceKind.meeting &&
+        value != _PlaceKind.shelter) {
+      if (!_poiZoneMatchesCamera || _communityPlaces.isEmpty) {
+        await _loadUsefulPlaces();
+        return;
+      }
+    }
     await _syncMarkers();
   }
 
   CameraPosition _initialCamera(String code) =>
       _countryViews[code] ??
       const CameraPosition(target: _europe, zoom: 4.3);
-
-  Future<void> _openNearby(String query) async {
-    await _openExternalSearch('$query near me');
-  }
 
   Future<void> _openExternalSearch(String query) async {
     final geo = Uri.parse(
@@ -313,6 +337,257 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
         ),
       );
     }
+  }
+
+
+  _Place _placeFromPoi(MapPoi poi) {
+    final kind = switch (poi.kind) {
+      MapPoiKind.hospital => _PlaceKind.health,
+      MapPoiKind.pharmacy => _PlaceKind.pharmacy,
+      MapPoiKind.police => _PlaceKind.police,
+      MapPoiKind.aed => _PlaceKind.aid,
+      MapPoiKind.drinkingWater => _PlaceKind.water,
+    };
+
+    return _Place(
+      poi.name,
+      '',
+      poi.latitude,
+      poi.longitude,
+      kind,
+      id: poi.id,
+      community: true,
+      sourceLabel: poi.sourceName,
+      sourceUrl: poi.sourceUrl,
+      openingHours: poi.openingHours,
+      distanceMeters: poi.distanceMeters,
+    );
+  }
+
+  Future<void> _loadUsefulPlaces({bool force = false}) async {
+    if (_poiLoading) return;
+    setState(() {
+      _poiLoading = true;
+      _poiError = null;
+    });
+
+    try {
+      final result = await _poiService.loadAround(
+        latitude: _camera.target.latitude,
+        longitude: _camera.target.longitude,
+        force: force,
+      );
+
+      if (!mounted) return;
+      setState(() {
+        _communityPlaces = result.items.map(_placeFromPoi).toList();
+        _poiUpdatedAt = result.fetchedAt;
+        _poiFromCache = result.fromCache;
+        _poiStale = result.stale;
+        _poiCenter = _camera.target;
+        _poiError = result.warning;
+      });
+      await _syncMarkers();
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _poiError = Localizations.localeOf(context).languageCode == 'en'
+            ? 'Useful places could not be loaded. Personal landmarks remain available.'
+            : 'Impossible de charger les points utiles. Les repères personnels restent disponibles.';
+      });
+    } finally {
+      if (mounted) setState(() => _poiLoading = false);
+    }
+  }
+
+  bool get _poiZoneMatchesCamera {
+    final center = _poiCenter;
+    if (center == null) return false;
+    return (center.latitude - _camera.target.latitude).abs() < .12 &&
+        (center.longitude - _camera.target.longitude).abs() < .16;
+  }
+
+  Future<void> _selectUsefulKind(_PlaceKind kind) async {
+    setState(() => _filter = kind);
+    if (!_poiZoneMatchesCamera || _communityPlaces.isEmpty) {
+      await _loadUsefulPlaces();
+    } else {
+      await _syncMarkers();
+    }
+  }
+
+  Future<void> _openDirections(_Place place) async {
+    final query = '${place.lat},${place.lng}';
+    final geo = Uri.parse(
+      'geo:${place.lat},${place.lng}?q=${Uri.encodeComponent(query)}',
+    );
+    if (await canLaunchUrl(geo)) {
+      await launchUrl(geo, mode: LaunchMode.externalApplication);
+      return;
+    }
+    await _openExternalSearch(query);
+  }
+
+  Future<void> _openSource(_Place place) async {
+    if (place.sourceUrl.isEmpty) return;
+    final uri = Uri.tryParse(place.sourceUrl);
+    if (uri == null) return;
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+
+  Future<void> _showPlaceDetails(_Place place) async {
+    await _goTo(place, zoom: place.kind == _PlaceKind.city ? 12 : 15);
+    if (!mounted || place.kind == _PlaceKind.city) return;
+
+    final en = Localizations.localeOf(context).languageCode == 'en';
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(18, 0, 18, 18),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  CircleAvatar(
+                    backgroundColor: _color(place.kind).withValues(alpha: .12),
+                    child: Icon(_icon(place.kind), color: _color(place.kind)),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      _displayName(place, en),
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Text(
+                _displaySubtitle(place, en),
+                style: const TextStyle(
+                  color: Color(0xff52666b),
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              if (place.openingHours.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                Text(
+                  '${en ? 'Hours' : 'Horaires'} : ${place.openingHours}',
+                  style: const TextStyle(fontWeight: FontWeight.w800),
+                ),
+              ],
+              if (place.distanceMeters > 0) ...[
+                const SizedBox(height: 6),
+                Text(
+                  place.distanceMeters < 1000
+                      ? '${place.distanceMeters.round()} m'
+                      : '${(place.distanceMeters / 1000).toStringAsFixed(1)} km',
+                  style: const TextStyle(fontWeight: FontWeight.w800),
+                ),
+              ],
+              const SizedBox(height: 10),
+              if (place.community)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xfffff4c7),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    en
+                        ? 'Community map data · not an official emergency facility designation. Verify locally before relying on it.'
+                        : 'Donnée cartographique communautaire · ce n’est pas une désignation officielle d’infrastructure d’urgence. Vérifiez localement avant de vous y fier.',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                      height: 1.3,
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: FilledButton.icon(
+                      onPressed: () => _openDirections(place),
+                      icon: const Icon(Icons.directions_rounded),
+                      label: Text(en ? 'Directions' : 'Itinéraire'),
+                    ),
+                  ),
+                  if (place.sourceUrl.isNotEmpty) ...[
+                    const SizedBox(width: 8),
+                    OutlinedButton.icon(
+                      onPressed: () => _openSource(place),
+                      icon: const Icon(Icons.open_in_new_rounded),
+                      label: const Text('Source'),
+                    ),
+                  ],
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showMapSources() async {
+    final en = Localizations.localeOf(context).languageCode == 'en';
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(18, 0, 18, 22),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                en ? 'Map data & trust' : 'Données cartographiques & confiance',
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                en
+                    ? 'Hospitals, clinics, pharmacies, police, AEDs and drinking-water points are loaded from OpenStreetMap through the Overpass API and are labelled community data.'
+                    : 'Les hôpitaux, cliniques, pharmacies, postes de police, DAE et points d’eau potable sont chargés depuis OpenStreetMap via l’API Overpass et sont identifiés comme données communautaires.',
+              ),
+              const SizedBox(height: 8),
+              Text(
+                en
+                    ? 'ReadySafe never turns community shelter or meeting-point tags into official emergency shelters. Official facilities are shown only when a verified authority feed is integrated for that territory.'
+                    : 'ReadySafe ne transforme jamais des données communautaires d’abri ou de rassemblement en infrastructures officielles. Elles ne seront affichées comme officielles que lorsqu’une source d’autorité vérifiée sera intégrée pour le territoire concerné.',
+                style: const TextStyle(fontWeight: FontWeight.w800),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                en
+                    ? 'Personal landmarks remain local to the device and are never presented as official.'
+                    : 'Les repères personnels restent stockés localement sur l’appareil et ne sont jamais présentés comme officiels.',
+              ),
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: () => launchUrl(
+                  Uri.parse('https://www.openstreetmap.org/copyright'),
+                  mode: LaunchMode.externalApplication,
+                ),
+                icon: const Icon(Icons.open_in_new_rounded),
+                label: const Text('© OpenStreetMap contributors'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> _copyCenterCoordinates(bool en) async {
@@ -597,8 +872,27 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
     if (place.kind == _PlaceKind.city) {
       return en ? 'City' : 'Ville';
     }
+    if (place.community) {
+      final kind = _kindLabel(place.kind, en);
+      final source = place.sourceLabel.isEmpty ? 'OpenStreetMap' : place.sourceLabel;
+      return en
+          ? '$kind · $source · community'
+          : '$kind · $source · communautaire';
+    }
     return place.subtitle;
   }
+
+  String _kindLabel(_PlaceKind kind, bool en) => switch (kind) {
+        _PlaceKind.health => en ? 'Hospital / clinic' : 'Hôpital / clinique',
+        _PlaceKind.pharmacy => en ? 'Pharmacy' : 'Pharmacie',
+        _PlaceKind.police => 'Police',
+        _PlaceKind.aid => en ? 'AED' : 'DAE',
+        _PlaceKind.water => en ? 'Drinking water' : 'Eau potable',
+        _PlaceKind.shelter => en ? 'Potential shelter' : 'Abri envisagé',
+        _PlaceKind.meeting => en ? 'Meeting point' : 'Rassemblement',
+        _PlaceKind.personal => en ? 'Personal landmark' : 'Repère personnel',
+        _PlaceKind.city => en ? 'City' : 'Ville',
+      };
 
   @override
   Widget build(BuildContext context) {
@@ -613,6 +907,21 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
             tooltip: en ? 'Copy map-center coordinates' : 'Copier les coordonnées du centre',
             onPressed: () => _copyCenterCoordinates(en),
             icon: const Icon(Icons.my_location_outlined),
+          ),
+          IconButton(
+            tooltip: en ? 'Load useful places around map centre' : 'Charger les points utiles autour du centre',
+            onPressed: _poiLoading ? null : () => _loadUsefulPlaces(force: true),
+            icon: _poiLoading
+                ? const SizedBox.square(
+                    dimension: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.place_rounded),
+          ),
+          IconButton(
+            tooltip: en ? 'Map data sources' : 'Sources des données',
+            onPressed: _showMapSources,
+            icon: const Icon(Icons.info_outline_rounded),
           ),
           IconButton(
             tooltip: en ? 'My landmarks' : 'Mes repères',
@@ -708,8 +1017,8 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
                         child: Text(
                           en
-                              ? 'Online map · saved landmarks are personal, not official sites'
-                              : 'Carte en ligne · repères enregistrés personnels, non officiels',
+                              ? 'Online map · OpenStreetMap useful places are community data · personal landmarks stay local'
+                              : 'Carte en ligne · points utiles OpenStreetMap communautaires · repères personnels stockés localement',
                           style: const TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700),
                         ),
                       ),
@@ -772,12 +1081,7 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                                     subtitle: Text(
                                       _displaySubtitle(place, en),
                                     ),
-                                    onTap: () => _goTo(
-                                      place,
-                                      zoom: place.kind == _PlaceKind.city
-                                          ? 12
-                                          : 14,
-                                    ),
+                                    onTap: () => _showPlaceDetails(place),
                                   ),
                                 )
                                 .toList(),
@@ -797,28 +1101,24 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                         en ? 'My landmarks' : 'Mes repères',
                       ),
                       _filterChip(
-                        _PlaceKind.shelter,
-                        en ? 'Shelters' : 'Abris',
-                      ),
-                      _filterChip(
                         _PlaceKind.health,
-                        en ? 'Health' : 'Santé',
+                        en ? 'Hospitals' : 'Hôpitaux',
                       ),
                       _filterChip(
                         _PlaceKind.pharmacy,
                         en ? 'Pharmacies' : 'Pharmacies',
                       ),
                       _filterChip(
-                        _PlaceKind.water,
-                        en ? 'Water' : 'Eau',
-                      ),
-                      _filterChip(
-                        _PlaceKind.meeting,
-                        en ? 'Meeting' : 'Rassemblement',
-                      ),
-                      _filterChip(
                         _PlaceKind.aid,
-                        en ? 'Aid' : 'Aide',
+                        en ? 'AED' : 'DAE',
+                      ),
+                      _filterChip(
+                        _PlaceKind.police,
+                        'Police',
+                      ),
+                      _filterChip(
+                        _PlaceKind.water,
+                        en ? 'Drinking water' : 'Eau potable',
                       ),
                     ],
                   ),
@@ -830,33 +1130,33 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                     children: [
                       _NearbyAction(
                         icon: Icons.local_hospital_rounded,
-                        label: en ? 'Nearby hospital' : 'Hôpital proche',
-                        onTap: () => _openNearby('hospital'),
+                        label: en ? 'Hospitals' : 'Hôpitaux',
+                        onTap: () => _selectUsefulKind(_PlaceKind.health),
                       ),
                       _NearbyAction(
                         icon: Icons.local_pharmacy_rounded,
-                        label: en ? 'Pharmacy' : 'Pharmacie',
-                        onTap: () => _openNearby('pharmacy'),
+                        label: en ? 'Pharmacies' : 'Pharmacies',
+                        onTap: () => _selectUsefulKind(_PlaceKind.pharmacy),
                       ),
                       _NearbyAction(
                         icon: Icons.emergency_rounded,
                         label: en ? 'AED' : 'DAE',
-                        onTap: () => _openNearby('AED defibrillator'),
+                        onTap: () => _selectUsefulKind(_PlaceKind.aid),
                       ),
                       _NearbyAction(
                         icon: Icons.local_police_rounded,
-                        label: en ? 'Police' : 'Police',
-                        onTap: () => _openNearby('police station'),
-                      ),
-                      _NearbyAction(
-                        icon: Icons.home_work_rounded,
-                        label: en ? 'Shelter' : 'Abri',
-                        onTap: () => _openNearby('emergency shelter'),
+                        label: 'Police',
+                        onTap: () => _selectUsefulKind(_PlaceKind.police),
                       ),
                       _NearbyAction(
                         icon: Icons.water_drop_rounded,
                         label: en ? 'Drinking water' : 'Eau potable',
-                        onTap: () => _openNearby('drinking water'),
+                        onTap: () => _selectUsefulKind(_PlaceKind.water),
+                      ),
+                      _NearbyAction(
+                        icon: Icons.refresh_rounded,
+                        label: en ? 'Refresh area' : 'Actualiser la zone',
+                        onTap: _poiLoading ? null : () => _loadUsefulPlaces(force: true),
                       ),
                     ],
                   ),
@@ -914,8 +1214,15 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
             bottom: 10,
             child: _NearbySheet(
               places: places,
-              onTap: _goTo,
+              onTap: _showPlaceDetails,
+              onRefresh: () => _loadUsefulPlaces(force: true),
               en: en,
+              loading: _poiLoading,
+              loaded: _poiCenter != null,
+              error: _poiError,
+              fromCache: _poiFromCache,
+              stale: _poiStale,
+              updatedAt: _poiUpdatedAt,
               displayName: (place) => _displayName(place, en),
               displaySubtitle: (place) => _displaySubtitle(place, en),
             ),
@@ -949,6 +1256,8 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
         return '#147343';
       case _PlaceKind.aid:
         return '#d9822b';
+      case _PlaceKind.police:
+        return '#315f8c';
       case _PlaceKind.personal:
         return '#6a51a3';
       case _PlaceKind.city:
@@ -970,6 +1279,8 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
         return const Color(0xff147343);
       case _PlaceKind.aid:
         return const Color(0xffd9822b);
+      case _PlaceKind.police:
+        return const Color(0xff315f8c);
       case _PlaceKind.personal:
         return const Color(0xff6a51a3);
       case _PlaceKind.city:
@@ -990,7 +1301,9 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
       case _PlaceKind.meeting:
         return Icons.groups_rounded;
       case _PlaceKind.aid:
-        return Icons.volunteer_activism_rounded;
+        return Icons.emergency_rounded;
+      case _PlaceKind.police:
+        return Icons.local_police_rounded;
       case _PlaceKind.personal:
         return Icons.bookmark_rounded;
       case _PlaceKind.city:
@@ -1011,16 +1324,39 @@ class _NearbySheet extends StatelessWidget {
   const _NearbySheet({
     required this.places,
     required this.onTap,
+    required this.onRefresh,
     required this.en,
+    required this.loading,
+    required this.loaded,
+    required this.error,
+    required this.fromCache,
+    required this.stale,
+    required this.updatedAt,
     required this.displayName,
     required this.displaySubtitle,
   });
 
   final List<_Place> places;
-  final Future<void> Function(_Place place, {double zoom}) onTap;
+  final Future<void> Function(_Place place) onTap;
+  final VoidCallback onRefresh;
   final bool en;
+  final bool loading;
+  final bool loaded;
+  final String? error;
+  final bool fromCache;
+  final bool stale;
+  final DateTime? updatedAt;
   final String Function(_Place place) displayName;
   final String Function(_Place place) displaySubtitle;
+
+  String _timeLabel() {
+    final value = updatedAt;
+    if (value == null) return '';
+    final local = value.toLocal();
+    final hour = local.hour.toString().padLeft(2, '0');
+    final minute = local.minute.toString().padLeft(2, '0');
+    return '$hour:$minute';
+  }
 
   @override
   Widget build(BuildContext context) => Material(
@@ -1029,105 +1365,157 @@ class _NearbySheet extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         clipBehavior: Clip.antiAlias,
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxHeight: 188),
-          child: places.isEmpty
+          constraints: const BoxConstraints(maxHeight: 210),
+          child: loading && places.isEmpty
               ? Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(18),
                   child: Row(
                     children: [
-                      const Icon(
-                        Icons.info_outline_rounded,
-                        color: Color(0xff087f83),
+                      const SizedBox.square(
+                        dimension: 24,
+                        child: CircularProgressIndicator(strokeWidth: 2.5),
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: Text(
                           en
-                              ? 'No ReadySafe personal landmark is saved around this area. Add your own important points with the “Landmark” button.'
-                              : 'Aucun repère personnel ReadySafe n’est enregistré autour de cette zone. Ajoutez vos propres points importants avec le bouton « Repère ».',
+                              ? 'Loading useful places around the map centre…'
+                              : 'Chargement des points utiles autour du centre de la carte…',
+                          style: const TextStyle(fontWeight: FontWeight.w800),
                         ),
                       ),
                     ],
                   ),
                 )
-              : Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(14, 11, 8, 5),
+              : places.isEmpty
+                  ? Padding(
+                      padding: const EdgeInsets.all(16),
                       child: Row(
                         children: [
+                          const Icon(
+                            Icons.location_searching_rounded,
+                            color: Color(0xff087f83),
+                          ),
+                          const SizedBox(width: 10),
                           Expanded(
                             child: Text(
-                              en
-                                  ? 'Saved landmarks'
-                                  : 'Repères enregistrés',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w900,
-                              ),
+                              error ??
+                                  (loaded
+                                      ? (en
+                                          ? 'No useful place was found in this area. Move the map and refresh.'
+                                          : 'Aucun point utile trouvé dans cette zone. Déplacez la carte puis actualisez.')
+                                      : (en
+                                          ? 'Move or search the map, then load useful places around the centre.'
+                                          : 'Déplacez ou recherchez une ville, puis chargez les points utiles autour du centre.')),
                             ),
                           ),
-                          Text(
-                            en
-                                ? '${places.length} landmark(s)'
-                                : '${places.length} repère(s)',
-                            style: const TextStyle(
-                              fontSize: 11,
-                              color: Color(0xff65747a),
-                            ),
+                          IconButton(
+                            tooltip: en ? 'Load / refresh' : 'Charger / actualiser',
+                            onPressed: onRefresh,
+                            icon: const Icon(Icons.refresh_rounded),
                           ),
                         ],
                       ),
-                    ),
-                    Expanded(
-                      child: ListView.builder(
-                        padding: const EdgeInsets.only(bottom: 6),
-                        itemCount: places.length,
-                        itemBuilder: (context, index) {
-                          final place = places[index];
-
-                          return ListTile(
-                            dense: true,
-                            minTileHeight: 48,
-                            leading: CircleAvatar(
-                              radius: 17,
-                              backgroundColor:
-                                  _OnlineMapsScreenState._color(place.kind)
-                                      .withValues(alpha: .12),
-                              child: Icon(
-                                _OnlineMapsScreenState._icon(place.kind),
-                                size: 19,
-                                color:
-                                    _OnlineMapsScreenState._color(place.kind),
+                    )
+                  : Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(14, 7, 8, 2),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  en ? 'Useful places in this area' : 'Points utiles dans cette zone',
+                                  style: const TextStyle(fontWeight: FontWeight.w900),
+                                ),
                               ),
-                            ),
-                            title: Text(
-                              displayName(place),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                            subtitle: Text(displaySubtitle(place)),
-                            trailing: place.personal
-                                ? const Icon(
-                                    Icons.bookmark_rounded,
-                                    color: Color(0xff6a51a3),
-                                  )
-                                : const Icon(
-                                    Icons.chevron_right_rounded,
+                              if (updatedAt != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 6),
+                                  child: Text(
+                                    '${fromCache ? (en ? 'cache' : 'cache') : (en ? 'updated' : 'maj')} · ${_timeLabel()}',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: stale
+                                          ? const Color(0xff9a6a00)
+                                          : const Color(0xff65747a),
+                                      fontWeight: FontWeight.w800,
+                                    ),
                                   ),
-                            onTap: () => onTap(
-                              place,
-                              zoom: 14.5,
+                                ),
+                              IconButton(
+                                visualDensity: VisualDensity.compact,
+                                tooltip: en ? 'Refresh area' : 'Actualiser la zone',
+                                onPressed: loading ? null : onRefresh,
+                                icon: const Icon(Icons.refresh_rounded, size: 20),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (error != null)
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(14, 0, 14, 3),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                en
+                                    ? 'Network refresh failed; cached data is shown.'
+                                    : 'Échec de l’actualisation réseau ; les données en cache sont affichées.',
+                                style: const TextStyle(
+                                  fontSize: 10.5,
+                                  color: Color(0xff9a6a00),
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        Expanded(
+                          child: ListView.builder(
+                            padding: const EdgeInsets.only(bottom: 6),
+                            itemCount: places.length,
+                            itemBuilder: (context, index) {
+                              final place = places[index];
+                              return ListTile(
+                                dense: true,
+                                minTileHeight: 48,
+                                leading: CircleAvatar(
+                                  radius: 17,
+                                  backgroundColor:
+                                      _OnlineMapsScreenState._color(place.kind)
+                                          .withValues(alpha: .12),
+                                  child: Icon(
+                                    _OnlineMapsScreenState._icon(place.kind),
+                                    size: 19,
+                                    color:
+                                        _OnlineMapsScreenState._color(place.kind),
+                                  ),
+                                ),
+                                title: Text(
+                                  displayName(place),
+                                  style: const TextStyle(fontWeight: FontWeight.w800),
+                                ),
+                                subtitle: Text(
+                                  displaySubtitle(place),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                trailing: Icon(
+                                  place.personal
+                                      ? Icons.bookmark_rounded
+                                      : Icons.chevron_right_rounded,
+                                  color: place.personal
+                                      ? const Color(0xff6a51a3)
+                                      : null,
+                                ),
+                                onTap: () => onTap(place),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
         ),
       );
-
 }
 
 class _NearbyAction extends StatelessWidget {
@@ -1139,7 +1527,7 @@ class _NearbyAction extends StatelessWidget {
 
   final IconData icon;
   final String label;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) => Padding(
@@ -1188,7 +1576,12 @@ class _Place {
     this.lng,
     this.kind, {
     this.personal = false,
+    this.community = false,
     this.id = '',
+    this.sourceLabel = '',
+    this.sourceUrl = '',
+    this.openingHours = '',
+    this.distanceMeters = 0,
   });
 
   final String name;
@@ -1197,7 +1590,12 @@ class _Place {
   final double lng;
   final _PlaceKind kind;
   final bool personal;
+  final bool community;
   final String id;
+  final String sourceLabel;
+  final String sourceUrl;
+  final String openingHours;
+  final double distanceMeters;
 }
 
 class _NewMarker {
