@@ -157,22 +157,27 @@ class MoreScreen extends StatelessWidget {
               ),
               borderRadius: BorderRadius.circular(22),
             ),
-            child: const Row(
+            child: Row(
               children: [
-                CircleAvatar(
+                const CircleAvatar(
                   backgroundColor: Color(0xff087f83),
                   child: Icon(Icons.shield_rounded, color: Colors.white),
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Centre ReadySafe', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
-                      SizedBox(height: 2),
                       Text(
-                        'Premiers secours, préparation, famille, ressources et paramètres.',
-                        style: TextStyle(color: Color(0xff65747a)),
+                        en ? 'ReadySafe center' : 'Centre ReadySafe',
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        en
+                            ? 'First aid, preparedness, family resources and settings.'
+                            : 'Premiers secours, préparation, famille, ressources et paramètres.',
+                        style: const TextStyle(color: Color(0xff65747a)),
                       ),
                     ],
                   ),
