@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../services/local_storage_service.dart';
+import 'emergency_food_safety_screen.dart';
 
 class PowerOutageScreen extends StatefulWidget {
   const PowerOutageScreen({super.key});
@@ -175,6 +176,27 @@ class _PowerOutageScreenState extends State<PowerOutageScreen> {
                     'Utilisez un thermomètre et suivez les recommandations alimentaires locales si la coupure dure.',
                   ],
                 ),
+                Card(
+                  child: ListTile(
+                    leading: const CircleAvatar(
+                      backgroundColor: Color(0xfffff2df),
+                      child: Icon(Icons.restaurant_rounded, color: Color(0xffb7833f)),
+                    ),
+                    title: const Text(
+                      'Sécurité des aliments',
+                      style: TextStyle(fontWeight: FontWeight.w900),
+                    ),
+                    subtitle: const Text(
+                      'Décider quoi conserver ou jeter après une panne ou une inondation.',
+                    ),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const EmergencyFoodSafetyScreen()),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 9),
                 const _ActionBlock(
                   icon: Icons.co2_rounded,
                   title: 'Monoxyde de carbone',
