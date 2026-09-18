@@ -18,6 +18,7 @@ import 'power_outage_screen.dart';
 import 'preparedness_review_screen.dart';
 import 'recovery_screen.dart';
 import 'safety_tools_screen.dart';
+import 'sanitation_hygiene_screen.dart';
 import 'secure_vault_screen.dart';
 import 'special_kits_screen.dart';
 import 'support_needs_screen.dart';
@@ -105,6 +106,9 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
       'eau potable': _SearchHit('Kits & survie', 'Eau sûre en urgence', Icons.local_drink_rounded, WaterSafetyScreen()),
       'faire bouillir': _SearchHit('Kits & survie', 'Eau sûre en urgence', Icons.local_drink_rounded, WaterSafetyScreen()),
       'contamination eau': _SearchHit('Kits & survie', 'Eau sûre en urgence', Icons.local_drink_rounded, WaterSafetyScreen()),
+      'hygiène': _SearchHit('Kits & survie', 'Hygiène & assainissement', Icons.sanitizer_rounded, SanitationHygieneScreen()),
+      'assainissement': _SearchHit('Kits & survie', 'Hygiène & assainissement', Icons.sanitizer_rounded, SanitationHygieneScreen()),
+      'eaux souillées': _SearchHit('Kits & survie', 'Hygiène & assainissement', Icons.sanitizer_rounded, SanitationHygieneScreen()),
       'kit': _SearchHit('Kits & survie', 'Kit 72 h', Icons.backpack_rounded, ChecklistScreen(kit: true)),
       'voiture': _SearchHit('Kits & survie', 'Kits spécialisés', Icons.directions_car_rounded, SpecialKitsScreen()),
       'voyage': _SearchHit('Kits & survie', 'Kits spécialisés', Icons.luggage_rounded, SpecialKitsScreen()),
