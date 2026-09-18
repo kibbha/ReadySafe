@@ -96,6 +96,42 @@ class AppLocalizations {
         'Aidez la personne à utiliser son auto-injecteur prescrit si elle en possède un.',
     'aid_anaphylaxis_3':
         'Surveillez respiration et conscience; préparez-vous à suivre les instructions de réanimation.',
+    'aid_stroke': 'Suspicion d’AVC',
+    'aid_stroke_summary':
+        'Faiblesse du visage ou d’un bras, trouble soudain de la parole, de l’équilibre ou de la vision.',
+    'aid_stroke_1':
+        'Utilisez FAST : visage, bras, parole. Notez l’heure de début ou la dernière fois où la personne était normale.',
+    'aid_stroke_2':
+        'Appelez immédiatement les secours, même si les signes s’améliorent ou disparaissent.',
+    'aid_stroke_3':
+        'Installez la personne confortablement, ne lui donnez pas à manger ou boire et surveillez respiration et conscience.',
+    'aid_chest_pain': 'Douleur thoracique',
+    'aid_chest_pain_summary':
+        'Pression, serrement ou douleur dans la poitrine, parfois vers le bras, la mâchoire, le cou ou le dos.',
+    'aid_chest_pain_1':
+        'Appelez immédiatement les secours si la douleur évoque une urgence cardiaque ou s’accompagne d’essoufflement, malaise ou sueurs.',
+    'aid_chest_pain_2':
+        'Aidez la personne à s’asseoir ou s’allonger confortablement et évitez tout effort.',
+    'aid_chest_pain_3':
+        'Surveillez la respiration et la conscience et suivez les instructions de l’opérateur des secours.',
+    'aid_asthma': 'Crise d’asthme',
+    'aid_asthma_summary':
+        'Difficulté à respirer, sifflements ou oppression chez une personne asthmatique.',
+    'aid_asthma_1':
+        'Aidez la personne à s’asseoir et à utiliser son propre inhalateur de secours comme prescrit.',
+    'aid_asthma_2':
+        'Restez avec elle, rassurez-la et surveillez l’évolution de la respiration.',
+    'aid_asthma_3':
+        'Appelez les secours si la difficulté est sévère, s’aggrave, ne s’améliore pas rapidement ou si la personne s’épuise.',
+    'aid_hypoglycemia': 'Hypoglycémie',
+    'aid_hypoglycemia_summary':
+        'Sueurs, tremblements, faiblesse ou confusion chez une personne pouvant manquer de sucre.',
+    'aid_hypoglycemia_1':
+        'Si la personne est réveillée et avale sans difficulté, donnez une source de sucre rapide adaptée.',
+    'aid_hypoglycemia_2':
+        'Surveillez-la et répétez la vérification selon son plan habituel ou les instructions professionnelles.',
+    'aid_hypoglycemia_3':
+        'Si elle est inconsciente, convulse ou ne peut pas avaler, ne donnez rien par la bouche et appelez les secours.',
     'home': 'Accueil',
     'more': 'Plus',
     'title': 'READYSAFE',
@@ -412,6 +448,42 @@ class AppLocalizations {
         'Help the person use their prescribed auto-injector if they have one.',
     'aid_anaphylaxis_3':
         'Monitor breathing and consciousness and follow resuscitation instructions.',
+    'aid_stroke': 'Suspected stroke',
+    'aid_stroke_summary':
+        'Sudden face or arm weakness, speech problems, balance problems, or vision changes.',
+    'aid_stroke_1':
+        'Use FAST: face, arm, speech. Note when symptoms started or when the person was last known well.',
+    'aid_stroke_2':
+        'Call emergency services immediately, even if symptoms improve or disappear.',
+    'aid_stroke_3':
+        'Keep the person comfortable, give nothing to eat or drink, and monitor breathing and responsiveness.',
+    'aid_chest_pain': 'Chest pain',
+    'aid_chest_pain_summary':
+        'Pressure, squeezing, or pain in the chest that may spread to the arm, jaw, neck, or back.',
+    'aid_chest_pain_1':
+        'Call emergency services immediately if the pain suggests a heart emergency or comes with breathlessness, collapse, or sweating.',
+    'aid_chest_pain_2':
+        'Help the person sit or lie in a comfortable position and avoid exertion.',
+    'aid_chest_pain_3':
+        'Monitor breathing and responsiveness and follow the emergency operator’s instructions.',
+    'aid_asthma': 'Asthma attack',
+    'aid_asthma_summary':
+        'Breathing difficulty, wheezing, or chest tightness in a person with asthma.',
+    'aid_asthma_1':
+        'Help the person sit upright and use their own reliever inhaler as prescribed.',
+    'aid_asthma_2':
+        'Stay with them, reassure them, and monitor their breathing.',
+    'aid_asthma_3':
+        'Call emergency services if breathing is severe, worsening, not improving quickly, or the person is becoming exhausted.',
+    'aid_hypoglycemia': 'Low blood sugar',
+    'aid_hypoglycemia_summary':
+        'Sweating, shaking, weakness, or confusion in a person who may have low blood sugar.',
+    'aid_hypoglycemia_1':
+        'If the person is awake and can swallow safely, give a suitable fast-acting source of sugar.',
+    'aid_hypoglycemia_2':
+        'Monitor them and repeat checks according to their usual plan or professional instructions.',
+    'aid_hypoglycemia_3':
+        'If unconscious, having a seizure, or unable to swallow, give nothing by mouth and call emergency services.',
     'home': 'Home',
     'more': 'More',
     'title': 'READYSAFE',
