@@ -1,13 +1,16 @@
 import 'package:flutter/foundation.dart';
+
 import '../data/country_repository.dart';
 import '../models/country_profile.dart';
 import '../services/app_settings_service.dart';
 
 class AppController extends ChangeNotifier {
   AppController(this._service);
+
   final AppSettingsService _service;
   AppSettings _settings = const AppSettings();
   bool _ready = false;
+
   bool get ready => _ready;
   AppSettings get settings => _settings;
   CountryProfile? get residenceCountry =>
@@ -26,6 +29,8 @@ class AppController extends ChangeNotifier {
       localeCode: const {'fr', 'en'}.contains(loaded.localeCode)
           ? loaded.localeCode
           : 'fr',
+      largeText: loaded.largeText,
+      highContrast: loaded.highContrast,
     );
     _ready = true;
     notifyListeners();
@@ -36,11 +41,7 @@ class AppController extends ChangeNotifier {
       throw ArgumentError.value(code, 'code', 'Unsupported country');
     }
     await _service.saveResidence(code);
-    _settings = AppSettings(
-      residenceCountryCode: code,
-      travelCountryCode: _settings.travelCountryCode,
-      localeCode: _settings.localeCode,
-    );
+    _settings = _settings.copyWith(residenceCountryCode: code);
     notifyListeners();
   }
 
@@ -49,21 +50,28 @@ class AppController extends ChangeNotifier {
       throw ArgumentError.value(code, 'code', 'Unsupported country');
     }
     await _service.saveTravel(code);
-    _settings = AppSettings(
-      residenceCountryCode: _settings.residenceCountryCode,
-      travelCountryCode: code,
-      localeCode: _settings.localeCode,
-    );
+    _settings = code == null
+        ? _settings.copyWith(clearTravelCountry: true)
+        : _settings.copyWith(travelCountryCode: code);
     notifyListeners();
   }
 
   Future<void> setLocale(String code) async {
+    if (!const {'fr', 'en'}.contains(code)) return;
     await _service.saveLocale(code);
-    _settings = AppSettings(
-      residenceCountryCode: _settings.residenceCountryCode,
-      travelCountryCode: _settings.travelCountryCode,
-      localeCode: code,
-    );
+    _settings = _settings.copyWith(localeCode: code);
+    notifyListeners();
+  }
+
+  Future<void> setLargeText(bool enabled) async {
+    await _service.saveLargeText(enabled);
+    _settings = _settings.copyWith(largeText: enabled);
+    notifyListeners();
+  }
+
+  Future<void> setHighContrast(bool enabled) async {
+    await _service.saveHighContrast(enabled);
+    _settings = _settings.copyWith(highContrast: enabled);
     notifyListeners();
   }
 }
