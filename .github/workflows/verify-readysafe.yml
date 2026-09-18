@@ -2,9 +2,6 @@ name: ReadySafe Analyze and Test
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - work/readysafe-v3-batch2
 
 permissions:
   contents: read
