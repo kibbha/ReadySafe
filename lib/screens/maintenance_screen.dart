@@ -318,7 +318,7 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
                       SizedBox(width: 9),
                       Expanded(
                         child: Text(
-                          'Ces rappels sont actuellement visibles dans ReadySafe. Les notifications système seront activées après validation du prochain lot Android afin d’éviter de consommer inutilement le quota de builds.',
+                          'Ces rappels sont enregistrés dans ReadySafe et restent disponibles hors ligne. Consultez régulièrement cet écran pour vérifier les échéances et les éléments à renouveler.',
                           style: TextStyle(fontWeight: FontWeight.w700, height: 1.35),
                         ),
                       ),
