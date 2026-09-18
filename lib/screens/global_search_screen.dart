@@ -11,6 +11,7 @@ import 'guide_list_screen.dart';
 import 'home_safety_screen.dart';
 import 'offline_readiness_screen.dart';
 import 'official_sources_screen.dart';
+import 'power_outage_screen.dart';
 import 'preparedness_review_screen.dart';
 import 'recovery_screen.dart';
 import 'safety_tools_screen.dart';
@@ -112,6 +113,9 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
       'retour maison': _SearchHit('Après l’urgence', 'Récupération', Icons.restore_rounded, RecoveryScreen()),
       'signal sos': _SearchHit('Outils', 'Outils d’urgence', Icons.sos_rounded, SafetyToolsScreen()),
       'outil': _SearchHit('Outils', 'Outils d’urgence', Icons.handyman_rounded, SafetyToolsScreen()),
+      'panne électrique': _SearchHit('Préparation', 'Panne électrique', Icons.power_off_rounded, PowerOutageScreen()),
+      'blackout': _SearchHit('Préparation', 'Panne électrique', Icons.power_off_rounded, PowerOutageScreen()),
+      'courant': _SearchHit('Préparation', 'Panne électrique', Icons.power_off_rounded, PowerOutageScreen()),
       'domicile': _SearchHit('Préparation', 'Sécurité du domicile', Icons.home_work_rounded, HomeSafetyScreen()),
       'gaz': _SearchHit('Préparation', 'Sécurité du domicile', Icons.settings_input_component_rounded, HomeSafetyScreen()),
       'électricité': _SearchHit('Préparation', 'Sécurité du domicile', Icons.electrical_services_rounded, HomeSafetyScreen()),
