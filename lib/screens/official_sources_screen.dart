@@ -136,6 +136,12 @@ class OfficialSourcesScreen extends StatelessWidget {
             Icons.cloud_outlined,
           ),
           _OfficialSource(
+            'SLF — Bulletin avalanche',
+            'Bulletin et informations officielles du WSL Institut pour l’étude de la neige et des avalanches.',
+            'https://www.slf.ch/fr/bulletin-davalanches-et-situation-nivologique/',
+            Icons.landscape_outlined,
+          ),
+          _OfficialSource(
             '112 Europe',
             'Informations générales sur le numéro d’urgence européen 112.',
             'https://digital-strategy.ec.europa.eu/en/policies/112',
