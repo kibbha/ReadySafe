@@ -54,11 +54,13 @@ class _FamilyScreenState extends State<FamilyScreen> {
   }
 
   Future<void> _save() async {
-    await _storage.saveFamily(_values);
+    final snapshot = _values;
+    await _storage.saveFamily(snapshot);
 
     if (!mounted) return;
 
-    setState(() => _dirty = false);
+    setState(() => _dirty = !identical(_values, snapshot));
+    if (_dirty) return;
 
     final en = Localizations.localeOf(context).languageCode == 'en';
     ScaffoldMessenger.of(context).showSnackBar(

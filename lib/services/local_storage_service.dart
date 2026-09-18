@@ -6,6 +6,7 @@ import '../data/content.dart';
 import '../models/checklist_item.dart';
 
 class LocalStorageService {
+  static final Map<String, Future<void>> _pendingToggles = {};
   static const _familyDefaults = {
     'adults': 1,
     'children': 0,
@@ -39,9 +40,21 @@ class LocalStorageService {
   }
 
   Future<void> toggle(String key, String id, bool value) async {
-    final values = await completed(key);
-    value ? values.add(id) : values.remove(id);
-    await (await _prefs).setStringList(key, values.toList());
+    // A rapid sequence of taps must not read the same old checklist twice.
+    final previous = _pendingToggles[key] ?? Future<void>.value();
+    final operation = previous.catchError((Object _) {}).then((_) async {
+      final values = await completed(key);
+      value ? values.add(id) : values.remove(id);
+      await (await _prefs).setStringList(key, values.toList());
+    });
+    _pendingToggles[key] = operation;
+    try {
+      await operation;
+    } finally {
+      if (identical(_pendingToggles[key], operation)) {
+        _pendingToggles.remove(key);
+      }
+    }
   }
 
   Future<Map<String, KitStockEntry>> kitStock() async {
@@ -460,4 +473,3 @@ class LocalStorageService {
     return score.clamp(0, 100).toInt();
   }
 }
-

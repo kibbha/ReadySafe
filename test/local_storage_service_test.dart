@@ -4,6 +4,21 @@ import 'package:readysafe/services/local_storage_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  test('simultaneous checklist changes retain every distinct item', () async {
+    SharedPreferences.setMockInitialValues({});
+    final first = LocalStorageService();
+    final second = LocalStorageService();
+
+    await Future.wait([
+      first.toggle('concurrent_checklist', 'water', true),
+      second.toggle('concurrent_checklist', 'radio', true),
+      first.toggle('concurrent_checklist', 'medicines', true),
+    ]);
+
+    expect(await second.completed('concurrent_checklist'),
+        {'water', 'radio', 'medicines'});
+  });
+
   test('malformed family data falls back safely', () async {
     SharedPreferences.setMockInitialValues({'family': '{broken'});
     expect(await LocalStorageService().family(), {
