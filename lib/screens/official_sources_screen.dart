@@ -382,6 +382,11 @@ class OfficialSourcesScreen extends StatelessWidget {
     if (host.contains('gov.md')) return 'Government of Moldova';
     if (host.contains('akmc.gov.al')) return 'AKMC Albania';
     if (host.contains('cuk.gov.mk')) return 'Crisis Management Center — North Macedonia';
+    if (host.contains('policia.ad')) return 'Policia d’Andorra';
+    if (host.contains('journaldemonaco.gouv.mc')) return 'Journal de Monaco';
+    if (host.contains('gov.sm')) return 'Gov.sm — Polizia Civile';
+    if (host.contains('gov.me')) return 'Government of Montenegro';
+    if (host.contains('mup.gov.rs')) return 'Ministry of Interior — Serbia';
     if (host.contains('gov.uk')) return 'GOV.UK';
     return uri.host.replaceFirst('www.', '');
   }
