@@ -97,16 +97,16 @@ class _MainShellState extends State<MainShell> {
                         ),
                         if (extendedRail) ...[
                           const SizedBox(width: 10),
-                          const Column(
+                          Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
+                              const Text(
                                 'ReadySafe',
                                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
                               ),
                               Text(
-                                'ÊTRE PRÊT. SAUVER DES VIES.',
-                                style: TextStyle(
+                                en ? 'BE READY. ACT FAST.' : 'ÊTRE PRÊT. AGIR VITE.',
+                                style: const TextStyle(
                                   fontSize: 8.5,
                                   letterSpacing: .8,
                                   color: Color(0xff718084),
