@@ -28,7 +28,7 @@ class _HomeSafetyScreenState extends State<HomeSafetyScreen> {
       'smoke',
       'Détecteurs de fumée',
       'Présents, accessibles et testés régulièrement.',
-      Icons.detector_smoke_rounded,
+      Icons.warning_amber_rounded,
     ),
     _SafetyCheck(
       'co',

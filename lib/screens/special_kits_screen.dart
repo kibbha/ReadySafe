@@ -191,7 +191,7 @@ class SpecialKitsScreen extends StatelessWidget {
                     en: en,
                     onTap: () => Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => SpecialKitDetailScreen(kit: kit)),
+                      MaterialPageRoute(builder: (_) => _SpecialKitDetailScreen(kit: kit)),
                     ),
                   );
                 },
@@ -227,15 +227,15 @@ class SpecialKitsScreen extends StatelessWidget {
   }
 }
 
-class SpecialKitDetailScreen extends StatefulWidget {
-  const SpecialKitDetailScreen({super.key, required this.kit});
+class _SpecialKitDetailScreen extends StatefulWidget {
+  const _SpecialKitDetailScreen({required this.kit});
   final _KitDefinition kit;
 
   @override
-  State<SpecialKitDetailScreen> createState() => _SpecialKitDetailScreenState();
+  State<_SpecialKitDetailScreen> createState() => _SpecialKitDetailScreenState();
 }
 
-class _SpecialKitDetailScreenState extends State<SpecialKitDetailScreen> {
+class _SpecialKitDetailScreenState extends State<_SpecialKitDetailScreen> {
   final _storage = LocalStorageService();
   Set<String> _done = {};
 

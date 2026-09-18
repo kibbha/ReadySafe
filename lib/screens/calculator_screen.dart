@@ -267,12 +267,10 @@ class _Counter extends StatelessWidget {
     required this.label,
     required this.value,
     required this.onChange,
-    this.min = 0,
   });
 
   final String label;
   final int value;
-  final int min;
   final ValueChanged<int> onChange;
 
   @override
@@ -284,7 +282,7 @@ class _Counter extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
-                onPressed: value > min ? () => onChange(value - 1) : null,
+                onPressed: value > 0 ? () => onChange(value - 1) : null,
                 icon: const Icon(Icons.remove_circle_outline),
               ),
               SizedBox(

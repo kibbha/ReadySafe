@@ -177,7 +177,7 @@ class GuidedEmergencyScreen extends StatelessWidget {
       _Situation(
         en ? 'Stroke signs' : 'Signes d’AVC',
         en ? 'Face, arm or speech suddenly affected' : 'Visage, bras ou parole soudainement atteints',
-        Icons.neurology_rounded,
+        Icons.health_and_safety_rounded,
         () => _openGuide(context, 'stroke'),
       ),
       _Situation(
@@ -528,7 +528,7 @@ class GuidedEmergencyScreen extends StatelessWidget {
               _SituationGrid(
                 situations: otherSituations,
                 columns: columns,
-                wide: wide,
+                compact: columns == 1,
               ),
               const SizedBox(height: 18),
               Container(
