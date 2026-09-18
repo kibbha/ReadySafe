@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../services/local_storage_service.dart';
+import 'carbon_monoxide_screen.dart';
 import 'emergency_food_safety_screen.dart';
 
 class PowerOutageScreen extends StatefulWidget {
@@ -197,15 +198,25 @@ class _PowerOutageScreenState extends State<PowerOutageScreen> {
                   ),
                 ),
                 const SizedBox(height: 9),
-                const _ActionBlock(
-                  icon: Icons.co2_rounded,
-                  title: 'Monoxyde de carbone',
-                  color: Color(0xffd92d36),
-                  lines: [
-                    'N’utilisez jamais une cuisinière à gaz pour chauffer le logement.',
-                    'N’utilisez pas de barbecue, réchaud extérieur ou groupe électrogène à l’intérieur.',
-                    'Tout groupe électrogène doit rester à l’extérieur, bien ventilé et loin des ouvertures.',
-                  ],
+                Card(
+                  child: ListTile(
+                    leading: const CircleAvatar(
+                      backgroundColor: Color(0xffffe7e8),
+                      child: Icon(Icons.warning_amber_rounded, color: Color(0xffd92d36)),
+                    ),
+                    title: const Text(
+                      'Monoxyde de carbone',
+                      style: TextStyle(fontWeight: FontWeight.w900),
+                    ),
+                    subtitle: const Text(
+                      'Groupes électrogènes, appareils à combustion, détecteurs et suspicion d’intoxication.',
+                    ),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const CarbonMonoxideScreen()),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 14),
                 const Text(
