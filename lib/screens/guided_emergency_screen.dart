@@ -14,6 +14,7 @@ import 'first_aid_screen.dart';
 import 'guide_list_screen.dart';
 import 'home_safety_screen.dart';
 import 'leave_now_screen.dart';
+import 'lightning_safety_screen.dart';
 import 'medical_continuity_screen.dart';
 import 'official_sources_screen.dart';
 import 'power_outage_screen.dart';
@@ -24,6 +25,7 @@ import 'safety_tools_screen.dart';
 import 'smoke_air_quality_screen.dart';
 import 'sanitation_hygiene_screen.dart';
 import 'vehicle_emergency_screen.dart';
+import 'volcano_safety_screen.dart';
 import 'water_safety_screen.dart';
 
 class GuidedEmergencyScreen extends StatelessWidget {
@@ -225,6 +227,24 @@ class GuidedEmergencyScreen extends StatelessWidget {
         en ? 'Severe weather is affecting the area' : 'Un phénomène météo sévère touche la zone',
         Icons.thunderstorm_rounded,
         () => _openHazard(context, 'storm'),
+      ),
+      _Situation(
+        en ? 'Thunderstorm / lightning' : 'Orage / foudre',
+        en ? 'Thunder, lightning, hail or strong storm winds' : 'Tonnerre, foudre, grêle ou vents violents',
+        Icons.thunderstorm_rounded,
+        () => _openPage(context, const LightningSafetyScreen()),
+      ),
+      _Situation(
+        en ? 'Tsunami warning signs' : 'Signes de tsunami',
+        en ? 'Strong coastal earthquake or unusual sea behaviour' : 'Fort séisme côtier ou comportement inhabituel de la mer',
+        Icons.waves_rounded,
+        () => _openPage(context, const TsunamiSafetyScreen()),
+      ),
+      _Situation(
+        en ? 'Volcano / ash' : 'Volcan / cendres',
+        en ? 'Eruption, ashfall or debris-flow danger' : 'Éruption, chute de cendres ou coulée de débris',
+        Icons.volcano_rounded,
+        () => _openPage(context, const VolcanoSafetyScreen()),
       ),
       _Situation(
         en ? 'Earthquake' : 'Séisme',
