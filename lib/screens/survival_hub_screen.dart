@@ -8,6 +8,7 @@ import 'checklist_screen.dart';
 import 'guide_list_screen.dart';
 import 'leave_now_screen.dart';
 import 'official_sources_screen.dart';
+import 'preparedness_review_screen.dart';
 import 'recovery_screen.dart';
 import 'safety_tools_screen.dart';
 import 'training_screen.dart';
@@ -116,6 +117,13 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.restore_rounded,
         const Color(0xff147343),
         const RecoveryScreen(),
+      ),
+      _Module(
+        'Revue de préparation',
+        'Vérifier chaque année contacts, réserves, alertes et besoins du foyer',
+        Icons.fact_check_rounded,
+        const Color(0xff087f83),
+        const PreparednessReviewScreen(),
       ),
       _Module(
         'Formation & exercices',
