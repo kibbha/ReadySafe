@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:readysafe/data/country_repository.dart';
 import 'package:readysafe/data/first_aid_repository.dart';
+import 'package:readysafe/screens/guide_list_screen.dart';
 
 void main() {
   test('verified emergency numbers remain available after main merge', () {
@@ -56,6 +57,20 @@ void main() {
     expect(
       earthquake.steps.join(' ').toLowerCase(),
       isNot(contains('sortez prudemment')),
+    );
+  });
+
+  test('direct hazard routes can use English localized content', () {
+    final flood = disasterGuides.firstWhere(
+      (guide) => guide.id == 'flood',
+    );
+    final englishFlood = localizedGuide(flood, true);
+
+    expect(flood.title, 'Inondation');
+    expect(englishFlood.title, 'Flood');
+    expect(
+      englishFlood.steps.join(' '),
+      contains('official alerts'),
     );
   });
 
