@@ -19,6 +19,7 @@ import 'secure_vault_screen.dart';
 import 'special_kits_screen.dart';
 import 'support_needs_screen.dart';
 import 'training_screen.dart';
+import 'water_safety_screen.dart';
 
 class SurvivalHubScreen extends StatefulWidget {
   const SurvivalHubScreen({super.key});
@@ -89,6 +90,13 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.water_drop_rounded,
         const Color(0xff2087c7),
         const CalculatorScreen(),
+      ),
+      _Module(
+        'Eau sûre en urgence',
+        'Ébullition, traitement, filtres et contamination',
+        Icons.local_drink_rounded,
+        const Color(0xff237fc7),
+        const WaterSafetyScreen(),
       ),
       _Module(
         'Panne électrique',
