@@ -183,10 +183,13 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
                 if (expiryItems.isNotEmpty) ...[
                   Row(
                     children: [
-                      const Expanded(
+                      Expanded(
                         child: Text(
                           en ? 'Kit expiry dates' : 'Péremptions du kit',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900,
+                          ),
                         ),
                       ),
                       TextButton(
