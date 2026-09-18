@@ -83,7 +83,9 @@ class _EmergencyPlanSummaryScreenState extends State<EmergencyPlanSummaryScreen>
       ..writeln()
       ..writeln('RASSEMBLEMENT')
       ..writeln('Principal : ${(_plan['meetingPoint'] ?? '').isEmpty ? 'À définir' : _plan['meetingPoint']}')
-      ..writeln('Alternative : ${(_plan['backupMeetingPoint'] ?? '').isEmpty ? 'À définir' : _plan['backupMeetingPoint']}');
+      ..writeln('Alternative : ${(_plan['backupMeetingPoint'] ?? '').isEmpty ? 'À définir' : _plan['backupMeetingPoint']}')
+      ..writeln('Hors quartier : ${(_plan['outsideAreaMeetingPoint'] ?? '').isEmpty ? 'À définir' : _plan['outsideAreaMeetingPoint']}')
+      ..writeln('Personne autorisée enfant : ${(_plan['authorizedPickup'] ?? '').isEmpty ? 'À définir' : _plan['authorizedPickup']}');
 
     final notes = (_plan['notes'] ?? '').trim();
     if (notes.isNotEmpty) buffer.writeln('Notes : $notes');
@@ -96,6 +98,11 @@ class _EmergencyPlanSummaryScreenState extends State<EmergencyPlanSummaryScreen>
 
     final reconnect = (_communication['reconnectNotes'] ?? '').trim();
     if (reconnect.isNotEmpty) buffer.writeln('Reconnexion : $reconnect');
+
+    final childInstructions = (_plan['childInstructions'] ?? '').trim();
+    if (childInstructions.isNotEmpty) {
+      buffer.writeln('Consignes enfants : $childInstructions');
+    }
 
     buffer
       ..writeln()
@@ -316,6 +323,18 @@ class _EmergencyPlanSummaryScreenState extends State<EmergencyPlanSummaryScreen>
                               : _communication['outOfAreaPhone']!,
                         ),
                         _Line(
+                          label: 'Hors quartier',
+                          value: (_plan['outsideAreaMeetingPoint'] ?? '').isEmpty
+                              ? 'À définir'
+                              : _plan['outsideAreaMeetingPoint']!,
+                        ),
+                        _Line(
+                          label: 'Personne autorisée',
+                          value: (_plan['authorizedPickup'] ?? '').isEmpty
+                              ? 'À définir'
+                              : _plan['authorizedPickup']!,
+                        ),
+                        _Line(
                           label: 'Message rapide',
                           value: (_communication['safeMessage'] ?? '').isEmpty
                               ? 'À définir'
@@ -350,7 +369,7 @@ class _EmergencyPlanSummaryScreenState extends State<EmergencyPlanSummaryScreen>
                       SizedBox(width: 9),
                       Expanded(
                         child: Text(
-                          'N’ajoutez pas de données médicales sensibles à ce résumé tant que le coffre chiffré ReadySafe n’est pas activé.',
+                          'Ce résumé reste volontairement limité aux informations opérationnelles. Les références médicales et autres données sensibles doivent rester dans le coffre sécurisé, pas dans le texte exporté.',
                           style: TextStyle(fontWeight: FontWeight.w700, height: 1.35),
                         ),
                       ),
