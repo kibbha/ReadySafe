@@ -178,7 +178,9 @@ class _PreparednessReviewScreenState extends State<PreparednessReviewScreen> {
   Widget build(BuildContext context) {
     final en = Localizations.localeOf(context).languageCode == 'en';
     final items = _items(en);
-    final progress = items.isEmpty ? 0.0 : _checked.length / items.length;
+    final validIds = items.map((item) => item.id).toSet();
+    final checkedCount = _checked.intersection(validIds).length;
+    final progress = items.isEmpty ? 0.0 : checkedCount / items.length;
     final nextReview = _lastReview == null
         ? null
         : DateTime(_lastReview!.year + 1, _lastReview!.month, _lastReview!.day);
@@ -232,8 +234,8 @@ class _PreparednessReviewScreenState extends State<PreparednessReviewScreen> {
                       const SizedBox(height: 7),
                       Text(
                         en
-                            ? '${_checked.length} / ${items.length} points checked'
-                            : '${_checked.length} / ${items.length} points vérifiés',
+                            ? '$checkedCount / ${items.length} points checked'
+                            : '$checkedCount / ${items.length} points vérifiés',
                         style: const TextStyle(fontWeight: FontWeight.w900),
                       ),
                       if (_lastReview != null) ...[
@@ -279,7 +281,7 @@ class _PreparednessReviewScreenState extends State<PreparednessReviewScreen> {
                 }),
                 const SizedBox(height: 8),
                 FilledButton.icon(
-                  onPressed: _checked.length == items.length ? _completeReview : null,
+                  onPressed: checkedCount == items.length ? _completeReview : null,
                   icon: const Icon(Icons.verified_rounded),
                   label: Text(en ? 'Mark review as complete' : 'Marquer la revue comme terminée'),
                 ),
