@@ -8,11 +8,14 @@ import 'emergency_plan_summary_screen.dart';
 import 'family_documents_screen.dart';
 import 'first_aid_screen.dart';
 import 'guide_list_screen.dart';
+import 'home_safety_screen.dart';
+import 'offline_readiness_screen.dart';
 import 'official_sources_screen.dart';
 import 'preparedness_review_screen.dart';
 import 'recovery_screen.dart';
 import 'safety_tools_screen.dart';
 import 'special_kits_screen.dart';
+import 'support_needs_screen.dart';
 import 'online_maps_screen.dart';
 import 'survival_hub_screen.dart';
 
@@ -109,6 +112,14 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
       'retour maison': _SearchHit('Après l’urgence', 'Récupération', Icons.restore_rounded, RecoveryScreen()),
       'signal sos': _SearchHit('Outils', 'Outils d’urgence', Icons.sos_rounded, SafetyToolsScreen()),
       'outil': _SearchHit('Outils', 'Outils d’urgence', Icons.handyman_rounded, SafetyToolsScreen()),
+      'domicile': _SearchHit('Préparation', 'Sécurité du domicile', Icons.home_work_rounded, HomeSafetyScreen()),
+      'gaz': _SearchHit('Préparation', 'Sécurité du domicile', Icons.settings_input_component_rounded, HomeSafetyScreen()),
+      'électricité': _SearchHit('Préparation', 'Sécurité du domicile', Icons.electrical_services_rounded, HomeSafetyScreen()),
+      'accessibilité': _SearchHit('Famille', 'Besoins spécifiques', Icons.accessibility_new_rounded, SupportNeedsScreen()),
+      'mobilité': _SearchHit('Famille', 'Besoins spécifiques', Icons.accessible_forward_rounded, SupportNeedsScreen()),
+      'audition': _SearchHit('Famille', 'Besoins spécifiques', Icons.hearing_rounded, SupportNeedsScreen()),
+      'hors ligne': _SearchHit('Préparation', 'Préparation hors ligne', Icons.offline_bolt_rounded, OfflineReadinessScreen()),
+      'offline': _SearchHit('Préparation', 'Préparation hors ligne', Icons.offline_bolt_rounded, OfflineReadinessScreen()),
       'revue': _SearchHit('Préparation', 'Revue de préparation', Icons.fact_check_rounded, PreparednessReviewScreen()),
       'vérification': _SearchHit('Préparation', 'Revue de préparation', Icons.fact_check_rounded, PreparednessReviewScreen()),
     };
