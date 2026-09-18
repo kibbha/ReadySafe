@@ -353,8 +353,7 @@ class _PosterGuideCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final steps = guide.steps.take(3).toList();
-    final illustration = guide.steps.isNotEmpty ? guide.steps.first.illustrationAsset : null;
+    final steps = guide.steps.take(4).toList();
     final en = Localizations.localeOf(context).languageCode == 'en';
 
     return Material(
@@ -401,29 +400,17 @@ class _PosterGuideCard extends StatelessWidget {
               ),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 6),
+                  padding: const EdgeInsets.fromLTRB(7, 7, 7, 5),
                   child: Column(
                     children: [
-                      if (illustration != null)
+                      for (var i = 0; i < steps.length; i++)
                         Expanded(
-                          flex: 4,
-                          child: SvgPicture.asset(illustration, fit: BoxFit.contain),
+                          child: _PosterStep(
+                            number: i + 1,
+                            text: _aidText(context, steps[i].textKey),
+                            illustrationAsset: steps[i].illustrationAsset,
+                          ),
                         ),
-                      const SizedBox(height: 5),
-                      Expanded(
-                        flex: 5,
-                        child: Column(
-                          children: [
-                            for (var i = 0; i < steps.length; i++)
-                              Expanded(
-                                child: _PosterStep(
-                                  number: i + 1,
-                                  text: _aidText(context, steps[i].textKey),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
                     ],
                   ),
                 ),
@@ -447,34 +434,49 @@ class _PosterGuideCard extends StatelessWidget {
 }
 
 class _PosterStep extends StatelessWidget {
-  const _PosterStep({required this.number, required this.text});
+  const _PosterStep({
+    required this.number,
+    required this.text,
+    required this.illustrationAsset,
+  });
+
   final int number;
   final String text;
+  final String illustrationAsset;
 
   @override
-  Widget build(BuildContext context) => Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 18,
-            height: 18,
-            alignment: Alignment.center,
-            decoration: const BoxDecoration(color: Color(0xff087f83), shape: BoxShape.circle),
-            child: Text(
-              number.toString(),
-              style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w900),
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: 18,
+              height: 18,
+              alignment: Alignment.center,
+              decoration: const BoxDecoration(color: Color(0xff087f83), shape: BoxShape.circle),
+              child: Text(
+                number.toString(),
+                style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w900),
+              ),
             ),
-          ),
-          const SizedBox(width: 5),
-          Expanded(
-            child: Text(
-              text,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 9.5, height: 1.12, fontWeight: FontWeight.w700, color: Color(0xff31464b)),
+            const SizedBox(width: 5),
+            Expanded(
+              child: Text(
+                text,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: 9.2, height: 1.1, fontWeight: FontWeight.w700, color: Color(0xff31464b)),
+              ),
             ),
-          ),
-        ],
+            const SizedBox(width: 3),
+            SizedBox(
+              width: 50,
+              height: 52,
+              child: SvgPicture.asset(illustrationAsset, fit: BoxFit.contain),
+            ),
+          ],
+        ),
       );
 }
 
