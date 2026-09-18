@@ -3,13 +3,13 @@ import '../models/guide.dart';
 
 const emergencyGuides = [
   Guide(id:'emergency',title:'Urgence générale',icon:'warning',immediate:'Mettez-vous en sécurité, restez calme et évaluez le danger.',avoid:'Ne vous exposez pas pour récupérer des objets.',steps:['Éloignez-vous du danger immédiat.','Alertez les secours si une vie est menacée.','Prévenez un proche lorsque cela est sûr.'],callHelp:'Appelez les secours en cas de danger vital, d’incendie ou de blessure grave.',evacuate:'Évacuez sur ordre des autorités ou si le lieu devient dangereux.'),
-  Guide(id:'evacuation',title:'Évacuation',icon:'directions_run',immediate:'Prenez votre kit, vos documents et quittez la zone sans attendre.',avoid:'N’attendez pas ou ne retournez pas dans une zone évacuée.',steps:['Suivez les consignes officielles.','Fermez gaz, eau et électricité si cela est sans danger.','Rejoignez le point de rassemblement.'],callHelp:'Signalez toute personne vulnérable ou blessée.',evacuate:'Évacuez immédiatement dès qu’un ordre est donné.'),
+  Guide(id:'evacuation',title:'Évacuation',icon:'directions_run',immediate:'Quittez la zone sans délai lorsqu’une évacuation est ordonnée. Prenez uniquement ce qui est immédiatement accessible.',avoid:'Ne retardez pas le départ pour récupérer des objets et ne retournez pas dans une zone évacuée.',steps:['Suivez les consignes officielles et les itinéraires indiqués.','Ne manipulez gaz, eau ou électricité que si les autorités ou la situation l’exigent, si cela ne retarde pas le départ et si vous savez le faire sans danger.','Rejoignez le point de rassemblement ou le lieu d’accueil indiqué.'],callHelp:'Signalez toute personne blessée, manquante ou vulnérable lorsque cela est nécessaire.',evacuate:'Évacuez immédiatement dès qu’un ordre est donné ou si le lieu devient dangereux.'),
   Guide(id:'blackout',title:'Coupure électrique',icon:'power_off',immediate:'Utilisez une lampe, préservez la batterie du téléphone.',avoid:'N’utilisez jamais un générateur ou barbecue à l’intérieur.',steps:['Débranchez les appareils sensibles.','Gardez le réfrigérateur fermé.','Écoutez les informations locales.'],callHelp:'Appelez en cas de ligne électrique tombée ou danger médical.',evacuate:'Évacuez seulement si les autorités le demandent.'),
 ];
 
 const disasterGuides = [
   Guide(id:'fire',title:'Incendie',icon:'local_fire_department',immediate:'Sortez immédiatement et restez dehors.',avoid:'Ne retournez jamais dans un bâtiment en feu.',steps:['Alertez les occupants.','Sortez par l’issue la plus sûre.','Appelez les pompiers depuis l’extérieur.'],callHelp:'Appelez les pompiers dès que vous êtes en sécurité.',evacuate:'Évacuez immédiatement si fumée, feu ou alarme.'),
-  Guide(id:'flood',title:'Inondation',icon:'water',immediate:'Gagnez un point haut et évitez toute eau en mouvement.',avoid:'Ne marchez ni ne conduisez dans une zone inondée.',steps:['Coupez l’électricité si sûr.','Écoutez les alertes.','Emportez le kit d’urgence.'],callHelp:'Appelez si quelqu’un est isolé ou emporté.',evacuate:'Évacuez dès l’alerte ou la montée des eaux.'),
+  Guide(id:'flood',title:'Inondation',icon:'water',immediate:'Gagnez un endroit plus sûr et en hauteur, et évitez toute eau en mouvement.',avoid:'Ne marchez ni ne conduisez dans une zone inondée lorsque la profondeur, le courant ou l’état de la route sont incertains.',steps:['Suivez les alertes et les consignes d’évacuation officielles.','Évitez caves, passages souterrains et zones basses qui peuvent se remplir rapidement.','Emportez le kit d’urgence uniquement s’il est immédiatement accessible et sans retarder le départ.'],callHelp:'Appelez si quelqu’un est coincé, emporté ou en danger immédiat.',evacuate:'Évacuez lorsqu’un ordre est donné ou si la montée des eaux menace le lieu.'),
   Guide(id:'storm',title:'Tempête',icon:'thunderstorm',immediate:'Abritez-vous à l’intérieur, loin des fenêtres.',avoid:'Ne restez pas sous les arbres ou près des lignes électriques.',steps:['Chargez les appareils.','Rentrez les objets extérieurs.','Suivez les alertes météo.'],callHelp:'Appelez pour un danger immédiat.',evacuate:'Évacuez si les autorités le demandent.'),
   Guide(id:'earthquake',title:'Séisme',icon:'landscape',immediate:'Baissez-vous, abritez-vous, agrippez-vous.',avoid:'Ne courez pas dehors pendant les secousses.',steps:['Protégez tête et cou.','Après les secousses, sortez prudemment.','Attendez-vous à des répliques.'],callHelp:'Appelez pour blessures graves ou effondrement.',evacuate:'Évacuez après les secousses si le bâtiment est endommagé.'),
   Guide(id:'heat',title:'Canicule',icon:'wb_sunny',immediate:'Hydratez-vous et cherchez un endroit frais.',avoid:'Ne laissez jamais enfant ou animal dans un véhicule.',steps:['Buvez régulièrement.','Évitez les efforts intenses.','Prenez des nouvelles des proches fragiles.'],callHelp:'Appelez en cas de confusion, perte de connaissance ou malaise grave.',evacuate:'Rejoignez un lieu frais si votre logement devient dangereux.'),
@@ -25,8 +25,8 @@ const disasterGuides = [
 
 const firstAid = ['Malaise','Saignement','Brûlure','Étouffement','Fracture','Entorse','Perte de connaissance','Réaction allergique','Intoxication'];
 
-/// Base stock for one adult. The UI will later scale household-dependent
-/// quantities from the saved family profile. Expiry/rotation dates are entered
+/// Base stock model. Household-dependent quantities are scaled from the saved
+/// family profile by the kit and preparedness screens. Expiry/rotation dates are entered
 /// by the user because they depend on the exact purchased product.
 const kitItems = [
   ChecklistItem(id:'water',label:'Eau potable',category:'Eau',recommendedQuantity:9,unit:'L / personne',hasExpiry:true,expiryReminderDays:30,notes:'Réserve minimale de boisson pour environ 3 jours.'),
@@ -54,7 +54,7 @@ const kitItems = [
   ChecklistItem(id:'whistle',label:'Sifflet de signalisation',category:'Signalisation',recommendedQuantity:1,unit:'sifflet'),
   ChecklistItem(id:'masks',label:'Masques de protection adaptés au contexte',category:'Protection',recommendedQuantity:1,unit:'réserve'),
   ChecklistItem(id:'plastic_sheeting',label:'Bâche ou film plastique résistant',category:'Abri',recommendedQuantity:1,unit:'rouleau / bâche'),
-  ChecklistItem(id:'wrench',label:'Clé ou pince pour coupures techniques',category:'Outils',recommendedQuantity:1,unit:'outil',notes:'À utiliser uniquement si vous savez couper les installations en sécurité.'),
+  ChecklistItem(id:'wrench',label:'Clé ou pince pour coupures techniques',category:'Outils',recommendedQuantity:1,unit:'outil',notes:'Repérez l’outil à l’avance. Ne coupez un réseau que si les autorités, un professionnel ou la situation l’exigent et si vous savez le faire sans danger.'),
   ChecklistItem(id:'can_opener',label:'Ouvre-boîte manuel',category:'Nourriture',recommendedQuantity:1,unit:'outil'),
   ChecklistItem(id:'paper_maps',label:'Cartes papier de la zone',category:'Orientation',recommendedQuantity:1,unit:'jeu'),
   ChecklistItem(id:'spare_keys',label:'Double des clés essentielles',category:'Documents & argent',recommendedQuantity:1,unit:'jeu'),
