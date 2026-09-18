@@ -6,6 +6,8 @@ import 'communication_plan_screen.dart';
 import 'family_documents_screen.dart';
 import 'first_aid_screen.dart';
 import 'guide_list_screen.dart';
+import 'official_sources_screen.dart';
+import 'recovery_screen.dart';
 import 'safety_tools_screen.dart';
 import 'settings_screen.dart';
 import 'training_screen.dart';
@@ -47,6 +49,18 @@ class MoreScreen extends StatelessWidget {
         en ? 'Official numbers for the active country' : 'Numéros officiels du pays actif',
         Icons.phone_in_talk_rounded,
         const EmergencyScreen(),
+      ),
+      _MoreItem(
+        en ? 'Official alerts & sources' : 'Alertes & sources officielles',
+        en ? 'Open trusted government warning channels' : 'Ouvrir les canaux officiels du pays actif',
+        Icons.campaign_rounded,
+        const OfficialSourcesScreen(),
+      ),
+      _MoreItem(
+        en ? 'After the emergency' : 'Après l’urgence',
+        en ? 'Recovery, home safety and practical next steps' : 'Retour, sécurité du logement et démarches essentielles',
+        Icons.restore_rounded,
+        const RecoveryScreen(),
       ),
       _MoreItem(
         en ? 'Risks & disasters' : 'Risques & catastrophes',
