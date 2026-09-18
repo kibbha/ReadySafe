@@ -26,6 +26,8 @@ class _EmergencyPlanSummaryScreenState extends State<EmergencyPlanSummaryScreen>
   Set<String> _offlineChecks = {};
   DateTime? _reviewDate;
   int _vaultCount = 0;
+  int _medicalReady = 0;
+  int _petReady = 0;
   bool _loading = true;
 
   @override
@@ -46,6 +48,8 @@ class _EmergencyPlanSummaryScreenState extends State<EmergencyPlanSummaryScreen>
     final offlineChecks = await _storage.offlineReadinessChecks();
     final reviewDate = await _storage.preparednessReviewDate();
     final vaultCount = await _vault.count();
+    final medicalReady = (await _storage.completed('medical_continuity_v3')).length;
+    final petReady = (await _storage.completed('pet_emergency_v3')).length;
 
     if (!mounted) return;
     setState(() {
@@ -60,6 +64,8 @@ class _EmergencyPlanSummaryScreenState extends State<EmergencyPlanSummaryScreen>
       _offlineChecks = offlineChecks;
       _reviewDate = reviewDate;
       _vaultCount = vaultCount;
+      _medicalReady = medicalReady;
+      _petReady = petReady;
       _loading = false;
     });
   }
@@ -122,6 +128,8 @@ class _EmergencyPlanSummaryScreenState extends State<EmergencyPlanSummaryScreen>
       ..writeln('Sécurité domicile : ${_homeSafetyChecks.length} point(s) vérifié(s)')
       ..writeln('Plan B hors ligne : ${_offlineChecks.length} point(s) prêt(s)')
       ..writeln('Entrées du coffre sécurisé : $_vaultCount')
+      ..writeln('Continuité médicale : $_medicalReady point(s) préparé(s)')
+      ..writeln('Plan animaux : $_petReady point(s) préparé(s)')
       ..writeln('Dernière revue : ${_reviewDate == null ? 'Non renseignée' : _formatDate(_reviewDate!)}')
       ..writeln()
       ..writeln('Message rapide : ${_communication['safeMessage'] ?? 'Je suis en sécurité.'}')
@@ -262,6 +270,19 @@ class _EmergencyPlanSummaryScreenState extends State<EmergencyPlanSummaryScreen>
                   value: '$_vaultCount entrée(s) chiffrée(s)',
                   color: const Color(0xff6750a4),
                 ),
+                _SummaryCard(
+                  icon: Icons.medical_services_rounded,
+                  title: 'Continuité médicale',
+                  value: '$_medicalReady point(s) préparé(s)',
+                  color: const Color(0xffd92d36),
+                ),
+                if ((_family['pets'] ?? 0) > 0)
+                  _SummaryCard(
+                    icon: Icons.pets_rounded,
+                    title: 'Plan animaux',
+                    value: '$_petReady point(s) préparé(s)',
+                    color: const Color(0xff147343),
+                  ),
                 _SummaryCard(
                   icon: Icons.fact_check_rounded,
                   title: 'Dernière revue',
