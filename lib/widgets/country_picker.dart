@@ -65,23 +65,26 @@ class _CountrySearchListState extends State<CountrySearchList> {
             itemCount: countries.length,
             itemBuilder: (_, index) {
               final country = countries[index];
-              return ListTile(
-                minTileHeight: 60,
-                leading: Text(
-                  countryFlag(country.isoCode),
-                  style: const TextStyle(fontSize: 28),
+              return Material(
+                color: Colors.transparent,
+                child: ListTile(
+                  minTileHeight: 60,
+                  leading: Text(
+                    countryFlag(country.isoCode),
+                    style: const TextStyle(fontSize: 28),
+                  ),
+                  title: Text(strings.get(country.nameKey)),
+                  subtitle: Text(country.isoCode),
+                  trailing: country.isoCode == widget.selectedCode
+                      ? const Icon(Icons.check_circle)
+                      : country.hasVerifiedNumbers
+                      ? const Icon(Icons.verified_outlined)
+                      : Icon(
+                          Icons.warning_amber_rounded,
+                          semanticLabel: strings.get('numbers_unverified'),
+                        ),
+                  onTap: () => widget.onSelected(country.isoCode),
                 ),
-                title: Text(strings.get(country.nameKey)),
-                subtitle: Text(country.isoCode),
-                trailing: country.isoCode == widget.selectedCode
-                    ? const Icon(Icons.check_circle)
-                    : country.hasVerifiedNumbers
-                    ? const Icon(Icons.verified_outlined)
-                    : Icon(
-                        Icons.warning_amber_rounded,
-                        semanticLabel: strings.get('numbers_unverified'),
-                      ),
-                onTap: () => widget.onSelected(country.isoCode),
               );
             },
           ),
