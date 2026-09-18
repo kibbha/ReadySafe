@@ -49,4 +49,21 @@ void main() {
     expect(markers.first['name'], 'Point famille');
     expect(markers.first['kind'], 'meeting');
   });
+
+  test('annual preparedness review persists date and checks', () async {
+    SharedPreferences.setMockInitialValues({});
+    final storage = LocalStorageService();
+    final date = DateTime(2026, 9, 18);
+
+    await storage.savePreparednessReviewDate(date);
+    await storage.savePreparednessReviewChecks({'contacts', 'kit', 'alerts'});
+
+    final savedDate = await storage.preparednessReviewDate();
+    final checks = await storage.preparednessReviewChecks();
+
+    expect(savedDate?.year, 2026);
+    expect(savedDate?.month, 9);
+    expect(savedDate?.day, 18);
+    expect(checks, containsAll({'contacts', 'kit', 'alerts'}));
+  });
 }
