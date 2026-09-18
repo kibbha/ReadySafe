@@ -117,9 +117,33 @@ class _HomeScreenState extends State<HomeScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Text('ReadySafe', style: TextStyle(fontSize: 23, fontWeight: FontWeight.w900)),
-                                Text(
-                                  '${_flag(country.isoCode)} ${t.get(country.nameKey)}${app.travelMode ? ' · ✈' : ''}',
-                                  style: const TextStyle(fontSize: 12, color: Color(0xff65747a), fontWeight: FontWeight.w700),
+                                Row(
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        '${_flag(country.isoCode)} ${t.get(country.nameKey)}${app.travelMode ? ' · ✈' : ''}',
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          color: Color(0xff65747a),
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ),
+                                    if (!country.hasVerifiedNumbers) ...[
+                                      const SizedBox(width: 5),
+                                      Tooltip(
+                                        message: en
+                                            ? 'Emergency numbers not yet verified for this country.'
+                                            : 'Numéros d’urgence pas encore vérifiés pour ce pays.',
+                                        child: const Icon(
+                                          Icons.warning_amber_rounded,
+                                          size: 16,
+                                          color: Color(0xffb7833f),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
                                 ),
                               ],
                             ),
