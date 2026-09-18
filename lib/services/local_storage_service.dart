@@ -297,19 +297,53 @@ class LocalStorageService {
     final docs = await emergencyDocuments();
     final plan = await familyPlan();
     final communication = await communicationPlan();
+    final homeChecks = await homeSafetyChecks();
+    final offlineChecks = await offlineReadinessChecks();
+    final reviewDate = await preparednessReviewDate();
+    final support = await supportNeeds();
+    final supportNotes = await supportNeedsNotes();
 
     var score = 0;
-    if (stock.values.where((entry) => entry.quantityOwned > 0 && !entry.isExpired).length >= 8) {
-      score += 40;
-    } else if (stock.values.any((entry) => entry.quantityOwned > 0)) {
-      score += 20;
+
+    final readyKitItems = stock.values
+        .where((entry) => entry.quantityOwned > 0 && !entry.isExpired)
+        .length;
+    if (readyKitItems >= 8) {
+      score += 25;
+    } else if (readyKitItems >= 4) {
+      score += 15;
+    } else if (readyKitItems > 0) {
+      score += 8;
     }
-    final people = (familyValue['adults'] ?? 0) + (familyValue['children'] ?? 0);
-    if (people > 0) score += 15;
-    if (contacts.any((contact) => (contact['phone'] ?? '').trim().isNotEmpty)) score += 15;
-    if ((plan['meetingPoint'] ?? '').trim().isNotEmpty) score += 15;
+
+    final people = (familyValue['adults'] ?? 0) +
+        (familyValue['children'] ?? 0) +
+        (familyValue['care'] ?? 0);
+    if (people > 0) score += 10;
+
+    if (contacts.any((contact) => (contact['phone'] ?? '').trim().isNotEmpty)) {
+      score += 10;
+    }
+
+    if ((plan['meetingPoint'] ?? '').trim().isNotEmpty) score += 10;
+
     if (docs.where((doc) => doc['ready'] == true).length >= 3) score += 10;
-    if ((communication['outOfAreaPhone'] ?? '').trim().isNotEmpty) score += 5;
+
+    if ((communication['outOfAreaPhone'] ?? '').trim().isNotEmpty) score += 10;
+
+    if (homeChecks.length >= 4) score += 10;
+
+    if (offlineChecks.length >= 3) score += 5;
+
+    if (reviewDate != null &&
+        DateTime.now().difference(reviewDate).inDays.abs() <= 400) {
+      score += 5;
+    }
+
+    final supportRelevant = (familyValue['care'] ?? 0) > 0 || support.isNotEmpty;
+    if (!supportRelevant || support.isNotEmpty || supportNotes.trim().isNotEmpty) {
+      score += 5;
+    }
+
     return score.clamp(0, 100).toInt();
-  }
-}
+  }}
