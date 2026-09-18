@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:readysafe/models/checklist_item.dart';
 import 'package:readysafe/services/local_storage_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,6 +12,32 @@ void main() {
       'care': 0,
       'pets': 0,
     });
+  });
+
+
+  test('locale-neutral defaults do not inject fake family data', () async {
+    SharedPreferences.setMockInitialValues({});
+    final storage = LocalStorageService();
+
+    expect(await storage.familyContacts(), isEmpty);
+    expect((await storage.communicationPlan())['safeMessage'], isEmpty);
+  });
+
+  test('non-applicable pet stock does not inflate preparedness score', () async {
+    SharedPreferences.setMockInitialValues({});
+    final storage = LocalStorageService();
+
+    await storage.saveKitStockEntry(
+      const KitStockEntry(
+        itemId: 'pet_food',
+        quantityOwned: 10,
+      ),
+    );
+
+    final score = await storage.preparednessScore();
+
+    // Baseline household + no-extra-needs readiness only.
+    expect(score, 15);
   });
 
   test('communication plan persists locally', () async {
