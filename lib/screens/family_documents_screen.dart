@@ -5,6 +5,7 @@ import '../services/local_storage_service.dart';
 import 'communication_plan_screen.dart';
 import 'emergency_plan_summary_screen.dart';
 import 'family_screen.dart';
+import 'secure_vault_screen.dart';
 import 'support_needs_screen.dart';
 
 class FamilyDocumentsScreen extends StatefulWidget {
@@ -284,6 +285,22 @@ class _FamilyDocumentsScreenState extends State<FamilyDocumentsScreen>
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const CommunicationPlanScreen()),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Card(
+            child: ListTile(
+              leading: const CircleAvatar(
+                backgroundColor: Color(0xffe4f2f0),
+                child: Icon(Icons.lock_rounded, color: Color(0xff087f83)),
+              ),
+              title: const Text('Coffre sécurisé', style: TextStyle(fontWeight: FontWeight.w900)),
+              subtitle: const Text('Références et notes sensibles chiffrées sur l’appareil'),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SecureVaultScreen()),
               ),
             ),
           ),
