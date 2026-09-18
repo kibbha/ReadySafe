@@ -124,9 +124,10 @@ class SpecialKitsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final en = Localizations.localeOf(context).languageCode == 'en';
     return Scaffold(
       backgroundColor: const Color(0xfff7faf9),
-      appBar: AppBar(title: const Text('Kits spécialisés')),
+      appBar: AppBar(title: Text(en ? 'Specialized kits' : 'Kits spécialisés')),
       body: LayoutBuilder(
         builder: (context, constraints) {
           final wide = constraints.maxWidth >= 760;
@@ -141,26 +142,30 @@ class SpecialKitsScreen extends StatelessWidget {
                   ),
                   borderRadius: BorderRadius.circular(22),
                 ),
-                child: const Row(
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CircleAvatar(
+                    const CircleAvatar(
                       backgroundColor: Color(0xff087f83),
                       child: Icon(Icons.inventory_2_rounded, color: Colors.white),
                     ),
-                    SizedBox(width: 12),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Un kit différent pour chaque contexte',
-                            style: TextStyle(fontSize: 19, fontWeight: FontWeight.w900),
+                            en
+                                ? 'A different kit for each context'
+                                : 'Un kit différent pour chaque contexte',
+                            style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w900),
                           ),
-                          SizedBox(height: 4),
+                          const SizedBox(height: 4),
                           Text(
-                            'Le kit domicile reste la base. Ces listes complètent la préparation pour évacuation, voiture, voyage, enfants, animaux et extérieur.',
-                            style: TextStyle(color: Color(0xff65747a), height: 1.35),
+                            en
+                                ? 'The home kit remains the foundation. These lists add evacuation, vehicle, travel, child, pet and outdoor needs.'
+                                : 'Le kit domicile reste la base. Ces listes complètent la préparation pour évacuation, voiture, voyage, enfants, animaux et extérieur.',
+                            style: const TextStyle(color: Color(0xff65747a), height: 1.35),
                           ),
                         ],
                       ),
@@ -183,6 +188,7 @@ class SpecialKitsScreen extends StatelessWidget {
                   final kit = _kits[index];
                   return _KitCard(
                     kit: kit,
+                    en: en,
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => SpecialKitDetailScreen(kit: kit)),
@@ -197,15 +203,17 @@ class SpecialKitsScreen extends StatelessWidget {
                   color: const Color(0xfffff4c7),
                   borderRadius: BorderRadius.circular(17),
                 ),
-                child: const Row(
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.tune_rounded, color: Color(0xff9a6a00)),
-                    SizedBox(width: 9),
+                    const Icon(Icons.tune_rounded, color: Color(0xff9a6a00)),
+                    const SizedBox(width: 9),
                     Expanded(
                       child: Text(
-                        'Ces listes sont des bases à personnaliser. Ajoutez toujours les traitements, aides techniques, aliments spécifiques et contraintes propres à votre foyer.',
-                        style: TextStyle(fontWeight: FontWeight.w700, height: 1.35),
+                        en
+                            ? 'These lists are starting points. Always add prescribed treatment, assistive equipment, special food and household-specific needs.'
+                            : 'Ces listes sont des bases à personnaliser. Ajoutez toujours les traitements, aides techniques, aliments spécifiques et contraintes propres à votre foyer.',
+                        style: const TextStyle(fontWeight: FontWeight.w700, height: 1.35),
                       ),
                     ),
                   ],
@@ -254,6 +262,7 @@ class _SpecialKitDetailScreenState extends State<SpecialKitDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final en = Localizations.localeOf(context).languageCode == 'en';
     final ready = widget.kit.items.where((item) => _done.contains(item.id)).length;
     final progress = widget.kit.items.isEmpty ? 0.0 : ready / widget.kit.items.length;
 
@@ -264,7 +273,7 @@ class _SpecialKitDetailScreenState extends State<SpecialKitDetailScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xfff7faf9),
-      appBar: AppBar(title: Text(widget.kit.title)),
+      appBar: AppBar(title: Text(_kitTitle(widget.kit, en))),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(12, 4, 12, 28),
         children: [
@@ -287,11 +296,11 @@ class _SpecialKitDetailScreenState extends State<SpecialKitDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.kit.title,
+                        _kitTitle(widget.kit, en),
                         style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w900),
                       ),
                       const SizedBox(height: 3),
-                      Text(widget.kit.subtitle, style: const TextStyle(color: Color(0xff65747a))),
+                      Text(_kitSubtitle(widget.kit, en), style: const TextStyle(color: Color(0xff65747a))),
                       const SizedBox(height: 8),
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
@@ -304,7 +313,7 @@ class _SpecialKitDetailScreenState extends State<SpecialKitDetailScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '$ready / ${widget.kit.items.length} prêts',
+                        en ? '$ready / ${widget.kit.items.length} ready' : '$ready / ${widget.kit.items.length} prêts',
                         style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900),
                       ),
                     ],
@@ -317,7 +326,7 @@ class _SpecialKitDetailScreenState extends State<SpecialKitDetailScreen> {
             Padding(
               padding: const EdgeInsets.fromLTRB(4, 14, 4, 6),
               child: Text(
-                group.key,
+                _categoryLabel(group.key, en),
                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
               ),
             ),
@@ -339,7 +348,7 @@ class _SpecialKitDetailScreenState extends State<SpecialKitDetailScreen> {
                           : const Color(0xffb7833f),
                     ),
                   ),
-                  title: Text(item.label, style: const TextStyle(fontWeight: FontWeight.w800)),
+                  title: Text(_itemLabel(widget.kit.id, item, en), style: const TextStyle(fontWeight: FontWeight.w800)),
                 ),
               );
             }),
@@ -366,8 +375,14 @@ class _SpecialKitDetailScreenState extends State<SpecialKitDetailScreen> {
 }
 
 class _KitCard extends StatelessWidget {
-  const _KitCard({required this.kit, required this.onTap});
+  const _KitCard({
+    required this.kit,
+    required this.en,
+    required this.onTap,
+  });
+
   final _KitDefinition kit;
+  final bool en;
   final VoidCallback onTap;
 
   @override
@@ -397,12 +412,12 @@ class _KitCard extends StatelessWidget {
                 ),
                 const Spacer(),
                 Text(
-                  kit.title,
+                  _kitTitle(kit, en),
                   style: const TextStyle(fontSize: 15.5, fontWeight: FontWeight.w900),
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  kit.subtitle,
+                  _kitSubtitle(kit, en),
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(fontSize: 11.5, color: Color(0xff65747a), height: 1.2),
@@ -413,6 +428,122 @@ class _KitCard extends StatelessWidget {
         ),
       );
 }
+
+String _kitTitle(_KitDefinition kit, bool en) {
+  if (!en) return kit.title;
+  return const {
+        'evacuation': 'Evacuation bag',
+        'vehicle': 'Vehicle kit',
+        'travel': 'Travel kit',
+        'children': 'Baby / child kit',
+        'pets': 'Pet kit',
+        'outdoor': 'Outdoor kit',
+      }[kit.id] ??
+      kit.title;
+}
+
+String _kitSubtitle(_KitDefinition kit, bool en) {
+  if (!en) return kit.subtitle;
+  return const {
+        'evacuation': 'Ready to grab quickly when you need to leave home.',
+        'vehicle': 'For breakdowns, blocked roads or difficult journeys.',
+        'travel': 'Documents, health and continuity while away from home.',
+        'children': 'Adapt supplies to the child’s age, routine and needs.',
+        'pets': 'Prepare evacuation and short-term autonomy for household pets.',
+        'outdoor': 'For hiking, isolated activities or travel without network coverage.',
+      }[kit.id] ??
+      kit.subtitle;
+}
+
+String _categoryLabel(String category, bool en) {
+  if (!en) return category;
+  return const {
+        'Eau': 'Water',
+        'Nourriture': 'Food',
+        'Santé': 'Health',
+        'Énergie': 'Power',
+        'Éclairage': 'Lighting',
+        'Communication': 'Communication',
+        'Documents': 'Documents',
+        'Protection': 'Protection',
+        'Hygiène': 'Hygiene',
+        'Sécurité': 'Safety',
+        'Outils': 'Tools',
+        'Orientation': 'Navigation',
+        'Mobilité': 'Mobility',
+        'Bien-être': 'Comfort',
+        'Signalisation': 'Signalling',
+      }[category] ??
+      category;
+}
+
+String _itemLabel(String kitId, _KitEntry item, bool en) {
+  if (!en) return item.label;
+  return _itemEnglish['$kitId.${item.id}'] ?? item.label;
+}
+
+const _itemEnglish = <String, String>{
+  'evacuation.water': 'Portable drinking water',
+  'evacuation.food': 'Ready-to-eat food',
+  'evacuation.meds': 'Personal medicines',
+  'evacuation.firstaid': 'Compact first-aid kit',
+  'evacuation.phone': 'Phone, cable and power bank',
+  'evacuation.light': 'Compact flashlight',
+  'evacuation.radio': 'Portable radio if available',
+  'evacuation.docs': 'Copies of essential documents',
+  'evacuation.cash': 'Cash',
+  'evacuation.clothes': 'Spare clothing and weather protection',
+  'evacuation.hygiene': 'Basic hygiene supplies',
+  'evacuation.keys': 'Essential keys',
+  'vehicle.vest': 'Reflective vest',
+  'vehicle.triangle': 'Warning triangle',
+  'vehicle.firstaid': 'First-aid kit',
+  'vehicle.water': 'Water',
+  'vehicle.food': 'Long-life snacks',
+  'vehicle.blanket': 'Blanket / thermal protection',
+  'vehicle.light': 'Flashlight',
+  'vehicle.power': 'Power bank and cable',
+  'vehicle.charger': 'Vehicle charger',
+  'vehicle.gloves': 'Work gloves',
+  'vehicle.weather': 'Rain / cold protection',
+  'vehicle.map': 'Offline map or backup route',
+  'travel.identity': 'Identity documents and copies',
+  'travel.insurance': 'Insurance and assistance',
+  'travel.meds': 'Medicines and useful prescriptions',
+  'travel.contacts': 'Important offline contacts',
+  'travel.power': 'Power bank and adapters',
+  'travel.cash': 'Backup payment method',
+  'travel.water': 'Water bottle / water for the journey',
+  'travel.light': 'Small flashlight',
+  'travel.map': 'Offline destination map',
+  'travel.embassy': 'Consular contact details when relevant',
+  'children.food': 'Age-appropriate food and snacks',
+  'children.water': 'Water appropriate to the child’s needs',
+  'children.diapers': 'Diapers / changing supplies if needed',
+  'children.wipes': 'Wipes and hygiene supplies',
+  'children.clothes': 'Spare clothing',
+  'children.meds': 'Prescribed / usual medicines',
+  'children.comfort': 'Comfort item',
+  'children.identity': 'Responsible-adult contacts and child information',
+  'children.carrier': 'Suitable transport method',
+  'pets.food': 'Usual pet food',
+  'pets.water': 'Additional water',
+  'pets.bowls': 'Bowls / containers',
+  'pets.lead': 'Lead, harness or carrier',
+  'pets.meds': 'Required treatment',
+  'pets.docs': 'Identification, records and veterinarian contacts',
+  'pets.waste': 'Waste bags and hygiene supplies',
+  'pets.blanket': 'Blanket or familiar item',
+  'outdoor.water': 'Water and suitable treatment method',
+  'outdoor.food': 'Energy reserve',
+  'outdoor.navigation': 'Map, compass or offline navigation',
+  'outdoor.light': 'Headlamp',
+  'outdoor.weather': 'Rain / cold / sun protection',
+  'outdoor.firstaid': 'First-aid kit',
+  'outdoor.whistle': 'Emergency whistle',
+  'outdoor.power': 'Power bank',
+  'outdoor.contacts': 'Route shared with a trusted person',
+};
 
 class _KitDefinition {
   const _KitDefinition(
