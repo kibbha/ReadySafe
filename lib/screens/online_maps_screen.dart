@@ -2,7 +2,9 @@ import 'dart:math' show Point;
 
 import 'package:flutter/material.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../app/app_scope.dart';
 import '../services/local_storage_service.dart';
 
 enum _PlaceKind { shelter, health, pharmacy, water, meeting, aid, personal, city }
@@ -16,44 +18,51 @@ class OnlineMapsScreen extends StatefulWidget {
 
 class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
   static const _style = 'https://tiles.openfreemap.org/styles/liberty';
-  static const _geneva = LatLng(46.2044, 6.1432);
+  static const _europe = LatLng(50.0, 10.0);
 
   final _storage = LocalStorageService();
   final _search = TextEditingController();
 
   MapLibreMapController? _map;
-  CameraPosition _camera = const CameraPosition(target: _geneva, zoom: 12);
+  CameraPosition _camera = const CameraPosition(target: _europe, zoom: 4.3);
+  bool _countryCameraSet = false;
   _PlaceKind? _filter;
   bool _searchOpen = false;
   final List<Circle> _circles = [];
   List<_Place> _personalPlaces = [];
 
   static const _places = <_Place>[
-    _Place('HUG — Hôpital universitaire', 'Repère santé à vérifier', 46.1933, 6.1484, _PlaceKind.health),
-    _Place('Pharmacie — repère exemple', 'À vérifier avant usage', 46.2107, 6.1422, _PlaceKind.pharmacy),
-    _Place('Plainpalais', 'Point de rassemblement personnel possible', 46.1985, 6.1427, _PlaceKind.meeting),
-    _Place('Parc des Bastions', 'Repère de rassemblement à vérifier', 46.2003, 6.1459, _PlaceKind.meeting),
-    _Place('Point d’eau — Jardin Anglais', 'Disponibilité et potabilité à vérifier', 46.2031, 6.1527, _PlaceKind.water),
-    _Place('Centre sportif des Vernets', 'Repère potentiel — statut d’abri à vérifier', 46.1948, 6.1347, _PlaceKind.shelter),
-    _Place('Croix-Rouge genevoise', 'Ressource locale — horaires à vérifier', 46.1990, 6.1380, _PlaceKind.aid),
     _Place('Genève', 'Ville', 46.2044, 6.1432, _PlaceKind.city),
-    _Place('Gare Cornavin', 'Transport', 46.2102, 6.1425, _PlaceKind.city),
-    _Place('Aéroport de Genève', 'Transport', 46.2381, 6.1090, _PlaceKind.city),
     _Place('Lausanne', 'Ville', 46.5197, 6.6323, _PlaceKind.city),
     _Place('Berne', 'Ville', 46.9480, 7.4474, _PlaceKind.city),
     _Place('Zurich', 'Ville', 47.3769, 8.5417, _PlaceKind.city),
+    _Place('Bâle', 'Ville', 47.5596, 7.5886, _PlaceKind.city),
     _Place('Paris', 'Ville', 48.8566, 2.3522, _PlaceKind.city),
     _Place('Lyon', 'Ville', 45.7640, 4.8357, _PlaceKind.city),
+    _Place('Marseille', 'Ville', 43.2965, 5.3698, _PlaceKind.city),
     _Place('Milan', 'Ville', 45.4642, 9.1900, _PlaceKind.city),
     _Place('Rome', 'Ville', 41.9028, 12.4964, _PlaceKind.city),
     _Place('Berlin', 'Ville', 52.5200, 13.4050, _PlaceKind.city),
+    _Place('Munich', 'Ville', 48.1351, 11.5820, _PlaceKind.city),
     _Place('Bruxelles', 'Ville', 50.8503, 4.3517, _PlaceKind.city),
+    _Place('Londres', 'Ville', 51.5074, -0.1278, _PlaceKind.city),
+    _Place('Vienne', 'Ville', 48.2082, 16.3738, _PlaceKind.city),
+    _Place('Madrid', 'Ville', 40.4168, -3.7038, _PlaceKind.city),
   ];
 
   @override
   void initState() {
     super.initState();
     _loadPersonalMarkers();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_countryCameraSet) return;
+    final code = AppScope.of(context).activeCountry?.isoCode ?? '';
+    _camera = _initialCamera(code);
+    _countryCameraSet = true;
   }
 
   List<_Place> get _allPlaces => [..._places, ..._personalPlaces];
@@ -155,6 +164,41 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
   Future<void> _setFilter(_PlaceKind? value) async {
     setState(() => _filter = value);
     await _syncMarkers();
+  }
+
+  CameraPosition _initialCamera(String code) {
+    switch (code) {
+      case 'CH':
+        return const CameraPosition(target: LatLng(46.8182, 8.2275), zoom: 7.0);
+      case 'FR':
+        return const CameraPosition(target: LatLng(46.2276, 2.2137), zoom: 5.4);
+      case 'DE':
+        return const CameraPosition(target: LatLng(51.1657, 10.4515), zoom: 5.5);
+      case 'IT':
+        return const CameraPosition(target: LatLng(41.8719, 12.5674), zoom: 5.3);
+      case 'BE':
+        return const CameraPosition(target: LatLng(50.5039, 4.4699), zoom: 7.2);
+      case 'GB':
+        return const CameraPosition(target: LatLng(55.3781, -3.4360), zoom: 5.2);
+      case 'ES':
+        return const CameraPosition(target: LatLng(40.4637, -3.7492), zoom: 5.4);
+      case 'AT':
+        return const CameraPosition(target: LatLng(47.5162, 14.5501), zoom: 6.2);
+      default:
+        return const CameraPosition(target: _europe, zoom: 4.3);
+    }
+  }
+
+  Future<void> _openNearby(String query) async {
+    final geo = Uri.parse('geo:0,0?q=${Uri.encodeComponent(query)}');
+    if (await canLaunchUrl(geo)) {
+      await launchUrl(geo, mode: LaunchMode.externalApplication);
+      return;
+    }
+    final web = Uri.parse(
+      'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent('$query near me')}',
+    );
+    await launchUrl(web, mode: LaunchMode.externalApplication);
   }
 
   Future<void> _addMarkerAtCenter() async {
@@ -330,9 +374,10 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
             icon: const Icon(Icons.bookmarks_outlined),
           ),
           IconButton(
-            tooltip: 'Recentrer sur Genève',
+            tooltip: 'Recentrer sur le pays actif',
             onPressed: () async {
-              _camera = const CameraPosition(target: _geneva, zoom: 12);
+              final code = AppScope.of(context).activeCountry?.isoCode ?? '';
+              _camera = _initialCamera(code);
               await _map?.animateCamera(CameraUpdate.newCameraPosition(_camera));
               await _syncMarkers();
             },
@@ -379,7 +424,7 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                     onTap: () => setState(() => _searchOpen = true),
                     onChanged: (_) => setState(() => _searchOpen = true),
                     decoration: InputDecoration(
-                      hintText: 'Rechercher un lieu ou un repère…',
+                      hintText: 'Rechercher une ville ou un repère enregistré…',
                       prefixIcon: const Icon(Icons.search_rounded),
                       suffixIcon: _search.text.isEmpty
                           ? null
@@ -436,6 +481,34 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                       _filterChip(_PlaceKind.water, 'Eau'),
                       _filterChip(_PlaceKind.meeting, 'Rassemblement'),
                       _filterChip(_PlaceKind.aid, 'Aide'),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 6),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _NearbyAction(
+                        icon: Icons.local_hospital_rounded,
+                        label: 'Hôpital proche',
+                        onTap: () => _openNearby('hospital'),
+                      ),
+                      _NearbyAction(
+                        icon: Icons.local_pharmacy_rounded,
+                        label: 'Pharmacie',
+                        onTap: () => _openNearby('pharmacy'),
+                      ),
+                      _NearbyAction(
+                        icon: Icons.emergency_rounded,
+                        label: 'DAE',
+                        onTap: () => _openNearby('AED defibrillator'),
+                      ),
+                      _NearbyAction(
+                        icon: Icons.local_police_rounded,
+                        label: 'Police',
+                        onTap: () => _openNearby('police station'),
+                      ),
                     ],
                   ),
                 ),
@@ -579,7 +652,7 @@ class _NearbySheet extends StatelessWidget {
                       SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          'Aucun repère ReadySafe n’est enregistré autour de cette zone. Ajoutez vos propres points importants avec le bouton « Repère ».',
+                          'Aucun repère personnel ReadySafe n’est enregistré autour de cette zone. Ajoutez vos propres points importants avec le bouton « Repère ».',
                         ),
                       ),
                     ],
@@ -631,6 +704,28 @@ class _NearbySheet extends StatelessWidget {
                     ),
                   ],
                 ),
+        ),
+      );
+}
+
+class _NearbyAction extends StatelessWidget {
+  const _NearbyAction({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.only(right: 6),
+        child: ActionChip(
+          avatar: Icon(icon, size: 18, color: const Color(0xff087f83)),
+          label: Text(label),
+          onPressed: onTap,
         ),
       );
 }
