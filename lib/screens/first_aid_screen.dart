@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../app/app_scope.dart';
 import '../app/localizations.dart';
+import '../core/search_text.dart';
 import '../data/first_aid_repository.dart';
 import '../models/first_aid_guide.dart';
 import 'emergency_screen.dart';
@@ -134,7 +135,7 @@ class _FirstAidScreenState extends State<FirstAidScreen> {
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
     final en = Localizations.localeOf(context).languageCode == 'en';
-    final q = _query.trim().toLowerCase();
+    final q = normalizeSearchText(_query);
     final browsingAll = q.isNotEmpty || _filter != 'all';
 
     final guides = (browsingAll ? firstAidGuides : _essentials).where((guide) {
@@ -144,8 +145,8 @@ class _FirstAidScreenState extends State<FirstAidScreen> {
         t.get(guide.titleKey),
         t.get(guide.summaryKey),
         ...guide.steps.map((step) => _aidText(context, step.textKey)),
-      ].join(' ').toLowerCase();
-      return haystack.contains(q);
+      ].join(' ');
+      return normalizeSearchText(haystack).contains(q);
     }).toList();
 
     final extras = firstAidGuides.where((guide) => !_essentialIds.contains(guide.id)).toList();

@@ -6,6 +6,7 @@ import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../app/app_scope.dart';
+import '../core/search_text.dart';
 import '../services/local_storage_service.dart';
 
 enum _PlaceKind {
@@ -147,7 +148,8 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
   List<_Place> get _allPlaces => [..._places, ..._personalPlaces];
 
   List<_Place> get _searchResults {
-    final q = _search.text.trim().toLowerCase();
+    final en = Localizations.localeOf(context).languageCode == 'en';
+    final q = normalizeSearchText(_search.text);
 
     if (q.isEmpty) {
       return [
@@ -156,12 +158,13 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
       ];
     }
 
-    return _allPlaces
-        .where(
-          (place) =>
-              '${place.name} ${place.subtitle}'.toLowerCase().contains(q),
-        )
-        .toList();
+    return _allPlaces.where((place) {
+      final haystack = normalizeSearchText(
+        '${place.name} ${_displayName(place, en)} '
+        '${place.subtitle} ${_displaySubtitle(place, en)}',
+      );
+      return haystack.contains(q);
+    }).toList();
   }
 
   List<_Place> get _visibleSafetyPlaces {

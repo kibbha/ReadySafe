@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../app/localizations.dart';
+import '../core/search_text.dart';
 import '../data/content.dart';
 import '../data/first_aid_repository.dart';
 import 'avalanche_safety_screen.dart';
@@ -68,7 +69,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
       Localizations.localeOf(context).languageCode == 'en';
 
   List<_SearchHit> _hits(String query) {
-    final q = query.trim().toLowerCase();
+    final q = normalizeSearchText(query);
 
     if (q.isEmpty) return const [];
 
@@ -91,9 +92,10 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
         summary,
         stepText,
         ...(_firstAidAliases[guide.id] ?? const <String>[]),
-      ].join(' ').toLowerCase();
+      ].join(' ');
+      final normalizedTerms = normalizeSearchText(terms);
 
-      if (terms.contains(q)) {
+      if (normalizedTerms.contains(q)) {
         hits.add(
           _SearchHit(
             en ? 'First aid' : 'Premiers secours',
@@ -115,9 +117,10 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
         localized.immediate,
         ...localized.steps,
         ...(_hazardAliases[guide.id] ?? const <String>[]),
-      ].join(' ').toLowerCase();
+      ].join(' ');
+      final normalizedTerms = normalizeSearchText(terms);
 
-      if (terms.contains(q)) {
+      if (normalizedTerms.contains(q)) {
         hits.add(
           _SearchHit(
             en ? 'Risks' : 'Risques',
@@ -139,9 +142,10 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
         localized.immediate,
         ...localized.steps,
         ...(_hazardAliases[guide.id] ?? const <String>[]),
-      ].join(' ').toLowerCase();
+      ].join(' ');
+      final normalizedTerms = normalizeSearchText(terms);
 
-      if (terms.contains(q)) {
+      if (normalizedTerms.contains(q)) {
         hits.add(
           _SearchHit(
             en ? 'Survival actions' : 'Réflexes de survie',
@@ -155,7 +159,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
 
     for (final shortcut in _shortcuts(en)) {
       final matches = shortcut.terms.any((term) {
-        final normalized = term.toLowerCase();
+        final normalized = normalizeSearchText(term);
         return normalized.contains(q) || q.contains(normalized);
       });
 
