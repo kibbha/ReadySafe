@@ -135,4 +135,64 @@ void main() {
       containsAll({'id', 'carrier'}),
     );
   });
+
+  test('family reunification fields survive family plan persistence', () async {
+    SharedPreferences.setMockInitialValues({});
+    final storage = LocalStorageService();
+
+    await storage.saveFamilyPlan({
+      'meetingPoint': 'Tree',
+      'backupMeetingPoint': 'Library',
+      'outsideAreaMeetingPoint': 'Station',
+      'authorizedPickup': 'Alex',
+      'childInstructions': 'Wait with teacher',
+      'notes': 'Test note',
+    });
+
+    final plan = await storage.familyPlan();
+    expect(plan['meetingPoint'], 'Tree');
+    expect(plan['outsideAreaMeetingPoint'], 'Station');
+    expect(plan['authorizedPickup'], 'Alex');
+    expect(plan['childInstructions'], 'Wait with teacher');
+  });
+
+  test('vehicle and reunification checklist states persist', () async {
+    SharedPreferences.setMockInitialValues({});
+    final storage = LocalStorageService();
+
+    await storage.toggle('vehicle_emergency_v3', 'warning', true);
+    await storage.toggle('family_reunification_v3', 'meeting_places', true);
+
+    expect(
+      await storage.completed('vehicle_emergency_v3'),
+      contains('warning'),
+    );
+    expect(
+      await storage.completed('family_reunification_v3'),
+      contains('meeting_places'),
+    );
+  });
+
+  test('recovery log persists locally', () async {
+    SharedPreferences.setMockInitialValues({});
+    final storage = LocalStorageService();
+
+    await storage.saveRecoveryLog({
+      'eventDate': '18.09.2026',
+      'eventType': 'Flood',
+      'location': 'Home',
+      'peopleStatus': 'Safe',
+      'damageNotes': 'Basement',
+      'actionsTaken': 'Electricity isolated',
+      'insurance': 'Example Insurance',
+      'caseNumber': 'ABC-123',
+      'contacts': 'Building manager',
+      'followUp': 'Drying company',
+    });
+
+    final log = await storage.recoveryLog();
+    expect(log['eventType'], 'Flood');
+    expect(log['caseNumber'], 'ABC-123');
+    expect(log['followUp'], 'Drying company');
+  });
 }
