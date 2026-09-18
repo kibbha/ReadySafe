@@ -90,7 +90,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
         title,
         summary,
         stepText,
-        ..._firstAidAliases[guide.id] ?? const <String>[],
+        ...(_firstAidAliases[guide.id] ?? const <String>[]),
       ].join(' ').toLowerCase();
 
       if (terms.contains(q)) {
@@ -110,7 +110,7 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
         guide.title,
         guide.immediate,
         ...guide.steps,
-        ..._hazardAliases[guide.id] ?? const <String>[],
+        ...(_hazardAliases[guide.id] ?? const <String>[]),
       ].join(' ').toLowerCase();
 
       if (terms.contains(q)) {
