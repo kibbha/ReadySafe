@@ -37,6 +37,12 @@ void main() {
       'drowning',
       'hypothermia',
       'heatstroke',
+      'poisoning',
+      'anaphylaxis',
+      'stroke',
+      'chest_pain',
+      'asthma',
+      'hypoglycemia',
     };
     expect(firstAidGuides.map((guide) => guide.id), containsAll(expectedIds));
     expect(firstAidGuides.every((guide) => guide.steps.length >= 3), isTrue);
