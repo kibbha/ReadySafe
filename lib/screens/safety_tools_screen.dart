@@ -37,8 +37,9 @@ class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
   Future<void> _copyMessage() async {
     await Clipboard.setData(ClipboardData(text: _safeMessage));
     if (!mounted) return;
+    final en = Localizations.localeOf(context).languageCode == 'en';
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Message copié.')),
+      SnackBar(content: Text(en ? 'Message copied.' : 'Message copié.')),
     );
   }
 
@@ -49,10 +50,11 @@ class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final en = Localizations.localeOf(context).languageCode == 'en';
     final tools = [
       _Tool(
-        'Signal SOS visuel',
-        'Afficher un signal plein écran très visible.',
+        en ? 'Visual SOS signal' : 'Signal SOS visuel',
+        en ? 'Show a highly visible full-screen SOS signal.' : 'Afficher un signal plein écran très visible.',
         Icons.sos_rounded,
         const Color(0xffd92d36),
         () => Navigator.push(
@@ -61,8 +63,8 @@ class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
         ),
       ),
       _Tool(
-        'Numéros d’urgence',
-        'Accès direct aux services du pays actif.',
+        en ? 'Emergency numbers' : 'Numéros d’urgence',
+        en ? 'Direct access to services for the active country.' : 'Accès direct aux services du pays actif.',
         Icons.phone_in_talk_rounded,
         const Color(0xffd92d36),
         () => Navigator.push(
@@ -71,8 +73,8 @@ class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
         ),
       ),
       _Tool(
-        'Carte & repères',
-        'Retrouver les points importants et vos repères personnels.',
+        en ? 'Map & landmarks' : 'Carte & repères',
+        en ? 'Find useful places and your personal landmarks.' : 'Retrouver les points importants et vos repères personnels.',
         Icons.map_rounded,
         const Color(0xff147343),
         () => Navigator.push(
@@ -81,8 +83,8 @@ class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
         ),
       ),
       _Tool(
-        'Plan de communication',
-        'Contacts, reconnexion et consignes famille.',
+        en ? 'Communication plan' : 'Plan de communication',
+        en ? 'Contacts, reconnection and household instructions.' : 'Contacts, reconnexion et consignes famille.',
         Icons.connect_without_contact_rounded,
         const Color(0xff087f83),
         () => Navigator.push(
@@ -93,7 +95,7 @@ class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Outils d’urgence')),
+      appBar: AppBar(title: Text(en ? 'Emergency tools' : 'Outils d’urgence')),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(14, 4, 14, 28),
         children: [
@@ -105,26 +107,30 @@ class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
               ),
               borderRadius: BorderRadius.circular(22),
             ),
-            child: const Row(
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircleAvatar(
+                const CircleAvatar(
                   backgroundColor: Color(0xff087f83),
                   child: Icon(Icons.handyman_rounded, color: Colors.white),
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Des outils simples, immédiatement accessibles',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+                        en
+                            ? 'Simple tools, immediately accessible'
+                            : 'Des outils simples, immédiatement accessibles',
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
-                        'Signal, communication, numéros d’urgence et repères : sans transformer l’écran en cockpit d’avion.',
-                        style: TextStyle(color: Color(0xff65747a), height: 1.35),
+                        en
+                            ? 'Signal, communication, emergency numbers and landmarks without cluttering the screen.'
+                            : 'Signal, communication, numéros d’urgence et repères : sans transformer l’écran en cockpit d’avion.',
+                        style: const TextStyle(color: Color(0xff65747a), height: 1.35),
                       ),
                     ],
                   ),
@@ -146,7 +152,7 @@ class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
             itemBuilder: (context, index) => _ToolCard(tool: tools[index]),
           ),
           const SizedBox(height: 16),
-          const Text('Message rapide', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
+          Text(en ? 'Quick message' : 'Message rapide', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
           const SizedBox(height: 7),
           Container(
             padding: const EdgeInsets.all(13),
@@ -158,11 +164,14 @@ class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Row(
+                Row(
                   children: [
-                    Icon(Icons.sms_outlined, color: Color(0xff087f83)),
-                    SizedBox(width: 8),
-                    Text('« Je suis en sécurité »', style: TextStyle(fontWeight: FontWeight.w900)),
+                    const Icon(Icons.sms_outlined, color: Color(0xff087f83)),
+                    const SizedBox(width: 8),
+                    Text(
+                      en ? '“I am safe”' : '« Je suis en sécurité »',
+                      style: const TextStyle(fontWeight: FontWeight.w900),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -174,7 +183,7 @@ class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
                       child: OutlinedButton.icon(
                         onPressed: _copyMessage,
                         icon: const Icon(Icons.copy_rounded),
-                        label: const Text('Copier'),
+                        label: Text(en ? 'Copy' : 'Copier'),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -197,15 +206,17 @@ class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
               color: const Color(0xffeaf6f4),
               borderRadius: BorderRadius.circular(17),
             ),
-            child: const Row(
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.offline_bolt_rounded, color: Color(0xff087f83)),
-                SizedBox(width: 9),
+                const Icon(Icons.offline_bolt_rounded, color: Color(0xff087f83)),
+                const SizedBox(width: 9),
                 Expanded(
                   child: Text(
-                    'Les fiches de premiers secours, les kits, les contacts, les plans familiaux et les repères personnels sont conçus pour rester utiles hors ligne. La carte de fond et certaines recherches peuvent nécessiter une connexion.',
-                    style: TextStyle(fontWeight: FontWeight.w700, height: 1.35),
+                    en
+                        ? 'First-aid guides, kits, contacts, family plans and personal landmarks are designed to remain useful offline. Map tiles and some searches may require connectivity.'
+                        : 'Les fiches de premiers secours, les kits, les contacts, les plans familiaux et les repères personnels sont conçus pour rester utiles hors ligne. La carte de fond et certaines recherches peuvent nécessiter une connexion.',
+                    style: const TextStyle(fontWeight: FontWeight.w700, height: 1.35),
                   ),
                 ),
               ],
@@ -255,12 +266,13 @@ class _SosVisualSignalScreenState extends State<SosVisualSignalScreen>
 
   @override
   Widget build(BuildContext context) {
+    final en = Localizations.localeOf(context).languageCode == 'en';
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
-        title: const Text('Signal SOS visuel'),
+        title: Text(en ? 'Visual SOS signal' : 'Signal SOS visuel'),
       ),
       body: AnimatedBuilder(
         animation: _controller,
@@ -298,7 +310,7 @@ class _SosVisualSignalScreenState extends State<SosVisualSignalScreen>
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'SIGNAL VISUEL',
+                      en ? 'VISUAL SIGNAL' : 'SIGNAL VISUEL',
                       style: TextStyle(
                         color: foreground,
                         fontSize: 18,
@@ -315,7 +327,11 @@ class _SosVisualSignalScreenState extends State<SosVisualSignalScreen>
                       ),
                       onPressed: _toggle,
                       icon: Icon(_running ? Icons.pause_rounded : Icons.play_arrow_rounded),
-                      label: Text(_running ? 'Mettre en pause' : 'Relancer'),
+                      label: Text(
+                        _running
+                            ? (en ? 'Pause' : 'Mettre en pause')
+                            : (en ? 'Restart' : 'Relancer'),
+                      ),
                     ),
                     const SizedBox(height: 14),
                     Container(
@@ -324,10 +340,12 @@ class _SosVisualSignalScreenState extends State<SosVisualSignalScreen>
                         color: Colors.black.withValues(alpha: .68),
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      child: const Text(
-                        'Ce signal peut aider à attirer l’attention. Il ne remplace pas l’appel aux services d’urgence ni les moyens de signalisation recommandés localement.',
+                      child: Text(
+                        en
+                            ? 'This signal may help attract attention. It does not replace calling emergency services or locally recommended signalling methods.'
+                            : 'Ce signal peut aider à attirer l’attention. Il ne remplace pas l’appel aux services d’urgence ni les moyens de signalisation recommandés localement.',
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white, height: 1.35),
+                        style: const TextStyle(color: Colors.white, height: 1.35),
                       ),
                     ),
                   ],
