@@ -7,6 +7,7 @@ import 'family_documents_screen.dart';
 import 'first_aid_screen.dart';
 import 'guide_list_screen.dart';
 import 'official_sources_screen.dart';
+import 'preparedness_review_screen.dart';
 import 'recovery_screen.dart';
 import 'safety_tools_screen.dart';
 import 'settings_screen.dart';
@@ -73,6 +74,12 @@ class MoreScreen extends StatelessWidget {
         en ? 'Blackout, evacuation and shelter guidance' : 'Panne, évacuation, confinement et réflexes utiles',
         Icons.menu_book_rounded,
         const GuideListScreen(kind: GuideKind.emergencies),
+      ),
+      _MoreItem(
+        en ? 'Preparedness review' : 'Revue de préparation',
+        en ? 'Annual review of contacts, supplies and plans' : 'Revoir chaque année contacts, réserves et plans',
+        Icons.fact_check_rounded,
+        const PreparednessReviewScreen(),
       ),
       _MoreItem(
         en ? 'Training' : 'Formation & exercices',
