@@ -346,4 +346,6 @@ class LocalStorageService {
     }
 
     return score.clamp(0, 100).toInt();
-  }}
+  }
+}
+
