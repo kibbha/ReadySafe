@@ -2,6 +2,7 @@
     <application
         android:label="ReadySafe"
         android:name="${applicationName}"
+        android:allowBackup="false"
         android:icon="@drawable/ic_launcher">
         <activity
             android:name=".MainActivity"
