@@ -10,6 +10,7 @@ import 'guide_list_screen.dart';
 import 'home_safety_screen.dart';
 import 'offline_readiness_screen.dart';
 import 'official_sources_screen.dart';
+import 'power_outage_screen.dart';
 import 'preparedness_review_screen.dart';
 import 'recovery_screen.dart';
 import 'safety_tools_screen.dart';
@@ -84,6 +85,12 @@ class MoreScreen extends StatelessWidget {
         en ? 'Blackout, evacuation and shelter guidance' : 'Panne, évacuation, confinement et réflexes utiles',
         Icons.menu_book_rounded,
         const GuideListScreen(kind: GuideKind.emergencies),
+      ),
+      _MoreItem(
+        en ? 'Power outage' : 'Panne électrique',
+        en ? 'Power continuity, food safety and carbon monoxide' : 'Énergie, froid alimentaire, communication et sécurité CO',
+        Icons.power_off_rounded,
+        const PowerOutageScreen(),
       ),
       _MoreItem(
         en ? 'Home safety' : 'Sécurité du domicile',
