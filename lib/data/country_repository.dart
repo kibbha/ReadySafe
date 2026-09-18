@@ -36,7 +36,16 @@ class CountryRepository {
     'BE':[Uri.parse('https://112.be/fr'),_eu112],
     'DE':[Uri.parse('https://www.bbk.bund.de/EN/Prepare-for-disasters/Personal-Preparedness/Emergency-call/emergency-call_node.html'),_eu112],
     'IT':[Uri.parse('https://www.interno.gov.it/it/temi/sicurezza/numero-unico-emergenza-112'),_eu112],
-    'GB':[_uk999], 'CH':[_chOfcom,_chRega,_eu112],
+    'GB':[_uk999],
+    'CH':[_chOfcom,_chRega,_eu112],
+    'NO':[
+      Uri.parse('https://www.dsb.no/brannsikkerhet/nodmelding/110-sentralene/'),
+      Uri.parse('https://www.politiet.no/en/english'),
+      Uri.parse('https://www.helsenorge.no/en/healthcare'),
+    ],
+    'IS':[Uri.parse('https://www.112.is/en/112')],
+    'TR':[Uri.parse('https://www.112.gov.tr/')],
+    'LI':[Uri.parse('https://www.llv.li/de/landesverwaltung/amt-fuer-bevoelkerungsschutz/rettungs--hilfsorganisationen/notrufnummern')],
   };
 
   static final Map<String,List<EmergencyService>> _verifiedServices = {
@@ -45,6 +54,23 @@ class CountryRepository {
     'DE':[_service('eu','service_emergency','112','service_de_112_desc'),_service('police','service_police','110','service_de_police_desc')],
     'IT':[_service('eu','service_emergency','112','service_it_112_desc')],
     'GB':[_service('general','service_emergency','999','service_112_desc'),_service('eu','service_emergency','112','service_112_desc')],
+    'NO':[
+      _service('fire','service_fire','110','service_no_fire_desc'),
+      _service('police','service_police','112','service_no_police_desc'),
+      _service('medical','service_ambulance','113','service_no_ambulance_desc'),
+    ],
+    'IS':[
+      _service('general','service_emergency','112','service_is_112_desc'),
+    ],
+    'TR':[
+      _service('general','service_emergency','112','service_tr_112_desc'),
+    ],
+    'LI':[
+      _service('eu','service_emergency','112','service_li_112_desc'),
+      _service('police','service_police','117','service_li_police_desc'),
+      _service('fire','service_fire','118','service_li_fire_desc'),
+      _service('medical','service_ambulance','144','service_li_ambulance_desc'),
+    ],
     'CH':[
       _service('eu','service_emergency','112','service_112_desc'),
       _service('medical','service_ambulance','144','service_ch_ambulance_desc'),
