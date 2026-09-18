@@ -18,6 +18,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     final strings = AppLocalizations.of(context);
+    final app = AppScope.of(context);
     final en = Localizations.localeOf(context).languageCode == 'en';
     final selectedCountry = CountryRepository.byCode(selected);
 
@@ -32,6 +33,27 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Wrap(
+                      spacing: 7,
+                      children: [
+                        ChoiceChip(
+                          label: const Text('FR'),
+                          selected: !en,
+                          showCheckmark: false,
+                          onSelected: (_) => app.setLocale('fr'),
+                        ),
+                        ChoiceChip(
+                          label: const Text('EN'),
+                          selected: en,
+                          showCheckmark: false,
+                          onSelected: (_) => app.setLocale('en'),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
                   Container(
                     padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
