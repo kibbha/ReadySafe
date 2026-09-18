@@ -4,6 +4,7 @@ import '../app/app_scope.dart';
 import '../app/localizations.dart';
 import '../models/country_profile.dart';
 import '../services/emergency_call_service.dart';
+import 'official_sources_screen.dart';
 
 class EmergencyScreen extends StatelessWidget {
   const EmergencyScreen({super.key, this.callService});
@@ -42,9 +43,13 @@ class EmergencyScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(t.get('emergencies'))),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 4, 16, 28),
-        children: [
+      body: Align(
+        alignment: Alignment.topCenter,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 900),
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 28),
+            children: [
           Container(
             padding: const EdgeInsets.all(13),
             decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(17), border: Border.all(color: const Color(0xffdbe5e7))),
@@ -58,21 +63,37 @@ class EmergencyScreen extends StatelessWidget {
               const Icon(Icons.verified_outlined, color: Color(0xff087f83)),
             ]),
           ),
-          if (primary != null) ...[const SizedBox(height: 14), _DangerHero(service: primary, callService: caller)],
+          if (primary != null) ...[
+            const SizedBox(height: 14),
+            _DangerHero(
+              service: primary,
+              callService: caller,
+            ),
+          ] else ...[
+            const SizedBox(height: 14),
+            _UnverifiedCountryNotice(
+              en: en,
+              countryName: t.get(country.nameKey),
+            ),
+          ],
           if (others.isNotEmpty) ...[
             const SizedBox(height: 16),
             Text(en ? 'Useful numbers' : 'Numéros utiles', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
             const SizedBox(height: 9),
             LayoutBuilder(
               builder: (context, constraints) {
-                final columns = constraints.maxWidth >= 760 ? 3 : 2;
+                final columns = constraints.maxWidth >= 760
+                    ? 3
+                    : constraints.maxWidth >= 440
+                        ? 2
+                        : 1;
                 return GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: others.length,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: columns,
-                    mainAxisExtent: 142,
+                    mainAxisExtent: columns == 1 ? 96 : 142,
                     crossAxisSpacing: 10,
                     mainAxisSpacing: 10,
                   ),
@@ -80,6 +101,7 @@ class EmergencyScreen extends StatelessWidget {
                     service: others[i],
                     icon: _icon(others[i]),
                     callService: caller,
+                    compact: columns == 1,
                   ),
                 );
               },
@@ -89,10 +111,74 @@ class EmergencyScreen extends StatelessWidget {
           Card(child: Padding(padding: const EdgeInsets.all(14), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [const Icon(Icons.verified_user_outlined, color: Color(0xff087f83)), const SizedBox(width: 8), Text(t.get('official_sources'), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15))]),
             const SizedBox(height: 5),
-            ...country.sources.map((source) => ListTile(dense: true, visualDensity: VisualDensity.compact, contentPadding: EdgeInsets.zero, title: Text(source.host, style: const TextStyle(fontWeight: FontWeight.w700)), trailing: const Icon(Icons.open_in_new, size: 17), onTap: () => launchUrl(source, mode: LaunchMode.externalApplication))),
-            Text(country.verifiedOn != null ? t.get('verified_on', {'date': country.verifiedOn!.toIso8601String().substring(0, 10)}) : t.get('numbers_unverified'), style: const TextStyle(fontSize: 12, color: Color(0xff65747a))),
+            if (country.sources.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: Text(
+                  en
+                      ? 'No country-specific official source is bundled yet.'
+                      : 'Aucune source officielle spécifique au pays n’est encore intégrée.',
+                  style: const TextStyle(
+                    color: Color(0xff65747a),
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              )
+            else
+              ...country.sources.map(
+                (source) => ListTile(
+                  dense: true,
+                  visualDensity: VisualDensity.compact,
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(
+                    source.host,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  trailing: const Icon(
+                    Icons.open_in_new,
+                    size: 17,
+                  ),
+                  onTap: () async {
+                    final opened = await launchUrl(
+                      source,
+                      mode: LaunchMode.externalApplication,
+                    );
+                    if (!opened && context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            en
+                                ? 'Unable to open this official source.'
+                                : 'Impossible d’ouvrir cette source officielle.',
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ),
+            Text(
+              country.verifiedOn != null
+                  ? t.get(
+                      'verified_on',
+                      {
+                        'date': country.verifiedOn!
+                            .toIso8601String()
+                            .substring(0, 10),
+                      },
+                    )
+                  : t.get('numbers_unverified'),
+              style: const TextStyle(
+                fontSize: 12,
+                color: Color(0xff65747a),
+              ),
+            ),
           ]))),
-        ],
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -114,16 +200,207 @@ class _DangerHero extends StatelessWidget {
 }
 
 class _EmergencyTile extends StatelessWidget {
-  const _EmergencyTile({required this.service, required this.icon, required this.callService});
-  final EmergencyService service; final IconData icon; final EmergencyCallService callService;
-  @override Widget build(BuildContext context) {
-    final t=AppLocalizations.of(context); final isRega = service.id == 'rega';
-    return Card(margin: EdgeInsets.zero, child: InkWell(borderRadius: BorderRadius.circular(18), onTap: () => _call(context,t,service,callService), child: Padding(padding: const EdgeInsets.all(12), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Row(children: [Container(width: 40,height:40,decoration:BoxDecoration(color:isRega?const Color(0xffe8f5f5):const Color(0xffffe9e9),borderRadius:BorderRadius.circular(12)),child:Icon(icon,color:isRega?const Color(0xff087f83):Theme.of(context).colorScheme.error,size:23)), const Spacer(), const Icon(Icons.call_outlined, size: 18, color: Color(0xff87969a))]),
-      const Spacer(), Text(service.number ?? '—',style:TextStyle(fontSize:24,fontWeight:FontWeight.w900,color:isRega?const Color(0xff087f83):Theme.of(context).colorScheme.error)), Text(t.get(service.nameKey),maxLines:2,overflow:TextOverflow.ellipsis,style:const TextStyle(fontSize:13,fontWeight:FontWeight.w800,height:1.1)),
-    ]))));
+  const _EmergencyTile({
+    required this.service,
+    required this.icon,
+    required this.callService,
+    required this.compact,
+  });
+
+  final EmergencyService service;
+  final IconData icon;
+  final EmergencyCallService callService;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    final isRega = service.id == 'rega';
+    final accent = isRega
+        ? const Color(0xff087f83)
+        : Theme.of(context).colorScheme.error;
+
+    return Card(
+      margin: EdgeInsets.zero,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(18),
+        onTap: () => _call(
+          context,
+          t,
+          service,
+          callService,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: compact
+              ? Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: isRega
+                            ? const Color(0xffe8f5f5)
+                            : const Color(0xffffe9e9),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        icon,
+                        color: accent,
+                        size: 23,
+                      ),
+                    ),
+                    const SizedBox(width: 11),
+                    Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            service.number ?? '—',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w900,
+                              color: accent,
+                            ),
+                          ),
+                          Text(
+                            t.get(service.nameKey),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(
+                      Icons.call_outlined,
+                      color: Color(0xff87969a),
+                    ),
+                  ],
+                )
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: isRega
+                                ? const Color(0xffe8f5f5)
+                                : const Color(0xffffe9e9),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            icon,
+                            color: accent,
+                            size: 23,
+                          ),
+                        ),
+                        const Spacer(),
+                        const Icon(
+                          Icons.call_outlined,
+                          size: 18,
+                          color: Color(0xff87969a),
+                        ),
+                      ],
+                    ),
+                    const Spacer(),
+                    Text(
+                      service.number ?? '—',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w900,
+                        color: accent,
+                      ),
+                    ),
+                    Text(
+                      t.get(service.nameKey),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                        height: 1.1,
+                      ),
+                    ),
+                  ],
+                ),
+        ),
+      ),
+    );
   }
 }
+
+class _UnverifiedCountryNotice extends StatelessWidget {
+  const _UnverifiedCountryNotice({
+    required this.en,
+    required this.countryName,
+  });
+
+  final bool en;
+  final String countryName;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: const Color(0xfffff4c7),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: const Color(0xffffdf75)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(
+                  Icons.warning_amber_rounded,
+                  color: Color(0xff9a6a00),
+                ),
+                const SizedBox(width: 9),
+                Expanded(
+                  child: Text(
+                    en
+                        ? 'ReadySafe does not yet have a verified callable emergency number for $countryName.'
+                        : 'ReadySafe ne dispose pas encore d’un numéro d’urgence appelable vérifié pour $countryName.',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w900,
+                      height: 1.35,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 7),
+            Text(
+              en
+                  ? 'Do not rely on an unverified number. Use the phone’s native emergency features and verify local official information.'
+                  : 'Ne vous fiez pas à un numéro non vérifié. Utilisez les fonctions d’urgence natives du téléphone et vérifiez les informations officielles locales.',
+              style: const TextStyle(height: 1.35),
+            ),
+            const SizedBox(height: 10),
+            OutlinedButton.icon(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const OfficialSourcesScreen(),
+                ),
+              ),
+              icon: const Icon(Icons.verified_user_outlined),
+              label: Text(
+                en ? 'Official sources' : 'Sources officielles',
+              ),
+            ),
+          ],
+        ),
+      );
 
 Future<void> _call(BuildContext context, AppLocalizations t, EmergencyService service, EmergencyCallService caller) async {
   final number=service.number; if(number==null||!service.isCallable)return;
