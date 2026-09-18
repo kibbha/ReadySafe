@@ -26,6 +26,7 @@ import 'smoke_air_quality_screen.dart';
 import 'special_kits_screen.dart';
 import 'support_needs_screen.dart';
 import 'training_screen.dart';
+import 'vehicle_emergency_screen.dart';
 import 'water_safety_screen.dart';
 
 class SurvivalHubScreen extends StatefulWidget {
@@ -137,6 +138,14 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         'act',
       ),
       _Module(
+        en ? 'Vehicle emergency' : 'Urgence véhicule',
+        en ? 'Breakdown, crash, flooded roads and severe weather' : 'Panne, accident, route inondée et météo sévère',
+        Icons.directions_car_rounded,
+        const Color(0xffb7833f),
+        const VehicleEmergencyScreen(),
+        'act',
+      ),
+      _Module(
         en ? 'Power outage' : 'Panne électrique',
         en ? 'Power, food refrigeration, communication and CO safety' : 'Énergie, froid alimentaire, communication et sécurité CO',
         Icons.power_off_rounded,
@@ -182,6 +191,14 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.connect_without_contact_rounded,
         const Color(0xff0f7c7f),
         const CommunicationPlanScreen(),
+        'prepare',
+      ),
+      _Module(
+        en ? 'Family reunification' : 'Réunification familiale',
+        en ? 'Meeting places, child pickup and family emergency card' : 'Rendez-vous, récupération des enfants et carte famille urgence',
+        Icons.family_restroom_rounded,
+        const Color(0xff087f83),
+        const FamilyReunificationScreen(),
         'prepare',
       ),
       _Module(
