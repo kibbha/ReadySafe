@@ -3,7 +3,9 @@ import 'dart:math' show Point;
 import 'package:flutter/material.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 
-enum _PlaceKind { shelter, health, pharmacy, water, meeting, aid, city }
+import '../services/local_storage_service.dart';
+
+enum _PlaceKind { shelter, health, pharmacy, water, meeting, aid, personal, city }
 
 class OnlineMapsScreen extends StatefulWidget {
   const OnlineMapsScreen({super.key});
@@ -16,12 +18,15 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
   static const _style = 'https://tiles.openfreemap.org/styles/liberty';
   static const _geneva = LatLng(46.2044, 6.1432);
 
+  final _storage = LocalStorageService();
   final _search = TextEditingController();
+
   MapLibreMapController? _map;
   CameraPosition _camera = const CameraPosition(target: _geneva, zoom: 12);
   _PlaceKind? _filter;
   bool _searchOpen = false;
   final List<Circle> _circles = [];
+  List<_Place> _personalPlaces = [];
 
   static const _places = <_Place>[
     _Place('HUG — Hôpital universitaire', 'Repère santé à vérifier', 46.1933, 6.1484, _PlaceKind.health),
@@ -45,16 +50,29 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
     _Place('Bruxelles', 'Ville', 50.8503, 4.3517, _PlaceKind.city),
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    _loadPersonalMarkers();
+  }
+
+  List<_Place> get _allPlaces => [..._places, ..._personalPlaces];
+
   List<_Place> get _searchResults {
     final q = _search.text.trim().toLowerCase();
-    if (q.isEmpty) return _places.where((p) => p.kind == _PlaceKind.city).take(8).toList();
-    return _places
+    if (q.isEmpty) {
+      return [
+        ..._personalPlaces,
+        ..._places.where((p) => p.kind == _PlaceKind.city).take(8),
+      ];
+    }
+    return _allPlaces
         .where((p) => '${p.name} ${p.subtitle}'.toLowerCase().contains(q))
         .toList();
   }
 
   List<_Place> get _visibleSafetyPlaces {
-    return _places.where((p) {
+    return _allPlaces.where((p) {
       if (p.kind == _PlaceKind.city) return false;
       if (_filter != null && p.kind != _filter) return false;
       final dLat = (p.lat - _camera.target.latitude).abs();
@@ -63,9 +81,48 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
     }).toList();
   }
 
+  Future<void> _loadPersonalMarkers() async {
+    final raw = await _storage.safetyMarkers();
+    final places = <_Place>[];
+    for (final marker in raw) {
+      final lat = marker['lat'];
+      final lng = marker['lng'];
+      if (lat is! num || lng is! num) continue;
+      places.add(
+        _Place(
+          '${marker['name'] ?? 'Mon repère'}',
+          '${marker['note'] ?? 'Repère personnel hors ligne'}',
+          lat.toDouble(),
+          lng.toDouble(),
+          _kindFromName('${marker['kind'] ?? 'personal'}'),
+          personal: true,
+          id: '${marker['id'] ?? ''}',
+        ),
+      );
+    }
+    if (!mounted) return;
+    setState(() => _personalPlaces = places);
+    await _syncMarkers();
+  }
+
+  Future<void> _savePersonalMarkers() async {
+    await _storage.saveSafetyMarkers([
+      for (final place in _personalPlaces)
+        {
+          'id': place.id,
+          'name': place.name,
+          'note': place.subtitle,
+          'lat': place.lat,
+          'lng': place.lng,
+          'kind': place.kind.name,
+        },
+    ]);
+  }
+
   Future<void> _syncMarkers() async {
     final map = _map;
     if (map == null) return;
+
     for (final circle in List<Circle>.from(_circles)) {
       await map.removeCircle(circle);
     }
@@ -75,10 +132,10 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
       final circle = await map.addCircle(
         CircleOptions(
           geometry: LatLng(place.lat, place.lng),
-          circleRadius: 10,
+          circleRadius: place.personal ? 12 : 10,
           circleColor: _hex(place.kind),
           circleStrokeColor: '#ffffff',
-          circleStrokeWidth: 3,
+          circleStrokeWidth: place.personal ? 4 : 3,
         ),
       );
       _circles.add(circle);
@@ -100,6 +157,160 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
     await _syncMarkers();
   }
 
+  Future<void> _addMarkerAtCenter() async {
+    final name = TextEditingController();
+    final note = TextEditingController();
+    var kind = _PlaceKind.personal;
+
+    final result = await showDialog<_NewMarker>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Ajouter un repère'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: name,
+                  decoration: const InputDecoration(
+                    labelText: 'Nom du repère',
+                    prefixIcon: Icon(Icons.edit_location_alt_outlined),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                DropdownButtonFormField<_PlaceKind>(
+                  value: kind,
+                  decoration: const InputDecoration(
+                    labelText: 'Catégorie',
+                    prefixIcon: Icon(Icons.category_outlined),
+                  ),
+                  items: const [
+                    DropdownMenuItem(value: _PlaceKind.personal, child: Text('Personnel')),
+                    DropdownMenuItem(value: _PlaceKind.meeting, child: Text('Rassemblement')),
+                    DropdownMenuItem(value: _PlaceKind.shelter, child: Text('Abri / lieu sûr')),
+                    DropdownMenuItem(value: _PlaceKind.water, child: Text('Eau')),
+                    DropdownMenuItem(value: _PlaceKind.health, child: Text('Santé')),
+                    DropdownMenuItem(value: _PlaceKind.aid, child: Text('Aide / ressource')),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) setDialogState(() => kind = value);
+                  },
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: note,
+                  maxLines: 2,
+                  decoration: const InputDecoration(
+                    labelText: 'Note',
+                    prefixIcon: Icon(Icons.notes_rounded),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Le repère sera placé au centre actuel de la carte : '
+                  '${_camera.target.latitude.toStringAsFixed(5)}, '
+                  '${_camera.target.longitude.toStringAsFixed(5)}',
+                  style: const TextStyle(fontSize: 12, color: Color(0xff65747a)),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Annuler')),
+            FilledButton(
+              onPressed: () {
+                if (name.text.trim().isEmpty) return;
+                Navigator.pop(
+                  context,
+                  _NewMarker(
+                    name.text.trim(),
+                    note.text.trim().isEmpty ? 'Repère personnel hors ligne' : note.text.trim(),
+                    kind,
+                  ),
+                );
+              },
+              child: const Text('Ajouter'),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (result == null) return;
+
+    final place = _Place(
+      result.name,
+      result.note,
+      _camera.target.latitude,
+      _camera.target.longitude,
+      result.kind,
+      personal: true,
+      id: DateTime.now().microsecondsSinceEpoch.toString(),
+    );
+    setState(() => _personalPlaces = [..._personalPlaces, place]);
+    await _savePersonalMarkers();
+    await _syncMarkers();
+  }
+
+  Future<void> _manageMarkers() async {
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        child: SizedBox(
+          height: 420,
+          child: Column(
+            children: [
+              const Padding(
+                padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
+                child: Row(
+                  children: [
+                    Icon(Icons.bookmark_added_outlined, color: Color(0xff087f83)),
+                    SizedBox(width: 8),
+                    Text('Mes repères', style: TextStyle(fontSize: 19, fontWeight: FontWeight.w900)),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: _personalPlaces.isEmpty
+                    ? const Center(child: Text('Aucun repère personnel enregistré.'))
+                    : ListView.builder(
+                        itemCount: _personalPlaces.length,
+                        itemBuilder: (context, index) {
+                          final place = _personalPlaces[index];
+                          return ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: _color(place.kind).withValues(alpha: .12),
+                              child: Icon(_icon(place.kind), color: _color(place.kind)),
+                            ),
+                            title: Text(place.name, style: const TextStyle(fontWeight: FontWeight.w800)),
+                            subtitle: Text(place.subtitle),
+                            trailing: IconButton(
+                              tooltip: 'Supprimer',
+                              onPressed: () async {
+                                setState(() => _personalPlaces.removeAt(index));
+                                await _savePersonalMarkers();
+                                await _syncMarkers();
+                                if (sheetContext.mounted) Navigator.pop(sheetContext);
+                              },
+                              icon: const Icon(Icons.delete_outline_rounded),
+                            ),
+                            onTap: () async {
+                              Navigator.pop(sheetContext);
+                              await _goTo(place, zoom: 15);
+                            },
+                          );
+                        },
+                      ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _search.dispose();
@@ -114,7 +325,12 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
         title: const Text('Carte & repères'),
         actions: [
           IconButton(
-            tooltip: 'Recentrer',
+            tooltip: 'Mes repères',
+            onPressed: _manageMarkers,
+            icon: const Icon(Icons.bookmarks_outlined),
+          ),
+          IconButton(
+            tooltip: 'Recentrer sur Genève',
             onPressed: () async {
               _camera = const CameraPosition(target: _geneva, zoom: 12);
               await _map?.animateCamera(CameraUpdate.newCameraPosition(_camera));
@@ -123,6 +339,11 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
             icon: const Icon(Icons.center_focus_strong_rounded),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _addMarkerAtCenter,
+        icon: const Icon(Icons.add_location_alt_rounded),
+        label: const Text('Repère'),
       ),
       body: Stack(
         children: [
@@ -208,6 +429,7 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                   child: Row(
                     children: [
                       _filterChip(null, 'Tous'),
+                      _filterChip(_PlaceKind.personal, 'Mes repères'),
                       _filterChip(_PlaceKind.shelter, 'Abris'),
                       _filterChip(_PlaceKind.health, 'Santé'),
                       _filterChip(_PlaceKind.pharmacy, 'Pharmacies'),
@@ -277,6 +499,8 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
         return '#147343';
       case _PlaceKind.aid:
         return '#d9822b';
+      case _PlaceKind.personal:
+        return '#6a51a3';
       case _PlaceKind.city:
         return '#68777b';
     }
@@ -296,6 +520,8 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
         return const Color(0xff147343);
       case _PlaceKind.aid:
         return const Color(0xffd9822b);
+      case _PlaceKind.personal:
+        return const Color(0xff6a51a3);
       case _PlaceKind.city:
         return const Color(0xff68777b);
     }
@@ -315,9 +541,18 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
         return Icons.groups_rounded;
       case _PlaceKind.aid:
         return Icons.volunteer_activism_rounded;
+      case _PlaceKind.personal:
+        return Icons.bookmark_rounded;
       case _PlaceKind.city:
         return Icons.location_city_rounded;
     }
+  }
+
+  static _PlaceKind _kindFromName(String value) {
+    for (final kind in _PlaceKind.values) {
+      if (kind.name == value) return kind;
+    }
+    return _PlaceKind.personal;
   }
 }
 
@@ -336,64 +571,66 @@ class _NearbySheet extends StatelessWidget {
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxHeight: 188),
           child: places.isEmpty
-            ? const Padding(
-                padding: EdgeInsets.all(16),
-                child: Row(
+              ? const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      Icon(Icons.info_outline_rounded, color: Color(0xff087f83)),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          'Aucun repère ReadySafe n’est enregistré autour de cette zone. Ajoutez vos propres points importants avec le bouton « Repère ».',
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : Column(
                   children: [
-                    Icon(Icons.info_outline_rounded, color: Color(0xff087f83)),
-                    SizedBox(width: 10),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(14, 11, 8, 5),
+                      child: Row(
+                        children: [
+                          const Expanded(
+                            child: Text('Repères enregistrés', style: TextStyle(fontWeight: FontWeight.w900)),
+                          ),
+                          Text(
+                            '${places.length} repère(s)',
+                            style: const TextStyle(fontSize: 11, color: Color(0xff65747a)),
+                          ),
+                        ],
+                      ),
+                    ),
                     Expanded(
-                      child: Text(
-                        'Aucun repère ReadySafe n’est enregistré autour de cette zone. La carte reste navigable et la recherche de villes est disponible.',
+                      child: ListView.builder(
+                        padding: const EdgeInsets.only(bottom: 6),
+                        itemCount: places.length,
+                        itemBuilder: (context, index) {
+                          final place = places[index];
+                          return ListTile(
+                            dense: true,
+                            minTileHeight: 48,
+                            leading: CircleAvatar(
+                              radius: 17,
+                              backgroundColor: _OnlineMapsScreenState._color(place.kind).withValues(alpha: .12),
+                              child: Icon(
+                                _OnlineMapsScreenState._icon(place.kind),
+                                size: 19,
+                                color: _OnlineMapsScreenState._color(place.kind),
+                              ),
+                            ),
+                            title: Text(place.name, style: const TextStyle(fontWeight: FontWeight.w800)),
+                            subtitle: Text(place.subtitle),
+                            trailing: place.personal
+                                ? const Icon(Icons.bookmark_rounded, color: Color(0xff6a51a3))
+                                : const Icon(Icons.chevron_right_rounded),
+                            onTap: () => onTap(place, zoom: 14.5),
+                          );
+                        },
                       ),
                     ),
                   ],
                 ),
-              )
-            : Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(14, 11, 8, 5),
-                    child: Row(
-                      children: [
-                        const Expanded(
-                          child: Text('Repères à proximité', style: TextStyle(fontWeight: FontWeight.w900)),
-                        ),
-                        Text(
-                          '${places.length} repère(s)',
-                          style: const TextStyle(fontSize: 11, color: Color(0xff65747a)),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                      padding: const EdgeInsets.only(bottom: 6),
-                      itemCount: places.length,
-                      itemBuilder: (context, index) {
-                        final place = places[index];
-                        return ListTile(
-                          dense: true,
-                          minTileHeight: 48,
-                          leading: CircleAvatar(
-                            radius: 17,
-                            backgroundColor: _OnlineMapsScreenState._color(place.kind).withValues(alpha: .12),
-                            child: Icon(
-                              _OnlineMapsScreenState._icon(place.kind),
-                              size: 19,
-                              color: _OnlineMapsScreenState._color(place.kind),
-                            ),
-                          ),
-                          title: Text(place.name, style: const TextStyle(fontWeight: FontWeight.w800)),
-                          subtitle: Text(place.subtitle),
-                          trailing: const Icon(Icons.chevron_right_rounded),
-                          onTap: () => onTap(place, zoom: 14.5),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
         ),
       );
 }
@@ -414,10 +651,28 @@ class _MapButton extends StatelessWidget {
 }
 
 class _Place {
-  const _Place(this.name, this.subtitle, this.lat, this.lng, this.kind);
+  const _Place(
+    this.name,
+    this.subtitle,
+    this.lat,
+    this.lng,
+    this.kind, {
+    this.personal = false,
+    this.id = '',
+  });
+
   final String name;
   final String subtitle;
   final double lat;
   final double lng;
+  final _PlaceKind kind;
+  final bool personal;
+  final String id;
+}
+
+class _NewMarker {
+  const _NewMarker(this.name, this.note, this.kind);
+  final String name;
+  final String note;
   final _PlaceKind kind;
 }
