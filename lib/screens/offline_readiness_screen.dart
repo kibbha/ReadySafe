@@ -78,7 +78,10 @@ class _OfflineReadinessScreenState extends State<OfflineReadinessScreen> {
   @override
   Widget build(BuildContext context) {
     final en = Localizations.localeOf(context).languageCode == 'en';
-    final progress = _manualChecks.isEmpty ? 0.0 : _checks.length / _manualChecks.length;
+    final validIds = _manualChecks.map((item) => item.id).toSet();
+    final readyCount = _checks.intersection(validIds).length;
+    final progress =
+        _manualChecks.isEmpty ? 0.0 : readyCount / _manualChecks.length;
 
     return Scaffold(
       backgroundColor: const Color(0xfff7faf9),
@@ -129,8 +132,8 @@ class _OfflineReadinessScreenState extends State<OfflineReadinessScreen> {
                       const SizedBox(height: 5),
                       Text(
                         en
-                            ? '${_checks.length} / ${_manualChecks.length} offline backups ready'
-                            : '${_checks.length} / ${_manualChecks.length} sauvegardes externes prêtes',
+                            ? '$readyCount / ${_manualChecks.length} offline backups ready'
+                            : '$readyCount / ${_manualChecks.length} sauvegardes externes prêtes',
                         style: const TextStyle(fontWeight: FontWeight.w900),
                       ),
                     ],
