@@ -4,6 +4,7 @@ import '../data/content.dart';
 import '../data/first_aid_repository.dart';
 import 'checklist_screen.dart';
 import 'communication_plan_screen.dart';
+import 'emergency_plan_summary_screen.dart';
 import 'family_documents_screen.dart';
 import 'first_aid_screen.dart';
 import 'guide_list_screen.dart';
@@ -98,6 +99,8 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
       'hopital': _SearchHit('Carte', 'Santé à proximité', Icons.local_hospital_rounded, OnlineMapsScreen()),
       'abri': _SearchHit('Carte', 'Abris & lieux sûrs', Icons.home_work_rounded, OnlineMapsScreen()),
       'carte': _SearchHit('Carte', 'Carte & repères', Icons.map_rounded, OnlineMapsScreen()),
+      'plan urgence': _SearchHit('Famille', 'Mon plan d’urgence', Icons.assignment_turned_in_rounded, EmergencyPlanSummaryScreen()),
+      'plan d’urgence': _SearchHit('Famille', 'Mon plan d’urgence', Icons.assignment_turned_in_rounded, EmergencyPlanSummaryScreen()),
       'communication': _SearchHit('Famille', 'Plan de communication', Icons.connect_without_contact_rounded, CommunicationPlanScreen()),
       'contact extérieur': _SearchHit('Famille', 'Plan de communication', Icons.connect_without_contact_rounded, CommunicationPlanScreen()),
       'alerte': _SearchHit('Officiel', 'Alertes & sources officielles', Icons.campaign_rounded, OfficialSourcesScreen()),
