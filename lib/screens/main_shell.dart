@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+
 import '../app/localizations.dart';
-import 'first_aid_screen.dart';
 import 'guided_emergency_screen.dart';
 import 'home_screen.dart';
 import 'more_screen.dart';
-import 'prepare_screen.dart';
+import 'online_maps_screen.dart';
+import 'survival_hub_screen.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -19,8 +20,8 @@ class _MainShellState extends State<MainShell> {
   final pages = const [
     HomeScreen(),
     GuidedEmergencyScreen(),
-    PrepareScreen(),
-    FirstAidScreen(),
+    SurvivalHubScreen(),
+    OnlineMapsScreen(),
     MoreScreen(),
   ];
 
@@ -29,10 +30,10 @@ class _MainShellState extends State<MainShell> {
     final t = AppLocalizations.of(context);
     final en = Localizations.localeOf(context).languageCode == 'en';
     final destinations = [
-      (Icons.home_outlined, Icons.home, t.get('home')),
+      (Icons.home_outlined, Icons.home_rounded, t.get('home')),
       (Icons.sos_outlined, Icons.sos_rounded, en ? 'Emergency' : 'Urgence'),
-      (Icons.shield_outlined, Icons.shield_rounded, en ? 'Prepare' : 'Préparer'),
-      (Icons.health_and_safety_outlined, Icons.health_and_safety, t.get('firstAid')),
+      (Icons.backpack_outlined, Icons.backpack_rounded, en ? 'Kits' : 'Kits'),
+      (Icons.map_outlined, Icons.map_rounded, en ? 'Map' : 'Carte'),
       (Icons.more_horiz, Icons.more_horiz, t.get('more')),
     ];
 
@@ -70,12 +71,14 @@ class _MainShellState extends State<MainShell> {
                   selectedIndex: index,
                   onDestinationSelected: (value) => setState(() => index = value),
                   extended: extendedRail,
-                  minWidth: 76,
-                  minExtendedWidth: 205,
-                  labelType: extendedRail ? NavigationRailLabelType.none : NavigationRailLabelType.all,
-                  groupAlignment: -0.72,
+                  minWidth: 82,
+                  minExtendedWidth: 220,
+                  labelType: extendedRail
+                      ? NavigationRailLabelType.none
+                      : NavigationRailLabelType.all,
+                  groupAlignment: -0.70,
                   leading: Padding(
-                    padding: const EdgeInsets.fromLTRB(10, 18, 10, 22),
+                    padding: const EdgeInsets.fromLTRB(12, 18, 12, 20),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -97,8 +100,19 @@ class _MainShellState extends State<MainShell> {
                           const Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('ReadySafe', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
-                              Text('ÊTRE PRÊT. AGIR.', style: TextStyle(fontSize: 9.5, letterSpacing: 1.1, color: Color(0xff718084), fontWeight: FontWeight.w800)),
+                              Text(
+                                'ReadySafe',
+                                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+                              ),
+                              Text(
+                                'ÊTRE PRÊT. SAUVER DES VIES.',
+                                style: TextStyle(
+                                  fontSize: 8.5,
+                                  letterSpacing: .8,
+                                  color: Color(0xff718084),
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
                             ],
                           ),
                         ],
@@ -111,7 +125,10 @@ class _MainShellState extends State<MainShell> {
                         padding: const EdgeInsets.symmetric(vertical: 5),
                         icon: Icon(item.$1),
                         selectedIcon: Icon(item.$2),
-                        label: Text(item.$3, style: const TextStyle(fontWeight: FontWeight.w800)),
+                        label: Text(
+                          item.$3,
+                          style: const TextStyle(fontWeight: FontWeight.w800),
+                        ),
                       ),
                   ],
                 ),
