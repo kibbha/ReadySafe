@@ -8,9 +8,11 @@ import 'checklist_screen.dart';
 import 'guide_list_screen.dart';
 import 'home_safety_screen.dart';
 import 'maintenance_screen.dart';
+import 'medical_continuity_screen.dart';
 import 'leave_now_screen.dart';
 import 'offline_readiness_screen.dart';
 import 'official_sources_screen.dart';
+import 'pet_emergency_screen.dart';
 import 'power_outage_screen.dart';
 import 'preparedness_review_screen.dart';
 import 'recovery_screen.dart';
@@ -167,6 +169,22 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.accessibility_new_rounded,
         const Color(0xff6750a4),
         const SupportNeedsScreen(),
+        'prepare',
+      ),
+      _Module(
+        'Continuité médicale',
+        'Traitements, appareils, froid, consommables et solution de secours',
+        Icons.medical_services_rounded,
+        const Color(0xffd92d36),
+        const MedicalContinuityScreen(),
+        'prepare',
+      ),
+      _Module(
+        'Animaux',
+        'Évacuation, identification, hébergement et personne relais',
+        Icons.pets_rounded,
+        const Color(0xff147343),
+        const PetEmergencyScreen(),
         'prepare',
       ),
       _Module(
