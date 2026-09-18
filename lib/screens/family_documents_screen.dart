@@ -5,6 +5,7 @@ import '../services/local_storage_service.dart';
 import 'communication_plan_screen.dart';
 import 'emergency_plan_summary_screen.dart';
 import 'family_screen.dart';
+import 'support_needs_screen.dart';
 
 class FamilyDocumentsScreen extends StatefulWidget {
   const FamilyDocumentsScreen({super.key});
@@ -283,6 +284,22 @@ class _FamilyDocumentsScreenState extends State<FamilyDocumentsScreen>
               onTap: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const CommunicationPlanScreen()),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Card(
+            child: ListTile(
+              leading: const CircleAvatar(
+                backgroundColor: Color(0xffe4f2f0),
+                child: Icon(Icons.accessibility_new_rounded, color: Color(0xff087f83)),
+              ),
+              title: const Text('Besoins spécifiques', style: TextStyle(fontWeight: FontWeight.w900)),
+              subtitle: const Text('Mobilité, audition, vision, communication, aide et dépendance électrique'),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SupportNeedsScreen()),
               ),
             ),
           ),
