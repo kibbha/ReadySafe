@@ -5,6 +5,8 @@ import '../services/local_storage_service.dart';
 import 'communication_plan_screen.dart';
 import 'emergency_plan_summary_screen.dart';
 import 'family_screen.dart';
+import 'medical_continuity_screen.dart';
+import 'pet_emergency_screen.dart';
 import 'secure_vault_screen.dart';
 import 'support_needs_screen.dart';
 
@@ -304,6 +306,40 @@ class _FamilyDocumentsScreenState extends State<FamilyDocumentsScreen>
               ),
             ),
           ),
+          const SizedBox(height: 12),
+          Card(
+            child: ListTile(
+              leading: const CircleAvatar(
+                backgroundColor: Color(0xffffe7e8),
+                child: Icon(Icons.medical_services_rounded, color: Color(0xffd92d36)),
+              ),
+              title: const Text('Continuité médicale', style: TextStyle(fontWeight: FontWeight.w900)),
+              subtitle: const Text('Traitements, appareils, froid, consommables et soins réguliers'),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const MedicalContinuityScreen()),
+              ),
+            ),
+          ),
+          if ((_family['pets'] ?? 0) > 0) ...[
+            const SizedBox(height: 12),
+            Card(
+              child: ListTile(
+                leading: const CircleAvatar(
+                  backgroundColor: Color(0xffe5f2e9),
+                  child: Icon(Icons.pets_rounded, color: Color(0xff147343)),
+                ),
+                title: const Text('Plan animaux', style: TextStyle(fontWeight: FontWeight.w900)),
+                subtitle: const Text('Évacuation, transport, hébergement, matériel et vétérinaire'),
+                trailing: const Icon(Icons.chevron_right_rounded),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const PetEmergencyScreen()),
+                ),
+              ),
+            ),
+          ],
           const SizedBox(height: 12),
           Card(
             child: ListTile(
