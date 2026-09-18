@@ -162,6 +162,14 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
         return 'Noyade';
       case 'anaphylaxis':
         return 'Anaphylaxie';
+      case 'stroke':
+        return 'Suspicion d’AVC';
+      case 'chest_pain':
+        return 'Douleur thoracique';
+      case 'asthma':
+        return 'Crise d’asthme';
+      case 'hypoglycemia':
+        return 'Hypoglycémie';
       default:
         return 'Guide de premiers secours';
     }
