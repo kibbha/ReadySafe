@@ -100,7 +100,10 @@ class _FamilyDocumentsScreenState extends State<FamilyDocumentsScreen>
         ],
       ),
     );
-    if (result == null) return;
+    name.dispose();
+    role.dispose();
+    phone.dispose();
+    if (result == null || !mounted) return;
     setState(() => _contacts = [..._contacts, result]);
     await _storage.saveFamilyContacts(_contacts);
   }
@@ -146,7 +149,7 @@ class _FamilyDocumentsScreenState extends State<FamilyDocumentsScreen>
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Annuler')),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(en ? 'Cancel' : 'Annuler')),
           FilledButton(
             onPressed: () => Navigator.pop(context, {
               'meetingPoint': primary.text.trim(),
@@ -158,7 +161,10 @@ class _FamilyDocumentsScreenState extends State<FamilyDocumentsScreen>
         ],
       ),
     );
-    if (result == null) return;
+    primary.dispose();
+    backup.dispose();
+    notes.dispose();
+    if (result == null || !mounted) return;
     final merged = <String, String>{..._plan, ...result};
     setState(() => _plan = merged);
     await _storage.saveFamilyPlan(merged);
@@ -495,8 +501,11 @@ class _FamilyDocumentsScreenState extends State<FamilyDocumentsScreen>
             icon: Icons.folder_copy_rounded,
             title: en ? 'Essential documents' : 'Documents essentiels',
             subtitle: en ? '$readyDocs / ${_documents.length} categories ready' : '$readyDocs / ${_documents.length} catégories préparées',
-            actionLabel: en ? 'Offline' : 'Hors ligne',
-            onTap: () {},
+            actionLabel: en ? 'Vault' : 'Coffre',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SecureVaultScreen()),
+            ),
           ),
           const SizedBox(height: 14),
           Text(
@@ -528,7 +537,7 @@ class _FamilyDocumentsScreenState extends State<FamilyDocumentsScreen>
                   ),
                 ),
                 title: Text(_docTitle('${doc['id']}', en, '${doc['title']}'), style: const TextStyle(fontWeight: FontWeight.w900)),
-                subtitle: Text('${_docCategory('${doc['id']}', en, '${doc['category']}')} · ${ready ? (en ? 'Ready offline' : 'Prêt hors ligne') : (en ? 'To prepare' : 'À préparer')}'),
+                subtitle: Text('${_docCategory('${doc['id']}', en, '${doc['category']}')} · ${ready ? (en ? 'Prepared' : 'Préparé') : (en ? 'To prepare' : 'À préparer')}'),
                 controlAffinity: ListTileControlAffinity.trailing,
               ),
             );
