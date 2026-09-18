@@ -21,6 +21,28 @@ void main() {
     }
   });
 
+  test('evacuation guidance never requires delaying departure for utilities', () {
+    final evacuation = emergencyGuides.firstWhere(
+      (guide) => guide.id == 'evacuation',
+    );
+    final flood = disasterGuides.firstWhere(
+      (guide) => guide.id == 'flood',
+    );
+
+    expect(
+      evacuation.avoid.toLowerCase(),
+      contains('ne retardez pas'),
+    );
+    expect(
+      evacuation.steps.join(' ').toLowerCase(),
+      contains('ne manipulez gaz, eau ou électricité que si'),
+    );
+    expect(
+      flood.steps.join(' ').toLowerCase(),
+      isNot(contains('coupez l’électricité')),
+    );
+  });
+
   test('essential step-by-step first-aid guides remain available', () {
     const expectedIds = {
       'cpr_adult',
