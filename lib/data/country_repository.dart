@@ -46,6 +46,8 @@ class CountryRepository {
     'IS':[Uri.parse('https://www.112.is/en/112')],
     'TR':[Uri.parse('https://www.112.gov.tr/')],
     'LI':[Uri.parse('https://www.llv.li/de/landesverwaltung/amt-fuer-bevoelkerungsschutz/rettungs--hilfsorganisationen/notrufnummern')],
+    'GE':[Uri.parse('https://112.gov.ge/?lang=en&page_id=1686')],
+    'MD':[Uri.parse('https://www.gov.md/index.php/en/useful-information')],
   };
 
   static final Map<String,List<EmergencyService>> _verifiedServices = {
@@ -70,6 +72,12 @@ class CountryRepository {
       _service('police','service_police','117','service_li_police_desc'),
       _service('fire','service_fire','118','service_li_fire_desc'),
       _service('medical','service_ambulance','144','service_li_ambulance_desc'),
+    ],
+    'GE':[
+      _service('general','service_emergency','112','service_ge_112_desc'),
+    ],
+    'MD':[
+      _service('general','service_emergency','112','service_md_112_desc'),
     ],
     'CH':[
       _service('eu','service_emergency','112','service_112_desc'),
