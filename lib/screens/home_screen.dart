@@ -85,7 +85,13 @@ class _HomeScreenState extends State<HomeScreen> {
           onRefresh: _refreshScore,
           child: LayoutBuilder(
             builder: (context, constraints) {
-              final wide = constraints.maxWidth >= 760;
+              final width = constraints.maxWidth;
+              final wide = width >= 760;
+              final moduleColumns = width >= 980
+                  ? 4
+                  : width >= 440
+                      ? 2
+                      : 1;
               final padding = wide ? 26.0 : 14.0;
               return Center(
                 child: ConstrainedBox(
@@ -174,8 +180,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: modules.length,
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: wide ? 2 : 2,
-                          mainAxisExtent: wide ? 146 : 138,
+                          crossAxisCount: moduleColumns,
+                          mainAxisExtent: moduleColumns == 1 ? 108 : 138,
                           crossAxisSpacing: 10,
                           mainAxisSpacing: 10,
                         ),
