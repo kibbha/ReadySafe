@@ -81,6 +81,26 @@ class TrainingScreen extends StatelessWidget {
         ],
       ),
       _Drill(
+        en ? 'Family reunification' : 'Réunification familiale',
+        en ? 'Practise what happens if the household is separated.' : 'Tester ce qui se passe si le foyer est séparé.',
+        Icons.family_restroom_outlined,
+        [
+          en ? 'Name the primary and backup meeting points.' : 'Nommer les points de rendez-vous principal et alternatif.',
+          en ? 'Confirm who may collect children from school or childcare.' : 'Confirmer qui peut récupérer les enfants à l’école ou à la garde.',
+          en ? 'Use the out-of-area contact if local communications are disrupted.' : 'Utiliser le contact extérieur si les communications locales sont perturbées.',
+        ],
+      ),
+      _Drill(
+        en ? 'Vehicle emergency' : 'Urgence véhicule',
+        en ? 'Practise a safe response to a breakdown or blocked road.' : 'S’entraîner à réagir à une panne ou une route bloquée.',
+        Icons.directions_car_outlined,
+        [
+          en ? 'Locate the warning equipment and emergency kit.' : 'Retrouver la signalisation et le kit d’urgence.',
+          en ? 'Review the safest place to wait away from moving traffic.' : 'Revoir l’endroit le plus sûr pour attendre loin de la circulation.',
+          en ? 'Check a backup route and offline contact method.' : 'Vérifier un itinéraire de secours et un moyen de contact hors ligne.',
+        ],
+      ),
+      _Drill(
         en ? 'Pet evacuation' : 'Évacuation avec animaux',
         en ? 'Practise leaving safely with animals and their essential supplies.' : 'S’entraîner à partir avec les animaux et leur matériel indispensable.',
         Icons.pets_outlined,
