@@ -398,7 +398,7 @@ class GuideDetail extends StatelessWidget {
                             entry.$2,
                             style: const TextStyle(
                               height: 1.35,
-                              fontWeight: FontWeight.w650,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
