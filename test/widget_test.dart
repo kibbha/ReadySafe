@@ -15,6 +15,21 @@ void main() {
     expect(find.text('Continuer'), findsOneWidget);
   });
 
+  testWidgets('onboarding language can switch before country selection', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    await tester.pumpWidget(const ReadySafeApp());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('EN'));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('Select your country of residence'),
+      findsOneWidget,
+    );
+    expect(find.text('Continue'), findsOneWidget);
+  });
+
   testWidgets('saved residence opens all-in-one ReadySafe dashboard', (tester) async {
     SharedPreferences.setMockInitialValues({'settings.residenceCountry': 'FR'});
     await tester.pumpWidget(const ReadySafeApp());
