@@ -38,21 +38,26 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
 
     final results = <_DiagnosticResult>[];
 
-    final countriesWithoutNumber = CountryRepository.supported.where(
-      (country) => !country.services.any(
-        (service) =>
-            service.isCallable &&
-            (service.number ?? '').trim().isNotEmpty,
-      ),
-    ).toList();
+    final verifiedProfiles = CountryRepository.supported
+        .where((country) => country.hasVerifiedNumbers)
+        .length;
+    final pendingProfiles =
+        CountryRepository.supported.length - verifiedProfiles;
+    final invalidCountryProfiles = CountryRepository.supported.where(
+      (country) =>
+          country.services.isEmpty ||
+          (country.verifiedOn != null && !country.hasVerifiedNumbers),
+    );
 
     results.add(
       _DiagnosticResult(
         id: 'emergency_numbers',
-        ok: countriesWithoutNumber.isEmpty,
+        ok: invalidCountryProfiles.isEmpty,
         values: {
           'supported': CountryRepository.supported.length,
-          'missing': countriesWithoutNumber.length,
+          'verified': verifiedProfiles,
+          'pending': pendingProfiles,
+          'invalid': invalidCountryProfiles.length,
         },
       ),
     );
@@ -216,11 +221,11 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
       case 'emergency_numbers':
         return result.ok
             ? (en
-                ? '${v['supported']} supported country profiles have at least one callable emergency number.'
-                : '${v['supported']} profils pays disposent d’au moins un numéro d’urgence appelable.')
+                ? '${v['verified']} / ${v['supported']} country profiles have verified callable numbers · ${v['pending']} remain intentionally non-callable until verified.'
+                : '${v['verified']} / ${v['supported']} profils pays disposent de numéros appelables vérifiés · ${v['pending']} restent volontairement non appelables tant qu’ils ne sont pas vérifiés.')
             : (en
-                ? '${v['missing']} country profile(s) have no callable emergency number.'
-                : '${v['missing']} profil(s) pays ne disposent d’aucun numéro d’urgence appelable.');
+                ? '${v['invalid']} country profile(s) violate the emergency-number verification policy.'
+                : '${v['invalid']} profil(s) pays ne respectent pas la politique de vérification des numéros d’urgence.');
       case 'first_aid_data':
         return result.ok
             ? (en
