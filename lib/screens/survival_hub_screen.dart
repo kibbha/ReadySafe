@@ -7,6 +7,7 @@ import 'communication_plan_screen.dart';
 import 'checklist_screen.dart';
 import 'guide_list_screen.dart';
 import 'leave_now_screen.dart';
+import 'safety_tools_screen.dart';
 import 'training_screen.dart';
 
 class SurvivalHubScreen extends StatefulWidget {
@@ -92,6 +93,13 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.connect_without_contact_rounded,
         const Color(0xff0f7c7f),
         const CommunicationPlanScreen(),
+      ),
+      _Module(
+        'Outils d’urgence',
+        'Signal SOS, numéros, messages et accès rapide aux repères',
+        Icons.handyman_rounded,
+        const Color(0xffd92d36),
+        const SafetyToolsScreen(),
       ),
       _Module(
         'Formation & exercices',
