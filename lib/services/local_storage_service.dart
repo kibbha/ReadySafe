@@ -12,6 +12,10 @@ class LocalStorageService {
     'pets': 0,
   };
 
+  static const _contactsKey = 'family_contacts_v3';
+  static const _documentsKey = 'family_documents_v3';
+  static const _planKey = 'family_plan_v3';
+
   Future<SharedPreferences> get _prefs => SharedPreferences.getInstance();
 
   Future<Set<String>> completed(String key) async {
@@ -74,4 +78,90 @@ class LocalStorageService {
 
   Future<void> saveFamily(Map<String, int> value) async =>
       (await _prefs).setString('family', jsonEncode(value));
+
+  Future<List<Map<String, String>>> familyContacts() async {
+    final defaults = <Map<String, String>>[
+      {'name': 'Contact principal', 'role': 'À définir', 'phone': ''},
+    ];
+    try {
+      final raw = (await _prefs).getString(_contactsKey);
+      if (raw == null) return defaults;
+      final decoded = jsonDecode(raw);
+      if (decoded is! List) return defaults;
+      return decoded
+          .whereType<Map>()
+          .map((item) => item.map((key, value) => MapEntry('$key', '${value ?? ''}')))
+          .toList();
+    } catch (_) {
+      return defaults;
+    }
+  }
+
+  Future<void> saveFamilyContacts(List<Map<String, String>> contacts) async =>
+      (await _prefs).setString(_contactsKey, jsonEncode(contacts));
+
+  Future<List<Map<String, dynamic>>> emergencyDocuments() async {
+    const defaults = <Map<String, dynamic>>[
+      {'id': 'identity', 'title': 'Pièces d’identité', 'category': 'Identité', 'ready': false},
+      {'id': 'health', 'title': 'Documents de santé', 'category': 'Santé', 'ready': false},
+      {'id': 'insurance', 'title': 'Assurances', 'category': 'Protection', 'ready': false},
+      {'id': 'home', 'title': 'Documents logement', 'category': 'Logement', 'ready': false},
+      {'id': 'school', 'title': 'Documents scolaires', 'category': 'Famille', 'ready': false},
+      {'id': 'vehicle', 'title': 'Documents véhicule', 'category': 'Mobilité', 'ready': false},
+    ];
+    try {
+      final raw = (await _prefs).getString(_documentsKey);
+      if (raw == null) return defaults.map((e) => Map<String, dynamic>.from(e)).toList();
+      final decoded = jsonDecode(raw);
+      if (decoded is! List) return defaults.map((e) => Map<String, dynamic>.from(e)).toList();
+      return decoded.whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList();
+    } catch (_) {
+      return defaults.map((e) => Map<String, dynamic>.from(e)).toList();
+    }
+  }
+
+  Future<void> saveEmergencyDocuments(List<Map<String, dynamic>> docs) async =>
+      (await _prefs).setString(_documentsKey, jsonEncode(docs));
+
+  Future<Map<String, String>> familyPlan() async {
+    try {
+      final raw = (await _prefs).getString(_planKey);
+      if (raw == null) {
+        return {
+          'meetingPoint': '',
+          'backupMeetingPoint': '',
+          'notes': '',
+        };
+      }
+      final decoded = jsonDecode(raw);
+      if (decoded is! Map) return {'meetingPoint': '', 'backupMeetingPoint': '', 'notes': ''};
+      return decoded.map((key, value) => MapEntry('$key', '${value ?? ''}'));
+    } catch (_) {
+      return {'meetingPoint': '', 'backupMeetingPoint': '', 'notes': ''};
+    }
+  }
+
+  Future<void> saveFamilyPlan(Map<String, String> plan) async =>
+      (await _prefs).setString(_planKey, jsonEncode(plan));
+
+  Future<int> preparednessScore() async {
+    final stock = await kitStock();
+    final familyValue = await family();
+    final contacts = await familyContacts();
+    final docs = await emergencyDocuments();
+    final plan = await familyPlan();
+
+    var score = 0;
+    if (stock.values.where((entry) => entry.quantityOwned > 0 && !entry.isExpired).length >= 8) {
+      score += 40;
+    } else if (stock.values.any((entry) => entry.quantityOwned > 0)) {
+      score += 20;
+    }
+    final people = (familyValue['adults'] ?? 0) + (familyValue['children'] ?? 0);
+    if (people > 0) score += 15;
+    if (contacts.any((contact) => (contact['phone'] ?? '').trim().isNotEmpty)) score += 15;
+    if ((plan['meetingPoint'] ?? '').trim().isNotEmpty) score += 15;
+    if (docs.where((doc) => doc['ready'] == true).length >= 3) score += 15;
+    return score.clamp(0, 100);
+  }
 }
