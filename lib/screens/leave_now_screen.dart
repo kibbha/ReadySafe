@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../services/local_storage_service.dart';
 import 'emergency_screen.dart';
+import 'online_maps_screen.dart';
 
 class LeaveNowScreen extends StatefulWidget {
   const LeaveNowScreen({super.key});
@@ -13,7 +14,13 @@ class LeaveNowScreen extends StatefulWidget {
 class _LeaveNowScreenState extends State<LeaveNowScreen> {
   final _storage = LocalStorageService();
   Set<String> _done = {};
-  Map<String, int> _family = {'adults': 1, 'children': 0, 'care': 0, 'pets': 0};
+  Map<String, int> _family = {
+    'adults': 1,
+    'children': 0,
+    'care': 0,
+    'pets': 0,
+  };
+  Map<String, String> _plan = {};
 
   @override
   void initState() {
@@ -24,10 +31,14 @@ class _LeaveNowScreenState extends State<LeaveNowScreen> {
   Future<void> _load() async {
     final done = await _storage.completed('leave_now_v3');
     final family = await _storage.family();
+    final plan = await _storage.familyPlan();
+
     if (!mounted) return;
+
     setState(() {
       _done = done;
       _family = family;
+      _plan = plan;
     });
   }
 
@@ -42,6 +53,11 @@ class _LeaveNowScreenState extends State<LeaveNowScreen> {
   @override
   Widget build(BuildContext context) {
     final en = Localizations.localeOf(context).languageCode == 'en';
+    final people = (_family['adults'] ?? 0) +
+        (_family['children'] ?? 0) +
+        (_family['care'] ?? 0);
+    final pets = _family['pets'] ?? 0;
+    final meetingPoint = (_plan['meetingPoint'] ?? '').trim();
 
     final items = <_LeaveItem>[
       _LeaveItem(
@@ -90,7 +106,13 @@ class _LeaveNowScreenState extends State<LeaveNowScreen> {
       _LeaveItem(
         'meeting',
         en ? 'Meeting point' : 'Point de rassemblement',
-        en ? 'Confirm where the household will reconnect' : 'Confirmer où tout le monde se retrouve',
+        meetingPoint.isEmpty
+            ? (en
+                ? 'Confirm where the household will reconnect'
+                : 'Confirmer où tout le monde se retrouve')
+            : (en
+                ? 'Planned point: $meetingPoint'
+                : 'Point prévu : $meetingPoint'),
         Icons.location_on_rounded,
       ),
     ];
@@ -119,9 +141,13 @@ class _LeaveNowScreenState extends State<LeaveNowScreen> {
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(14, 4, 14, 28),
-        children: [
+      body: Align(
+        alignment: Alignment.topCenter,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 860),
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(14, 4, 14, 28),
+            children: [
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -147,6 +173,88 @@ class _LeaveNowScreenState extends State<LeaveNowScreen> {
                       height: 1.35,
                     ),
                   ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(13),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: const Color(0xffdbe6e7)),
+            ),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.family_restroom_rounded,
+                      color: Color(0xff087f83),
+                    ),
+                    const SizedBox(width: 9),
+                    Expanded(
+                      child: Text(
+                        en
+                            ? '$people people${pets > 0 ? ' · $pets pet(s)' : ''}'
+                            : '$people personne(s)${pets > 0 ? ' · $pets animal(aux)' : ''}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                if (meetingPoint.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.location_on_outlined,
+                        color: Color(0xff147343),
+                      ),
+                      const SizedBox(width: 9),
+                      Expanded(
+                        child: Text(
+                          meetingPoint,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const OnlineMapsScreen(),
+                          ),
+                        ),
+                        icon: const Icon(Icons.map_outlined),
+                        label: Text(en ? 'Open map' : 'Ouvrir la carte'),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const EmergencyScreen(),
+                          ),
+                        ),
+                        icon: const Icon(Icons.phone_in_talk_rounded),
+                        label: Text(en ? 'Emergency' : 'Urgence'),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -238,7 +346,9 @@ class _LeaveNowScreenState extends State<LeaveNowScreen> {
               ],
             ),
           ),
-        ],
+            ],
+          ),
+        ),
       ),
     );
   }
