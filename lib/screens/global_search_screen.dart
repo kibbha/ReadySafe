@@ -11,6 +11,7 @@ import 'official_sources_screen.dart';
 import 'preparedness_review_screen.dart';
 import 'recovery_screen.dart';
 import 'safety_tools_screen.dart';
+import 'special_kits_screen.dart';
 import 'online_maps_screen.dart';
 import 'survival_hub_screen.dart';
 
@@ -84,6 +85,11 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
     const shortcuts = <String, _SearchHit>{
       'eau': _SearchHit('Kits & survie', 'Eau & réserves', Icons.water_drop_rounded, SurvivalHubScreen()),
       'kit': _SearchHit('Kits & survie', 'Kit 72 h', Icons.backpack_rounded, ChecklistScreen(kit: true)),
+      'voiture': _SearchHit('Kits & survie', 'Kits spécialisés', Icons.directions_car_rounded, SpecialKitsScreen()),
+      'voyage': _SearchHit('Kits & survie', 'Kits spécialisés', Icons.luggage_rounded, SpecialKitsScreen()),
+      'animal': _SearchHit('Kits & survie', 'Kits spécialisés', Icons.pets_rounded, SpecialKitsScreen()),
+      'bébé': _SearchHit('Kits & survie', 'Kits spécialisés', Icons.child_care_rounded, SpecialKitsScreen()),
+      'evacuation bag': _SearchHit('Kits & survie', 'Kits spécialisés', Icons.inventory_2_rounded, SpecialKitsScreen()),
       'check': _SearchHit('Kits & survie', 'Check-lists', Icons.fact_check_rounded, ChecklistScreen(kit: false)),
       'famille': _SearchHit('Famille', 'Famille & documents', Icons.family_restroom_rounded, FamilyDocumentsScreen()),
       'document': _SearchHit('Famille', 'Documents importants', Icons.folder_copy_rounded, FamilyDocumentsScreen()),
