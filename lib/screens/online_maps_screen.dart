@@ -1,7 +1,6 @@
 import 'dart:math' show Point;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -406,15 +405,6 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
     if (center == null) return false;
     return (center.latitude - _camera.target.latitude).abs() < .12 &&
         (center.longitude - _camera.target.longitude).abs() < .16;
-  }
-
-  Future<void> _selectUsefulKind(_PlaceKind kind) async {
-    setState(() => _filter = kind);
-    if (!_poiZoneMatchesCamera || _communityPlaces.isEmpty) {
-      await _loadUsefulPlaces();
-    } else {
-      await _syncMarkers();
-    }
   }
 
   Future<void> _openDirections(_Place place) async {

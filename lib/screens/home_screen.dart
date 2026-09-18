@@ -425,17 +425,3 @@ class _ModuleCard extends StatelessWidget {
         ),
       );
 }
-
-class _QuickAction extends StatelessWidget {
-  const _QuickAction({required this.icon, required this.label, required this.onTap});
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) => ActionChip(
-        avatar: Icon(icon, size: 18, color: const Color(0xff087f83)),
-        label: Text(label),
-        onPressed: onTap,
-      );
-}
