@@ -1,92 +1,103 @@
 import 'dart:math' show Point;
+
 import 'package:flutter/material.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 
+enum _PlaceKind { shelter, health, pharmacy, water, meeting, aid, city }
+
 class OnlineMapsScreen extends StatefulWidget {
   const OnlineMapsScreen({super.key});
+
   @override
   State<OnlineMapsScreen> createState() => _OnlineMapsScreenState();
 }
 
 class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
-  static const _styles = <String, String>{
-    'Liberty': 'https://tiles.openfreemap.org/styles/liberty',
-    'Positron': 'https://tiles.openfreemap.org/styles/positron',
-    'Bright': 'https://tiles.openfreemap.org/styles/bright',
-  };
+  static const _style = 'https://tiles.openfreemap.org/styles/liberty';
   static const _geneva = LatLng(46.2044, 6.1432);
-  String _styleName = 'Liberty';
-  CameraPosition _camera = const CameraPosition(target: _geneva, zoom: 11.5);
-  MapLibreMapController? _map;
-  bool _searchOpen = false;
-  bool _showEmergency = true;
-  bool _showAssembly = true;
+
   final _search = TextEditingController();
-  final List<Circle> _poiCircles = [];
+  MapLibreMapController? _map;
+  CameraPosition _camera = const CameraPosition(target: _geneva, zoom: 12);
+  _PlaceKind? _filter;
+  bool _searchOpen = false;
+  final List<Circle> _circles = [];
 
   static const _places = <_Place>[
-    _Place('Genève', 'Suisse · Ville', 46.2044, 6.1432, Icons.location_city),
-    _Place('Gare Cornavin', 'Genève · Transport', 46.2102, 6.1425, Icons.train_outlined),
-    _Place('HUG — Hôpital', 'Genève · Urgence médicale', 46.1933, 6.1484, Icons.local_hospital_outlined, emergency: true),
-    _Place('Aéroport de Genève', 'Genève · Transport', 46.2381, 6.1090, Icons.flight_outlined),
-    _Place('Plainpalais', 'Genève · Repère ReadySafe', 46.1985, 6.1427, Icons.place_outlined, assembly: true),
-    _Place('Parc des Bastions', 'Genève · Repère ReadySafe', 46.2003, 6.1459, Icons.place_outlined, assembly: true),
-    _Place('Lausanne', 'Suisse · Ville', 46.5197, 6.6323, Icons.location_city),
-    _Place('Berne', 'Suisse · Ville', 46.9480, 7.4474, Icons.location_city),
-    _Place('Zurich', 'Suisse · Ville', 47.3769, 8.5417, Icons.location_city),
-    _Place('Paris', 'France · Ville', 48.8566, 2.3522, Icons.location_city),
-    _Place('Lyon', 'France · Ville', 45.7640, 4.8357, Icons.location_city),
-    _Place('Milan', 'Italie · Ville', 45.4642, 9.1900, Icons.location_city),
-    _Place('Rome', 'Italie · Ville', 41.9028, 12.4964, Icons.location_city),
-    _Place('Berlin', 'Allemagne · Ville', 52.5200, 13.4050, Icons.location_city),
-    _Place('Vienne', 'Autriche · Ville', 48.2082, 16.3738, Icons.location_city),
-    _Place('Bruxelles', 'Belgique · Ville', 50.8503, 4.3517, Icons.location_city),
-    _Place('Amsterdam', 'Pays-Bas · Ville', 52.3676, 4.9041, Icons.location_city),
-    _Place('Madrid', 'Espagne · Ville', 40.4168, -3.7038, Icons.location_city),
-    _Place('Lisbonne', 'Portugal · Ville', 38.7223, -9.1393, Icons.location_city),
-    _Place('Londres', 'Royaume-Uni · Ville', 51.5072, -0.1276, Icons.location_city),
+    _Place('HUG — Hôpital universitaire', 'Soins médicaux', 46.1933, 6.1484, _PlaceKind.health),
+    _Place('Pharmacie de la Gare', 'Pharmacie', 46.2107, 6.1422, _PlaceKind.pharmacy),
+    _Place('Plainpalais', 'Point de rassemblement', 46.1985, 6.1427, _PlaceKind.meeting),
+    _Place('Parc des Bastions', 'Lieu sûr / rassemblement', 46.2003, 6.1459, _PlaceKind.meeting),
+    _Place('Point d’eau — Jardin Anglais', 'Eau', 46.2031, 6.1527, _PlaceKind.water),
+    _Place('Centre sportif des Vernets', 'Abri / ressource', 46.1948, 6.1347, _PlaceKind.shelter),
+    _Place('Croix-Rouge genevoise', 'Aide', 46.1990, 6.1380, _PlaceKind.aid),
+    _Place('Genève', 'Ville', 46.2044, 6.1432, _PlaceKind.city),
+    _Place('Gare Cornavin', 'Transport', 46.2102, 6.1425, _PlaceKind.city),
+    _Place('Aéroport de Genève', 'Transport', 46.2381, 6.1090, _PlaceKind.city),
+    _Place('Lausanne', 'Ville', 46.5197, 6.6323, _PlaceKind.city),
+    _Place('Berne', 'Ville', 46.9480, 7.4474, _PlaceKind.city),
+    _Place('Zurich', 'Ville', 47.3769, 8.5417, _PlaceKind.city),
+    _Place('Paris', 'Ville', 48.8566, 2.3522, _PlaceKind.city),
+    _Place('Lyon', 'Ville', 45.7640, 4.8357, _PlaceKind.city),
+    _Place('Milan', 'Ville', 45.4642, 9.1900, _PlaceKind.city),
+    _Place('Rome', 'Ville', 41.9028, 12.4964, _PlaceKind.city),
+    _Place('Berlin', 'Ville', 52.5200, 13.4050, _PlaceKind.city),
+    _Place('Bruxelles', 'Ville', 50.8503, 4.3517, _PlaceKind.city),
   ];
 
-  List<_Place> get _results {
+  List<_Place> get _searchResults {
     final q = _search.text.trim().toLowerCase();
-    if (q.isEmpty) return _places.take(8).toList();
-    return _places.where((p) => '${p.name} ${p.type}'.toLowerCase().contains(q)).toList();
+    if (q.isEmpty) return _places.where((p) => p.kind == _PlaceKind.city).take(8).toList();
+    return _places
+        .where((p) => '${p.name} ${p.subtitle}'.toLowerCase().contains(q))
+        .toList();
   }
 
-  Future<void> _syncPois() async {
+  List<_Place> get _visibleSafetyPlaces {
+    return _places.where((p) {
+      if (p.kind == _PlaceKind.city) return false;
+      if (_filter != null && p.kind != _filter) return false;
+      final dLat = (p.lat - _camera.target.latitude).abs();
+      final dLng = (p.lng - _camera.target.longitude).abs();
+      return dLat < 0.35 && dLng < 0.45;
+    }).toList();
+  }
+
+  Future<void> _syncMarkers() async {
     final map = _map;
     if (map == null) return;
-    for (final circle in List<Circle>.from(_poiCircles)) {
+    for (final circle in List<Circle>.from(_circles)) {
       await map.removeCircle(circle);
     }
-    _poiCircles.clear();
-    for (final p in _places) {
-      if (!((p.emergency && _showEmergency) || (p.assembly && _showAssembly))) continue;
-      final circle = await map.addCircle(CircleOptions(
-        geometry: LatLng(p.lat, p.lng),
-        circleRadius: 9,
-        circleColor: p.emergency ? '#d92d36' : '#087f83',
-        circleStrokeColor: '#ffffff',
-        circleStrokeWidth: 3,
-      ));
-      _poiCircles.add(circle);
+    _circles.clear();
+
+    for (final place in _visibleSafetyPlaces) {
+      final circle = await map.addCircle(
+        CircleOptions(
+          geometry: LatLng(place.lat, place.lng),
+          circleRadius: 10,
+          circleColor: _hex(place.kind),
+          circleStrokeColor: '#ffffff',
+          circleStrokeWidth: 3,
+        ),
+      );
+      _circles.add(circle);
     }
   }
 
-  Future<void> _goTo(_Place p) async {
+  Future<void> _goTo(_Place place, {double zoom = 14}) async {
     FocusScope.of(context).unfocus();
-    final target = CameraPosition(target: LatLng(p.lat, p.lng), zoom: 13.5);
-    _camera = target;
-    await _map?.animateCamera(CameraUpdate.newCameraPosition(target));
-    if (mounted) setState(() => _searchOpen = false);
+    _camera = CameraPosition(target: LatLng(place.lat, place.lng), zoom: zoom);
+    await _map?.animateCamera(CameraUpdate.newCameraPosition(_camera));
+    if (mounted) {
+      setState(() => _searchOpen = false);
+      await _syncMarkers();
+    }
   }
 
-  void _setStyle(String name) {
-    if (_styleName == name) return;
-    setState(() {
-      _styleName = name;
-      _poiCircles.clear();
-    });
+  Future<void> _setFilter(_PlaceKind? value) async {
+    setState(() => _filter = value);
+    await _syncMarkers();
   }
 
   @override
@@ -96,131 +107,294 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Carte')),
-        body: Stack(children: [
+  Widget build(BuildContext context) {
+    final places = _visibleSafetyPlaces;
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Carte & repères'),
+        actions: [
+          IconButton(
+            tooltip: 'Recentrer',
+            onPressed: () async {
+              _camera = const CameraPosition(target: _geneva, zoom: 12);
+              await _map?.animateCamera(CameraUpdate.newCameraPosition(_camera));
+              await _syncMarkers();
+            },
+            icon: const Icon(Icons.center_focus_strong_rounded),
+          ),
+        ],
+      ),
+      body: Stack(
+        children: [
           MapLibreMap(
-            key: ValueKey(_styleName),
-            styleString: _styles[_styleName]!,
+            styleString: _style,
             initialCameraPosition: _camera,
-            onMapCreated: (c) => _map = c,
-            onStyleLoadedCallback: _syncPois,
-            onCameraIdle: () {
+            onMapCreated: (controller) => _map = controller,
+            onStyleLoadedCallback: _syncMarkers,
+            onCameraIdle: () async {
               final position = _map?.cameraPosition;
-              if (position != null) _camera = position;
+              if (position != null) {
+                _camera = position;
+                if (mounted) setState(() {});
+                await _syncMarkers();
+              }
             },
             compassEnabled: true,
-            rotateGesturesEnabled: true,
             tiltGesturesEnabled: false,
-            attributionButtonMargins: const Point<double>(8, 82),
+            rotateGesturesEnabled: true,
+            attributionButtonMargins: const Point<double>(8, 8),
           ),
           Positioned(
-            left: 12,
-            right: 12,
-            top: 12,
-            child: Column(children: [
-              Material(
-                elevation: 3,
-                borderRadius: BorderRadius.circular(16),
-                child: TextField(
-                  controller: _search,
-                  onTap: () => setState(() => _searchOpen = true),
-                  onChanged: (_) => setState(() => _searchOpen = true),
-                  decoration: InputDecoration(
-                    hintText: 'Rechercher une ville ou un lieu',
-                    prefixIcon: const Icon(Icons.search),
-                    suffixIcon: _search.text.isEmpty
-                        ? null
-                        : IconButton(onPressed: () { _search.clear(); setState(() {}); }, icon: const Icon(Icons.close)),
-                    border: InputBorder.none,
+            top: 10,
+            left: 10,
+            right: 10,
+            child: Column(
+              children: [
+                Material(
+                  elevation: 3,
+                  borderRadius: BorderRadius.circular(18),
+                  child: TextField(
+                    controller: _search,
+                    onTap: () => setState(() => _searchOpen = true),
+                    onChanged: (_) => setState(() => _searchOpen = true),
+                    decoration: InputDecoration(
+                      hintText: 'Rechercher un lieu ou un repère…',
+                      prefixIcon: const Icon(Icons.search_rounded),
+                      suffixIcon: _search.text.isEmpty
+                          ? null
+                          : IconButton(
+                              onPressed: () {
+                                _search.clear();
+                                setState(() {});
+                              },
+                              icon: const Icon(Icons.close_rounded),
+                            ),
+                    ),
                   ),
                 ),
-              ),
-              if (_searchOpen)
-                Container(
-                  margin: const EdgeInsets.only(top: 6),
-                  constraints: const BoxConstraints(maxHeight: 280),
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), boxShadow: const [BoxShadow(blurRadius: 12, color: Color(0x22000000))]),
-                  child: _results.isEmpty
-                      ? const Padding(padding: EdgeInsets.all(18), child: Text('Aucun lieu correspondant'))
-                      : ListView(
-                          shrinkWrap: true,
-                          padding: const EdgeInsets.symmetric(vertical: 6),
-                          children: _results.map((p) => ListTile(
-                            dense: true,
-                            leading: Icon(p.icon, color: p.emergency ? const Color(0xffd92d36) : const Color(0xff087f83)),
-                            title: Text(p.name, style: const TextStyle(fontWeight: FontWeight.w800)),
-                            subtitle: Text(p.type),
-                            onTap: () => _goTo(p),
-                          )).toList(),
-                        ),
+                if (_searchOpen)
+                  Container(
+                    margin: const EdgeInsets.only(top: 6),
+                    constraints: const BoxConstraints(maxHeight: 240),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: const [BoxShadow(blurRadius: 14, color: Color(0x22000000))],
+                    ),
+                    child: _searchResults.isEmpty
+                        ? const Padding(
+                            padding: EdgeInsets.all(16),
+                            child: Text('Aucun résultat'),
+                          )
+                        : ListView(
+                            shrinkWrap: true,
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            children: _searchResults
+                                .map(
+                                  (place) => ListTile(
+                                    dense: true,
+                                    leading: Icon(_icon(place.kind), color: _color(place.kind)),
+                                    title: Text(place.name, style: const TextStyle(fontWeight: FontWeight.w800)),
+                                    subtitle: Text(place.subtitle),
+                                    onTap: () => _goTo(place, zoom: place.kind == _PlaceKind.city ? 12 : 14),
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                  ),
+                const SizedBox(height: 8),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _filterChip(null, 'Tous'),
+                      _filterChip(_PlaceKind.shelter, 'Abris'),
+                      _filterChip(_PlaceKind.health, 'Santé'),
+                      _filterChip(_PlaceKind.pharmacy, 'Pharmacies'),
+                      _filterChip(_PlaceKind.water, 'Eau'),
+                      _filterChip(_PlaceKind.meeting, 'Rassemblement'),
+                      _filterChip(_PlaceKind.aid, 'Aide'),
+                    ],
+                  ),
                 ),
-            ]),
+              ],
+            ),
           ),
-          Positioned(right: 12, top: 74, child: Column(children: [
-            _MapButton(icon: Icons.layers_outlined, tooltip: 'Couches', onTap: _layers),
-            const SizedBox(height: 8),
-            _MapButton(icon: Icons.add, tooltip: 'Zoom avant', onTap: () => _map?.animateCamera(CameraUpdate.zoomBy(1))),
-            const SizedBox(height: 6),
-            _MapButton(icon: Icons.remove, tooltip: 'Zoom arrière', onTap: () => _map?.animateCamera(CameraUpdate.zoomBy(-1))),
-          ])),
           Positioned(
             right: 12,
-            bottom: 24,
-            child: _MapButton(
-              icon: Icons.center_focus_strong,
-              tooltip: 'Recentrer sur Genève',
-              onTap: () {
-                _camera = const CameraPosition(target: _geneva, zoom: 11.5);
-                _map?.animateCamera(CameraUpdate.newCameraPosition(_camera));
-              },
+            bottom: 210,
+            child: Column(
+              children: [
+                _MapButton(
+                  icon: Icons.add_rounded,
+                  tooltip: 'Zoom avant',
+                  onTap: () => _map?.animateCamera(CameraUpdate.zoomBy(1)),
+                ),
+                const SizedBox(height: 6),
+                _MapButton(
+                  icon: Icons.remove_rounded,
+                  tooltip: 'Zoom arrière',
+                  onTap: () => _map?.animateCamera(CameraUpdate.zoomBy(-1)),
+                ),
+              ],
             ),
           ),
           Positioned(
-            left: 12,
-            bottom: 24,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-              decoration: BoxDecoration(color: Colors.white.withValues(alpha: .94), borderRadius: BorderRadius.circular(10)),
-              child: Row(mainAxisSize: MainAxisSize.min, children: [
-                const Icon(Icons.wifi, size: 16, color: Color(0xff087f83)),
-                const SizedBox(width: 6),
-                Text('Carte en ligne · $_styleName', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
-              ]),
+            left: 10,
+            right: 10,
+            bottom: 10,
+            child: _NearbySheet(
+              places: places,
+              onTap: _goTo,
             ),
           ),
-        ]),
-      );
-
-  Future<void> _layers() async {
-    await showModalBottomSheet<void>(
-      context: context,
-      showDragHandle: true,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, modalSetState) => Padding(
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 28),
-          child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('Couches de carte', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
-            const SizedBox(height: 8),
-            const Text('Style', style: TextStyle(fontWeight: FontWeight.w800)),
-            const SizedBox(height: 8),
-            Wrap(spacing: 8, children: _styles.keys.map((name) => ChoiceChip(label: Text(name), selected: _styleName == name, onSelected: (_) { _setStyle(name); modalSetState(() {}); })).toList()),
-            const Divider(height: 28),
-            SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.local_hospital_outlined, color: Color(0xffd92d36)), title: const Text('Urgences médicales'), value: _showEmergency, onChanged: (v) { setState(() => _showEmergency = v); modalSetState(() {}); _syncPois(); }),
-            SwitchListTile(contentPadding: EdgeInsets.zero, secondary: const Icon(Icons.place_outlined, color: Color(0xff087f83)), title: const Text('Repères ReadySafe'), subtitle: const Text('Repères indicatifs, pas des points officiels d’évacuation'), value: _showAssembly, onChanged: (v) { setState(() => _showAssembly = v); modalSetState(() {}); _syncPois(); }),
-          ]),
-        ),
+        ],
       ),
     );
   }
+
+  Widget _filterChip(_PlaceKind? kind, String label) => Padding(
+        padding: const EdgeInsets.only(right: 6),
+        child: ChoiceChip(
+          label: Text(label),
+          selected: _filter == kind,
+          showCheckmark: false,
+          onSelected: (_) => _setFilter(kind),
+        ),
+      );
+
+  static String _hex(_PlaceKind kind) {
+    switch (kind) {
+      case _PlaceKind.health:
+        return '#d92d36';
+      case _PlaceKind.pharmacy:
+        return '#24965f';
+      case _PlaceKind.water:
+        return '#237fc7';
+      case _PlaceKind.shelter:
+        return '#087f83';
+      case _PlaceKind.meeting:
+        return '#147343';
+      case _PlaceKind.aid:
+        return '#d9822b';
+      case _PlaceKind.city:
+        return '#68777b';
+    }
+  }
+
+  static Color _color(_PlaceKind kind) {
+    switch (kind) {
+      case _PlaceKind.health:
+        return const Color(0xffd92d36);
+      case _PlaceKind.pharmacy:
+        return const Color(0xff24965f);
+      case _PlaceKind.water:
+        return const Color(0xff237fc7);
+      case _PlaceKind.shelter:
+        return const Color(0xff087f83);
+      case _PlaceKind.meeting:
+        return const Color(0xff147343);
+      case _PlaceKind.aid:
+        return const Color(0xffd9822b);
+      case _PlaceKind.city:
+        return const Color(0xff68777b);
+    }
+  }
+
+  static IconData _icon(_PlaceKind kind) {
+    switch (kind) {
+      case _PlaceKind.health:
+        return Icons.local_hospital_rounded;
+      case _PlaceKind.pharmacy:
+        return Icons.local_pharmacy_rounded;
+      case _PlaceKind.water:
+        return Icons.water_drop_rounded;
+      case _PlaceKind.shelter:
+        return Icons.home_work_rounded;
+      case _PlaceKind.meeting:
+        return Icons.groups_rounded;
+      case _PlaceKind.aid:
+        return Icons.volunteer_activism_rounded;
+      case _PlaceKind.city:
+        return Icons.location_city_rounded;
+    }
+  }
 }
 
-class _Place {
-  const _Place(this.name, this.type, this.lat, this.lng, this.icon, {this.emergency = false, this.assembly = false});
-  final String name, type;
-  final double lat, lng;
-  final IconData icon;
-  final bool emergency, assembly;
+class _NearbySheet extends StatelessWidget {
+  const _NearbySheet({required this.places, required this.onTap});
+
+  final List<_Place> places;
+  final Future<void> Function(_Place place, {double zoom}) onTap;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        constraints: const BoxConstraints(maxHeight: 188),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: .97),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: const [BoxShadow(blurRadius: 16, color: Color(0x22000000))],
+        ),
+        child: places.isEmpty
+            ? const Padding(
+                padding: EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Icon(Icons.info_outline_rounded, color: Color(0xff087f83)),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'Aucun repère ReadySafe n’est enregistré autour de cette zone. La carte reste navigable et la recherche de villes est disponible.',
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            : Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(14, 11, 8, 5),
+                    child: Row(
+                      children: [
+                        const Expanded(
+                          child: Text('Repères à proximité', style: TextStyle(fontWeight: FontWeight.w900)),
+                        ),
+                        Text(
+                          '${places.length} repère(s)',
+                          style: const TextStyle(fontSize: 11, color: Color(0xff65747a)),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      itemCount: places.length,
+                      itemBuilder: (context, index) {
+                        final place = places[index];
+                        return ListTile(
+                          dense: true,
+                          minTileHeight: 48,
+                          leading: CircleAvatar(
+                            radius: 17,
+                            backgroundColor: _OnlineMapsScreenState._color(place.kind).withValues(alpha: .12),
+                            child: Icon(
+                              _OnlineMapsScreenState._icon(place.kind),
+                              size: 19,
+                              color: _OnlineMapsScreenState._color(place.kind),
+                            ),
+                          ),
+                          title: Text(place.name, style: const TextStyle(fontWeight: FontWeight.w800)),
+                          subtitle: Text(place.subtitle),
+                          trailing: const Icon(Icons.chevron_right_rounded),
+                          onTap: () => onTap(place, zoom: 14.5),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+      );
 }
 
 class _MapButton extends StatelessWidget {
@@ -233,7 +407,16 @@ class _MapButton extends StatelessWidget {
   Widget build(BuildContext context) => Material(
         color: Colors.white,
         elevation: 3,
-        borderRadius: BorderRadius.circular(12),
-        child: IconButton(tooltip: tooltip, onPressed: onTap, icon: Icon(icon), color: const Color(0xff172126)),
+        borderRadius: BorderRadius.circular(14),
+        child: IconButton(onPressed: onTap, tooltip: tooltip, icon: Icon(icon)),
       );
+}
+
+class _Place {
+  const _Place(this.name, this.subtitle, this.lat, this.lng, this.kind);
+  final String name;
+  final String subtitle;
+  final double lat;
+  final double lng;
+  final _PlaceKind kind;
 }
