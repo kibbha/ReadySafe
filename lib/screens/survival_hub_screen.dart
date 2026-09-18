@@ -10,6 +10,7 @@ import 'home_safety_screen.dart';
 import 'leave_now_screen.dart';
 import 'offline_readiness_screen.dart';
 import 'official_sources_screen.dart';
+import 'power_outage_screen.dart';
 import 'preparedness_review_screen.dart';
 import 'recovery_screen.dart';
 import 'safety_tools_screen.dart';
@@ -60,8 +61,8 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
     final progress = _total == 0 ? 0.0 : _ready / _total;
     final modules = [
       _Module(
-        'Kit domicile 72 h',
-        'Eau, nourriture, radio, lumière, santé et protection',
+        'Kit domicile',
+        'Réserves pour plusieurs jours : eau, nourriture, radio, lumière et santé',
         Icons.backpack_rounded,
         const Color(0xff087f83),
         const ChecklistScreen(kit: true),
@@ -86,6 +87,13 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.water_drop_rounded,
         const Color(0xff2087c7),
         const CalculatorScreen(),
+      ),
+      _Module(
+        'Panne électrique',
+        'Énergie, froid alimentaire, communication et sécurité CO',
+        Icons.power_off_rounded,
+        const Color(0xffb7833f),
+        const PowerOutageScreen(),
       ),
       _Module(
         'Risques & catastrophes',
