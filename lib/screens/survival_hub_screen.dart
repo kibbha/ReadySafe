@@ -7,6 +7,7 @@ import 'avalanche_safety_screen.dart';
 import 'calculator_screen.dart';
 import 'communication_plan_screen.dart';
 import 'emergency_food_safety_screen.dart';
+import 'family_reunification_screen.dart';
 import 'carbon_monoxide_screen.dart';
 import 'checklist_screen.dart';
 import 'guide_list_screen.dart';
