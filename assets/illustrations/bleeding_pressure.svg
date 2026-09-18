@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 420">
+<rect width="720" height="420" rx="32" fill="#F4FAF9"/><ellipse cx="360" cy="374" rx="286" ry="20" fill="#DCEBE9"/>
+<!-- casualty reclining -->
+<path d="M394 246c52 4 105 28 151 70l-25 39c-59-36-108-49-165-48z" fill="#315D6A"/><path d="M521 318l96 20-8 32-103-14z" fill="#273F48"/>
+<circle cx="463" cy="163" r="42" fill="#E8B58F"/><path d="M426 155c8-39 54-54 82-20l-3 25c-20-18-49-19-79-5z" fill="#4B342D"/><path d="M422 205c31-24 78-22 110 5l-14 96-126-8z" fill="#D96565"/><path d="M445 173c7 5 15 5 23 0" fill="none" stroke="#8B5545" stroke-width="3" stroke-linecap="round"/>
+<!-- injured forearm -->
+<path d="M416 232c-43 16-83 34-126 54" fill="none" stroke="#E8B58F" stroke-width="30" stroke-linecap="round"/><path d="M290 286c-29 12-57 17-86 18" fill="none" stroke="#E8B58F" stroke-width="28" stroke-linecap="round"/><path d="M267 283l18-8" stroke="#B7202E" stroke-width="10" stroke-linecap="round"/><path d="M260 272c-8 8-11 19-8 31M278 269c-3 11 0 22 7 31" fill="none" stroke="#D92D36" stroke-width="4" stroke-linecap="round"/>
+<!-- first aider kneeling -->
+<circle cx="188" cy="139" r="41" fill="#DDA47E"/><path d="M149 133c8-38 50-51 79-23l-2 25c-20-15-48-16-77-2z" fill="#263D45"/><path d="M137 184c34-25 81-22 112 7l25 106-146 9z" fill="#13878B"/><path d="M151 304l-45 60h69l39-61z" fill="#244E59"/><path d="M229 302l46 62h70l-71-79z" fill="#244E59"/>
+<!-- arms pressing -->
+<path d="M231 213c24 16 42 34 56 57" fill="none" stroke="#DDA47E" stroke-width="25" stroke-linecap="round"/><path d="M172 215c26 18 51 37 76 62" fill="none" stroke="#DDA47E" stroke-width="25" stroke-linecap="round"/>
+<!-- dressing and hands -->
+<rect x="245" y="267" width="54" height="38" rx="9" transform="rotate(-8 245 267)" fill="#FFFFFF" stroke="#C7D9D8" stroke-width="3"/><ellipse cx="277" cy="270" rx="22" ry="13" transform="rotate(10 277 270)" fill="#DDA47E"/><ellipse cx="255" cy="282" rx="22" ry="13" transform="rotate(18 255 282)" fill="#DDA47E"/>
+<!-- pressure cue -->
+<path d="M277 226v25" stroke="#087F83" stroke-width="8" stroke-linecap="round"/><path d="M264 242l13 14 13-14" fill="none" stroke="#087F83" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="620" cy="74" r="43" fill="#E1F3F0"/><path d="M600 75l14 14 29-33" fill="none" stroke="#087F83" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

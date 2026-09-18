@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+<rect width="640" height="360" rx="28" fill="#F1F8F8"/>
+<ellipse cx="342" cy="313" rx="244" ry="20" fill="#DCEBEC"/>
+<!-- casualty -->
+<circle cx="494" cy="232" r="35" fill="#F1B38A"/><path d="M461 224q20-45 65-17q-8-31-41-29q-31 4-35 35z" fill="#5B382B"/>
+<path d="M232 230q65-36 230-12l23 77H215z" fill="#D94A4A"/><path d="M215 281H91q-21 0-21 17t22 17h220z" fill="#315E7D"/>
+<!-- rescuer -->
+<circle cx="264" cy="78" r="31" fill="#F1B38A"/><path d="M233 76q2-42 36-42q39 4 36 48l-18-20q-31 16-54 14z" fill="#9B5D2E"/>
+<path d="M220 101q45-22 89 6l30 111l-90 9l-54-85z" fill="#58AFC9"/>
+<path d="M244 206l58 1l28 72h-37l-24-50l-20 48h-39z" fill="#234C69"/>
+<!-- arms/hands compression -->
+<path d="M233 125q13-4 22 9l45 79l-20 12l-54-75q-12-20 7-25z" fill="#F1B38A"/>
+<path d="M299 118q16-4 22 13l18 83l-22 6l-29-80q-7-18 11-22z" fill="#F1B38A"/>
+<ellipse cx="307" cy="222" rx="29" ry="14" fill="#F7C5A2"/><ellipse cx="320" cy="228" rx="28" ry="13" fill="#F7C5A2"/>
+<!-- compression arrows -->
+<path d="M320 154v43" stroke="#D92D36" stroke-width="9" stroke-linecap="round"/><path d="M304 185l16 20l16-20" fill="none" stroke="#D92D36" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+<!-- chest target -->
+<circle cx="319" cy="239" r="22" fill="none" stroke="#D92D36" stroke-width="5" stroke-dasharray="7 7"/>
+<!-- aid badge -->
+<circle cx="74" cy="69" r="35" fill="#087F83"/><path d="M64 48h20v11h11v20H84v11H64V79H53V59h11z" fill="white"/>
+</svg>

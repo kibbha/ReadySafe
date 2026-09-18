@@ -41,8 +41,13 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('112').first);
+
+    final emergencyNumber = find.text('112').first;
+    await tester.ensureVisible(emergencyNumber);
     await tester.pumpAndSettle();
+    await tester.tap(emergencyNumber);
+    await tester.pumpAndSettle();
+
     expect(calls.called, isNull);
     expect(find.text('Confirmer l’appel'), findsOneWidget);
     await tester.tap(find.text('Appeler').last);
