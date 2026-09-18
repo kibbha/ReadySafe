@@ -81,9 +81,17 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
       return base;
     }
 
+    bool applicable(ChecklistItem item) {
+      final unit = item.unit ?? '';
+      if (unit.contains('/ enfant')) return children > 0;
+      if (unit.contains('/ animal')) return pets > 0;
+      return true;
+    }
+
+    final relevantItems = kitItems.where(applicable).toList();
     var ready = 0;
 
-    for (final item in kitItems) {
+    for (final item in relevantItems) {
       final entry = stock[item.id];
       if (entry == null || entry.isExpired) continue;
 
@@ -93,7 +101,7 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
       }
 
       final target = targetFor(item);
-      if (target <= 0 || entry.quantityOwned >= target) {
+      if (entry.quantityOwned >= target) {
         ready++;
       }
     }
@@ -102,7 +110,7 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
 
     setState(() {
       _ready = ready;
-      _total = kitItems.length;
+      _total = relevantItems.length;
     });
   }
 
