@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../data/content.dart';
 import '../models/checklist_item.dart';
 
 class LocalStorageService {
@@ -167,7 +168,7 @@ class LocalStorageService {
       'outOfAreaPhone': '',
       'schoolWork': '',
       'reconnectNotes': '',
-      'safeMessage': 'Je suis en sécurité. Je te contacte dès que possible.',
+      'safeMessage': '',
     };
     try {
       final raw = (await _prefs).getString(_communicationKey);
@@ -371,9 +372,44 @@ class LocalStorageService {
 
     var score = 0;
 
-    final readyKitItems = stock.values
-        .where((entry) => entry.quantityOwned > 0 && !entry.isExpired)
-        .length;
+    final peopleForStock = (familyValue['adults'] ?? 0) +
+        (familyValue['children'] ?? 0) +
+        (familyValue['care'] ?? 0);
+    final childrenForStock = familyValue['children'] ?? 0;
+    final petsForStock = familyValue['pets'] ?? 0;
+
+    num targetFor(ChecklistItem item) {
+      final base = item.recommendedQuantity;
+      if (base == null) return 0;
+
+      final unit = item.unit ?? '';
+      if (unit.contains('/ personne') || unit.contains('par personne')) {
+        return base * (peopleForStock == 0 ? 1 : peopleForStock);
+      }
+      if (unit.contains('/ enfant')) {
+        return base * childrenForStock;
+      }
+      if (unit.contains('/ animal')) {
+        return base * petsForStock;
+      }
+      return base;
+    }
+
+    var readyKitItems = 0;
+    for (final item in kitItems) {
+      final entry = stock[item.id];
+      if (entry == null || entry.isExpired) continue;
+
+      if (item.recommendedQuantity == null) {
+        if (entry.quantityOwned > 0) readyKitItems++;
+        continue;
+      }
+
+      final target = targetFor(item);
+      if (target <= 0 || entry.quantityOwned >= target) {
+        readyKitItems++;
+      }
+    }
     if (readyKitItems >= 8) {
       score += 25;
     } else if (readyKitItems >= 4) {
