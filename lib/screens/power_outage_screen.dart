@@ -99,11 +99,12 @@ class _PowerOutageScreenState extends State<PowerOutageScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final en = Localizations.localeOf(context).languageCode == 'en';
     final progress = _checks.isEmpty ? 0.0 : _done.length / _checks.length;
 
     return Scaffold(
       backgroundColor: const Color(0xfff7faf9),
-      appBar: AppBar(title: const Text('Panne électrique')),
+      appBar: AppBar(title: Text(en ? 'Power outage' : 'Panne électrique')),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : ListView(
@@ -120,17 +121,17 @@ class _PowerOutageScreenState extends State<PowerOutageScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Row(
+                      Row(
                         children: [
-                          CircleAvatar(
+                          const CircleAvatar(
                             backgroundColor: Color(0xffb7833f),
                             child: Icon(Icons.power_off_rounded, color: Colors.white),
                           ),
-                          SizedBox(width: 12),
+                          const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              'Préparer la continuité sans électricité',
-                              style: TextStyle(fontSize: 19, fontWeight: FontWeight.w900),
+                              en ? 'Prepare to function without mains power' : 'Préparer la continuité sans électricité',
+                              style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w900),
                             ),
                           ),
                         ],
@@ -147,35 +148,50 @@ class _PowerOutageScreenState extends State<PowerOutageScreen> {
                       ),
                       const SizedBox(height: 5),
                       Text(
-                        '${_done.length} / ${_checks.length} points préparés',
+                        en ? '${_done.length} / ${_checks.length} points ready' : '${_done.length} / ${_checks.length} points préparés',
                         style: const TextStyle(fontWeight: FontWeight.w900),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 14),
-                const _ActionBlock(
+                _ActionBlock(
                   icon: Icons.bolt_rounded,
-                  title: 'Pendant la panne',
-                  color: Color(0xff087f83),
-                  lines: [
-                    'Suivez les alertes officielles et gardez une radio disponible.',
-                    'Contactez votre réseau de soutien si la panne se prolonge.',
-                    'Utilisez des lampes plutôt que des bougies.',
-                    'Débranchez les appareils sensibles si nécessaire pour limiter les dommages au retour du courant.',
-                    'Quittez le logement si la température devient dangereuse ou si un équipement essentiel ne peut plus fonctionner.',
-                  ],
+                  title: en ? 'During the outage' : 'Pendant la panne',
+                  color: const Color(0xff087f83),
+                  lines: en
+                      ? const [
+                          'Follow official alerts and keep a radio available.',
+                          'Contact your support network if the outage continues.',
+                          'Use flashlights instead of candles when possible.',
+                          'Disconnect sensitive equipment when appropriate to reduce damage when power returns.',
+                          'Leave for a safer place if indoor temperature becomes dangerous or essential medical equipment can no longer operate.',
+                        ]
+                      : const [
+                          'Suivez les alertes officielles et gardez une radio disponible.',
+                          'Contactez votre réseau de soutien si la panne se prolonge.',
+                          'Utilisez des lampes plutôt que des bougies.',
+                          'Débranchez les appareils sensibles si nécessaire pour limiter les dommages au retour du courant.',
+                          'Quittez le logement si la température devient dangereuse ou si un équipement essentiel ne peut plus fonctionner.',
+                        ],
                 ),
-                const _ActionBlock(
+                _ActionBlock(
                   icon: Icons.kitchen_rounded,
-                  title: 'Réfrigérateur & congélateur',
-                  color: Color(0xff237fc7),
-                  lines: [
-                    'Évitez d’ouvrir les portes inutilement.',
-                    'Repère général Red Cross : un réfrigérateur fermé garde les aliments froids environ 4 h.',
-                    'Un congélateur plein fermé tient environ 48 h ; environ 24 h s’il est à moitié plein.',
-                    'Utilisez un thermomètre et suivez les recommandations alimentaires locales si la coupure dure.',
-                  ],
+                  title: en ? 'Refrigerator & freezer' : 'Réfrigérateur & congélateur',
+                  color: const Color(0xff237fc7),
+                  lines: en
+                      ? const [
+                          'Keep doors closed as much as possible.',
+                          'General Red Cross reference: a closed refrigerator keeps food cold for about 4 hours.',
+                          'A full closed freezer keeps food cold for about 48 hours; about 24 hours if half full.',
+                          'Use an appliance thermometer and follow local food-safety guidance when the outage is prolonged.',
+                        ]
+                      : const [
+                          'Évitez d’ouvrir les portes inutilement.',
+                          'Repère général Red Cross : un réfrigérateur fermé garde les aliments froids environ 4 h.',
+                          'Un congélateur plein fermé tient environ 48 h ; environ 24 h s’il est à moitié plein.',
+                          'Utilisez un thermomètre et suivez les recommandations alimentaires locales si la coupure dure.',
+                        ],
                 ),
                 Card(
                   child: ListTile(
@@ -183,12 +199,12 @@ class _PowerOutageScreenState extends State<PowerOutageScreen> {
                       backgroundColor: Color(0xfffff2df),
                       child: Icon(Icons.restaurant_rounded, color: Color(0xffb7833f)),
                     ),
-                    title: const Text(
-                      'Sécurité des aliments',
-                      style: TextStyle(fontWeight: FontWeight.w900),
+                    title: Text(
+                      en ? 'Food safety' : 'Sécurité des aliments',
+                      style: const TextStyle(fontWeight: FontWeight.w900),
                     ),
-                    subtitle: const Text(
-                      'Décider quoi conserver ou jeter après une panne ou une inondation.',
+                    subtitle: Text(
+                      en ? 'Decide what to keep or discard after an outage or flood.' : 'Décider quoi conserver ou jeter après une panne ou une inondation.',
                     ),
                     trailing: const Icon(Icons.chevron_right_rounded),
                     onTap: () => Navigator.push(
@@ -204,12 +220,12 @@ class _PowerOutageScreenState extends State<PowerOutageScreen> {
                       backgroundColor: Color(0xffffe7e8),
                       child: Icon(Icons.warning_amber_rounded, color: Color(0xffd92d36)),
                     ),
-                    title: const Text(
-                      'Monoxyde de carbone',
-                      style: TextStyle(fontWeight: FontWeight.w900),
+                    title: Text(
+                      en ? 'Carbon monoxide' : 'Monoxyde de carbone',
+                      style: const TextStyle(fontWeight: FontWeight.w900),
                     ),
-                    subtitle: const Text(
-                      'Groupes électrogènes, appareils à combustion, détecteurs et suspicion d’intoxication.',
+                    subtitle: Text(
+                      en ? 'Generators, fuel-burning devices, detectors and possible poisoning.' : 'Groupes électrogènes, appareils à combustion, détecteurs et suspicion d’intoxication.',
                     ),
                     trailing: const Icon(Icons.chevron_right_rounded),
                     onTap: () => Navigator.push(
@@ -219,9 +235,9 @@ class _PowerOutageScreenState extends State<PowerOutageScreen> {
                   ),
                 ),
                 const SizedBox(height: 14),
-                const Text(
-                  'Checklist de préparation',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+                Text(
+                  en ? 'Preparedness checklist' : 'Checklist de préparation',
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
                 ),
                 const SizedBox(height: 7),
                 ..._checks.map((item) {
@@ -243,10 +259,10 @@ class _PowerOutageScreenState extends State<PowerOutageScreen> {
                         ),
                       ),
                       title: Text(
-                        item.title,
+                        en ? _checkTitle(item.id) : item.title,
                         style: const TextStyle(fontWeight: FontWeight.w900),
                       ),
-                      subtitle: Text(item.subtitle),
+                      subtitle: Text(en ? _checkSubtitle(item.id) : item.subtitle),
                     ),
                   );
                 }),
@@ -254,17 +270,47 @@ class _PowerOutageScreenState extends State<PowerOutageScreen> {
                 OutlinedButton.icon(
                   onPressed: _openSource,
                   icon: const Icon(Icons.open_in_new_rounded),
-                  label: const Text('Source : American Red Cross'),
+                  label: Text(en ? 'Source: American Red Cross' : 'Source : American Red Cross'),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'Les règles locales, les consignes du fournisseur d’électricité et les instructions des autorités priment toujours.',
-                  style: TextStyle(fontSize: 12, color: Color(0xff65747a), height: 1.35),
+                Text(
+                  en
+                      ? 'Local rules, utility-provider instructions and official directions always take priority.'
+                      : 'Les règles locales, les consignes du fournisseur d’électricité et les instructions des autorités priment toujours.',
+                  style: const TextStyle(fontSize: 12, color: Color(0xff65747a), height: 1.35),
                 ),
               ],
             ),
     );
   }
+}
+
+String _checkTitle(String id) {
+  return const {
+        'lights': 'Lights ready',
+        'battery': 'Power banks charged',
+        'radio': 'Independent radio',
+        'medical': 'Electrical medical needs identified',
+        'cooling': 'Heat / cold backup plan',
+        'fridge': 'Refrigerator / freezer thermometer',
+        'contacts': 'Support network',
+        'cash': 'Backup payment method',
+      }[id] ??
+      id;
+}
+
+String _checkSubtitle(String id) {
+  return const {
+        'lights': 'Flashlights and spare batteries are easy to reach.',
+        'battery': 'Phones and essential devices have a charging backup.',
+        'radio': 'A battery or hand-crank radio is available.',
+        'medical': 'Essential devices and backup-power options are known.',
+        'cooling': 'An alternative safe place is identified if the home becomes too hot or too cold.',
+        'fridge': 'Helps assess food safety after a power outage.',
+        'contacts': 'A trusted person can be contacted if the outage lasts.',
+        'cash': 'Some cash is available if electronic payments are disrupted.',
+      }[id] ??
+      '';
 }
 
 class _ActionBlock extends StatelessWidget {
