@@ -15,6 +15,8 @@ class LocalStorageService {
   static const _contactsKey = 'family_contacts_v3';
   static const _documentsKey = 'family_documents_v3';
   static const _planKey = 'family_plan_v3';
+  static const _communicationKey = 'communication_plan_v3';
+  static const _safetyMarkersKey = 'personal_safety_markers_v3';
 
   Future<SharedPreferences> get _prefs => SharedPreferences.getInstance();
 
@@ -147,12 +149,53 @@ class LocalStorageService {
   Future<void> saveFamilyPlan(Map<String, String> plan) async =>
       (await _prefs).setString(_planKey, jsonEncode(plan));
 
+  Future<Map<String, String>> communicationPlan() async {
+    const defaults = <String, String>{
+      'outOfAreaContact': '',
+      'outOfAreaPhone': '',
+      'schoolWork': '',
+      'reconnectNotes': '',
+      'safeMessage': 'Je suis en sécurité. Je te contacte dès que possible.',
+    };
+    try {
+      final raw = (await _prefs).getString(_communicationKey);
+      if (raw == null) return Map<String, String>.from(defaults);
+      final decoded = jsonDecode(raw);
+      if (decoded is! Map) return Map<String, String>.from(defaults);
+      return {
+        for (final entry in defaults.entries)
+          entry.key: '${decoded[entry.key] ?? entry.value}',
+      };
+    } catch (_) {
+      return Map<String, String>.from(defaults);
+    }
+  }
+
+  Future<void> saveCommunicationPlan(Map<String, String> plan) async =>
+      (await _prefs).setString(_communicationKey, jsonEncode(plan));
+
+  Future<List<Map<String, dynamic>>> safetyMarkers() async {
+    try {
+      final raw = (await _prefs).getString(_safetyMarkersKey);
+      if (raw == null) return [];
+      final decoded = jsonDecode(raw);
+      if (decoded is! List) return [];
+      return decoded.whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  Future<void> saveSafetyMarkers(List<Map<String, dynamic>> markers) async =>
+      (await _prefs).setString(_safetyMarkersKey, jsonEncode(markers));
+
   Future<int> preparednessScore() async {
     final stock = await kitStock();
     final familyValue = await family();
     final contacts = await familyContacts();
     final docs = await emergencyDocuments();
     final plan = await familyPlan();
+    final communication = await communicationPlan();
 
     var score = 0;
     if (stock.values.where((entry) => entry.quantityOwned > 0 && !entry.isExpired).length >= 8) {
@@ -164,7 +207,8 @@ class LocalStorageService {
     if (people > 0) score += 15;
     if (contacts.any((contact) => (contact['phone'] ?? '').trim().isNotEmpty)) score += 15;
     if ((plan['meetingPoint'] ?? '').trim().isNotEmpty) score += 15;
-    if (docs.where((doc) => doc['ready'] == true).length >= 3) score += 15;
+    if (docs.where((doc) => doc['ready'] == true).length >= 3) score += 10;
+    if ((communication['outOfAreaPhone'] ?? '').trim().isNotEmpty) score += 5;
     return score.clamp(0, 100).toInt();
   }
 }
