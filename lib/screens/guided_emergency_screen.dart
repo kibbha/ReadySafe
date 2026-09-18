@@ -363,6 +363,12 @@ class GuidedEmergencyScreen extends StatelessWidget {
         () => _openPage(context, const MedicalContinuityScreen()),
       ),
       _Situation(
+        en ? 'Emergency while travelling' : 'Urgence pendant un voyage',
+        en ? 'Local numbers, documents, insurance or consular assistance' : 'Numéros locaux, documents, assurance ou aide consulaire',
+        Icons.luggage_rounded,
+        () => _openPage(context, const TravelEmergencyScreen()),
+      ),
+      _Situation(
         en ? 'Family is separated' : 'La famille est séparée',
         en ? 'Meeting places, child pickup and reconnection plan' : 'Rendez-vous, récupération des enfants et reconnexion',
         Icons.family_restroom_rounded,
