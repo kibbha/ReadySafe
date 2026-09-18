@@ -10,8 +10,10 @@ import 'first_aid_screen.dart';
 import 'guide_list_screen.dart';
 import 'home_safety_screen.dart';
 import 'leave_now_screen.dart';
+import 'medical_continuity_screen.dart';
 import 'official_sources_screen.dart';
 import 'power_outage_screen.dart';
+import 'pet_emergency_screen.dart';
 import 'offline_readiness_screen.dart';
 import 'recovery_screen.dart';
 import 'safety_tools_screen.dart';
@@ -302,6 +304,18 @@ class GuidedEmergencyScreen extends StatelessWidget {
         en ? 'Safe hygiene, waste and dirty-water guidance' : 'Hygiène, déchets et eaux souillées',
         Icons.sanitizer_rounded,
         () => _openPage(context, const SanitationHygieneScreen()),
+      ),
+      _Situation(
+        en ? 'Essential medicine or device problem' : 'Problème de traitement ou appareil essentiel',
+        en ? 'Medicine, refrigeration, power or regular care continuity' : 'Traitement, froid, énergie ou continuité des soins',
+        Icons.medical_services_rounded,
+        () => _openPage(context, const MedicalContinuityScreen()),
+      ),
+      _Situation(
+        en ? 'Pet needs evacuation help' : 'Un animal doit être évacué',
+        en ? 'Transport, shelter, supplies and veterinary planning' : 'Transport, hébergement, matériel et vétérinaire',
+        Icons.pets_rounded,
+        () => _openPage(context, const PetEmergencyScreen()),
       ),
       _Situation(
         en ? 'No network / Internet' : 'Pas de réseau / Internet',
