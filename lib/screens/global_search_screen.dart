@@ -3,9 +3,14 @@ import 'package:flutter/material.dart';
 import '../data/content.dart';
 import '../data/first_aid_repository.dart';
 import 'checklist_screen.dart';
+import 'communication_plan_screen.dart';
 import 'family_documents_screen.dart';
 import 'first_aid_screen.dart';
 import 'guide_list_screen.dart';
+import 'official_sources_screen.dart';
+import 'preparedness_review_screen.dart';
+import 'recovery_screen.dart';
+import 'safety_tools_screen.dart';
 import 'online_maps_screen.dart';
 import 'survival_hub_screen.dart';
 
@@ -65,6 +70,17 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
       }
     }
 
+    for (final guide in emergencyGuides) {
+      if ('${guide.title} ${guide.immediate} ${guide.steps.join(' ')}'.toLowerCase().contains(q)) {
+        hits.add(_SearchHit(
+          'Réflexes de survie',
+          guide.title,
+          Icons.shield_outlined,
+          const GuideListScreen(kind: GuideKind.emergencies),
+        ));
+      }
+    }
+
     const shortcuts = <String, _SearchHit>{
       'eau': _SearchHit('Kits & survie', 'Eau & réserves', Icons.water_drop_rounded, SurvivalHubScreen()),
       'kit': _SearchHit('Kits & survie', 'Kit 72 h', Icons.backpack_rounded, ChecklistScreen(kit: true)),
@@ -76,6 +92,16 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
       'hopital': _SearchHit('Carte', 'Santé à proximité', Icons.local_hospital_rounded, OnlineMapsScreen()),
       'abri': _SearchHit('Carte', 'Abris & lieux sûrs', Icons.home_work_rounded, OnlineMapsScreen()),
       'carte': _SearchHit('Carte', 'Carte & repères', Icons.map_rounded, OnlineMapsScreen()),
+      'communication': _SearchHit('Famille', 'Plan de communication', Icons.connect_without_contact_rounded, CommunicationPlanScreen()),
+      'contact extérieur': _SearchHit('Famille', 'Plan de communication', Icons.connect_without_contact_rounded, CommunicationPlanScreen()),
+      'alerte': _SearchHit('Officiel', 'Alertes & sources officielles', Icons.campaign_rounded, OfficialSourcesScreen()),
+      'source officielle': _SearchHit('Officiel', 'Alertes & sources officielles', Icons.verified_outlined, OfficialSourcesScreen()),
+      'après': _SearchHit('Après l’urgence', 'Récupération', Icons.restore_rounded, RecoveryScreen()),
+      'retour maison': _SearchHit('Après l’urgence', 'Récupération', Icons.restore_rounded, RecoveryScreen()),
+      'signal sos': _SearchHit('Outils', 'Outils d’urgence', Icons.sos_rounded, SafetyToolsScreen()),
+      'outil': _SearchHit('Outils', 'Outils d’urgence', Icons.handyman_rounded, SafetyToolsScreen()),
+      'revue': _SearchHit('Préparation', 'Revue de préparation', Icons.fact_check_rounded, PreparednessReviewScreen()),
+      'vérification': _SearchHit('Préparation', 'Revue de préparation', Icons.fact_check_rounded, PreparednessReviewScreen()),
     };
     for (final entry in shortcuts.entries) {
       if (entry.key.contains(q) || q.contains(entry.key)) hits.add(entry.value);
@@ -199,7 +225,7 @@ class _SearchHelp extends StatelessWidget {
             Text('Recherche globale', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
             SizedBox(height: 6),
             Text(
-              'Cherchez un geste, une situation, un équipement ou un repère : RCP, brûlure, eau, kit, pharmacie, abri, inondation…',
+              'Cherchez un geste, un risque, un équipement ou un outil : RCP, brûlure, eau, kit, pharmacie, abri, inondation, alerte, communication…',
               style: TextStyle(height: 1.4),
             ),
           ],
