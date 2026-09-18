@@ -1,6 +1,15 @@
 import 'package:flutter/material.dart';
 
 import '../app/localizations.dart';
+import 'water_safety_screen.dart';
+import 'volcano_safety_screen.dart';
+import 'tsunami_safety_screen.dart';
+import 'smoke_air_quality_screen.dart';
+import 'sanitation_hygiene_screen.dart';
+import 'lightning_safety_screen.dart';
+import 'emergency_food_safety_screen.dart';
+import 'carbon_monoxide_screen.dart';
+import 'avalanche_safety_screen.dart';
 import 'communication_plan_screen.dart';
 import 'diagnostics_screen.dart';
 import 'emergency_plan_summary_screen.dart';
@@ -195,6 +204,69 @@ class MoreScreen extends StatelessWidget {
             en ? 'Evacuation, shelter, outages and essential actions' : 'Évacuation, confinement, pannes et réflexes essentiels',
             Icons.menu_book_rounded,
             const GuideListScreen(kind: GuideKind.emergencies),
+          ),
+        ],
+      ),
+      _MoreSection(
+        en ? 'Environment & infrastructure' : 'Environnement & infrastructures',
+        en
+            ? 'Water, air, weather, terrain and utility hazards'
+            : 'Eau, air, météo, terrain et risques techniques',
+        Icons.public_rounded,
+        [
+          _MoreItem(
+            en ? 'Safe water' : 'Eau sûre en urgence',
+            en ? 'Boiling, treatment, filters and contamination' : 'Ébullition, traitement, filtres et contamination',
+            Icons.local_drink_rounded,
+            const WaterSafetyScreen(),
+          ),
+          _MoreItem(
+            en ? 'Food safety' : 'Sécurité alimentaire',
+            en ? 'Cold chain, outage, thawing and flood contamination' : 'Chaîne du froid, panne, décongélation et eau de crue',
+            Icons.restaurant_rounded,
+            const EmergencyFoodSafetyScreen(),
+          ),
+          _MoreItem(
+            en ? 'Hygiene & sanitation' : 'Hygiène & assainissement',
+            en ? 'Hands, waste, floodwater and infection prevention' : 'Mains, déchets, eaux souillées et prévention des infections',
+            Icons.sanitizer_rounded,
+            const SanitationHygieneScreen(),
+          ),
+          _MoreItem(
+            en ? 'Smoke & indoor air' : 'Fumée & qualité de l’air',
+            en ? 'Cleaner-air room, filtration and smoke exposure' : 'Pièce à air plus propre, filtration et exposition à la fumée',
+            Icons.air_rounded,
+            const SmokeAirQualityScreen(),
+          ),
+          _MoreItem(
+            en ? 'Carbon monoxide' : 'Monoxyde de carbone',
+            en ? 'Generators, combustion devices, alarms and poisoning signs' : 'Groupes électrogènes, combustion, détecteurs et signes d’intoxication',
+            Icons.warning_amber_rounded,
+            const CarbonMonoxideScreen(),
+          ),
+          _MoreItem(
+            en ? 'Thunderstorm & lightning' : 'Orage & foudre',
+            en ? 'Shelter, hail, electricity and flash flooding' : 'Abri, grêle, électricité et crues soudaines',
+            Icons.thunderstorm_rounded,
+            const LightningSafetyScreen(),
+          ),
+          _MoreItem(
+            en ? 'Avalanche safety' : 'Sécurité avalanche',
+            en ? 'Bulletins, terrain, rescue and burial response' : 'Bulletins, terrain, secours et ensevelissement',
+            Icons.landscape_rounded,
+            const AvalancheSafetyScreen(),
+          ),
+          _MoreItem(
+            en ? 'Tsunami' : 'Tsunami',
+            en ? 'Natural warning signs and coastal evacuation' : 'Signes naturels et évacuation côtière',
+            Icons.waves_rounded,
+            const TsunamiSafetyScreen(),
+          ),
+          _MoreItem(
+            en ? 'Volcano & ash' : 'Volcan & cendres',
+            en ? 'Evacuation, ash exposure and debris-flow safety' : 'Évacuation, exposition aux cendres et coulées de débris',
+            Icons.volcano_rounded,
+            const VolcanoSafetyScreen(),
           ),
         ],
       ),
