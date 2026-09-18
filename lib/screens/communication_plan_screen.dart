@@ -45,7 +45,13 @@ class _CommunicationPlanScreenState extends State<CommunicationPlanScreen> {
     _contactPhone.text = plan['outOfAreaPhone'] ?? '';
     _schoolWork.text = plan['schoolWork'] ?? '';
     _notes.text = plan['reconnectNotes'] ?? '';
-    _safeMessage.text = plan['safeMessage'] ?? '';
+    final storedSafeMessage = (plan['safeMessage'] ?? '').trim();
+    final en = Localizations.localeOf(context).languageCode == 'en';
+    _safeMessage.text = storedSafeMessage.isEmpty
+        ? (en
+            ? 'I am safe. I will contact you again as soon as possible.'
+            : 'Je suis en sécurité. Je te contacte dès que possible.')
+        : storedSafeMessage;
     setState(() => _loading = false);
   }
 
