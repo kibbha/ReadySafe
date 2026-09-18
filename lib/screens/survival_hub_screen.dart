@@ -13,6 +13,7 @@ import 'home_safety_screen.dart';
 import 'maintenance_screen.dart';
 import 'medical_continuity_screen.dart';
 import 'leave_now_screen.dart';
+import 'lightning_safety_screen.dart';
 import 'offline_readiness_screen.dart';
 import 'official_sources_screen.dart';
 import 'pet_emergency_screen.dart';
@@ -27,7 +28,9 @@ import 'smoke_air_quality_screen.dart';
 import 'special_kits_screen.dart';
 import 'support_needs_screen.dart';
 import 'training_screen.dart';
+import 'tsunami_safety_screen.dart';
 import 'vehicle_emergency_screen.dart';
+import 'volcano_safety_screen.dart';
 import 'water_safety_screen.dart';
 
 class SurvivalHubScreen extends StatefulWidget {
@@ -168,6 +171,30 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         Icons.landscape_rounded,
         const Color(0xff237fc7),
         const AvalancheSafetyScreen(),
+        'act',
+      ),
+      _Module(
+        en ? 'Thunderstorm & lightning' : 'Orage & foudre',
+        en ? 'Safe shelter, electricity, hail and flash flooding' : 'Abri sûr, électricité, grêle et crues soudaines',
+        Icons.thunderstorm_rounded,
+        const Color(0xff6750a4),
+        const LightningSafetyScreen(),
+        'act',
+      ),
+      _Module(
+        en ? 'Tsunami' : 'Tsunami',
+        en ? 'Natural warning signs, evacuation and coastal safety' : 'Signes naturels, évacuation et sécurité côtière',
+        Icons.waves_rounded,
+        const Color(0xff237fc7),
+        const TsunamiSafetyScreen(),
+        'act',
+      ),
+      _Module(
+        en ? 'Volcano & ash' : 'Volcan & cendres',
+        en ? 'Evacuation, ash, water and debris-flow safety' : 'Évacuation, cendres, eau et coulées de débris',
+        Icons.volcano_rounded,
+        const Color(0xffd16a32),
+        const VolcanoSafetyScreen(),
         'act',
       ),
       _Module(
