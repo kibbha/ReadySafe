@@ -332,6 +332,8 @@ class LocalStorageService {
     final reviewDate = await preparednessReviewDate();
     final support = await supportNeeds();
     final supportNotes = await supportNeedsNotes();
+    final medicalChecks = await completed('medical_continuity_v3');
+    final petChecks = await completed('pet_emergency_v3');
 
     var score = 0;
 
@@ -371,9 +373,12 @@ class LocalStorageService {
     }
 
     final supportRelevant = (familyValue['care'] ?? 0) > 0 || support.isNotEmpty;
-    if (!supportRelevant || support.isNotEmpty || supportNotes.trim().isNotEmpty) {
-      score += 5;
-    }
+    final supportReady = !supportRelevant ||
+        ((support.isNotEmpty || supportNotes.trim().isNotEmpty) &&
+            medicalChecks.length >= 3);
+    final petsRelevant = (familyValue['pets'] ?? 0) > 0;
+    final petsReady = !petsRelevant || petChecks.length >= 3;
+    if (supportReady && petsReady) score += 5;
 
     return score.clamp(0, 100).toInt();
   }
