@@ -159,6 +159,30 @@ class GuidedEmergencyScreen extends StatelessWidget {
         () => _openGuide(context, 'seizure'),
       ),
       _Situation(
+        en ? 'Stroke signs' : 'Signes d’AVC',
+        en ? 'Face, arm or speech suddenly affected' : 'Visage, bras ou parole soudainement atteints',
+        Icons.neurology_rounded,
+        () => _openGuide(context, 'stroke'),
+      ),
+      _Situation(
+        en ? 'Chest pain' : 'Douleur thoracique',
+        en ? 'Pressure, squeezing, breathlessness or collapse' : 'Pression, serrement, essoufflement ou malaise',
+        Icons.monitor_heart_outlined,
+        () => _openGuide(context, 'chest_pain'),
+      ),
+      _Situation(
+        en ? 'Asthma attack' : 'Crise d’asthme',
+        en ? 'Wheezing or breathing difficulty' : 'Sifflements ou difficulté à respirer',
+        Icons.air_rounded,
+        () => _openGuide(context, 'asthma'),
+      ),
+      _Situation(
+        en ? 'Low blood sugar' : 'Hypoglycémie',
+        en ? 'Sweating, shaking, weakness or confusion' : 'Sueurs, tremblements, faiblesse ou confusion',
+        Icons.bloodtype_outlined,
+        () => _openGuide(context, 'hypoglycemia'),
+      ),
+      _Situation(
         en ? 'Accident / fall' : 'Accident / chute',
         en ? 'Trauma, fracture or serious fall' : 'Traumatisme, fracture ou chute importante',
         Icons.personal_injury_rounded,
