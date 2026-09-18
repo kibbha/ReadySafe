@@ -854,22 +854,4 @@ const _hazardAliases = <String, List<String>>{
   'outbreak': ['outbreak', 'epidemic', 'épidémie'],
 };
 
-const _hazardTitlesEn = <String, String>{
-  'emergency': 'General emergency',
-  'evacuation': 'Evacuation',
-  'blackout': 'Power outage',
-  'fire': 'Fire',
-  'flood': 'Flood',
-  'storm': 'Severe storm',
-  'earthquake': 'Earthquake',
-  'heat': 'Extreme heat',
-  'cold': 'Extreme cold',
-  'water': 'Water outage',
-  'shelter': 'Shelter in place',
-  'wildfire': 'Wildfire',
-  'landslide': 'Landslide',
-  'gas_leak': 'Gas leak / suspicious gas smell',
-  'industrial': 'Industrial / chemical incident',
-  'radiological': 'Radiological incident',
-  'outbreak': 'Health outbreak',
-};
+
