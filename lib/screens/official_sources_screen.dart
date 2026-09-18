@@ -380,6 +380,8 @@ class OfficialSourcesScreen extends StatelessWidget {
     if (host.contains('llv.li')) return 'Liechtensteinische Landesverwaltung';
     if (host.contains('112.gov.ge')) return '112 Georgia';
     if (host.contains('gov.md')) return 'Government of Moldova';
+    if (host.contains('akmc.gov.al')) return 'AKMC Albania';
+    if (host.contains('cuk.gov.mk')) return 'Crisis Management Center — North Macedonia';
     if (host.contains('gov.uk')) return 'GOV.UK';
     return uri.host.replaceFirst('www.', '');
   }
