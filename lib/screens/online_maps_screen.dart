@@ -24,13 +24,13 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
   final List<Circle> _circles = [];
 
   static const _places = <_Place>[
-    _Place('HUG — Hôpital universitaire', 'Soins médicaux', 46.1933, 6.1484, _PlaceKind.health),
-    _Place('Pharmacie de la Gare', 'Pharmacie', 46.2107, 6.1422, _PlaceKind.pharmacy),
-    _Place('Plainpalais', 'Point de rassemblement', 46.1985, 6.1427, _PlaceKind.meeting),
-    _Place('Parc des Bastions', 'Lieu sûr / rassemblement', 46.2003, 6.1459, _PlaceKind.meeting),
-    _Place('Point d’eau — Jardin Anglais', 'Eau', 46.2031, 6.1527, _PlaceKind.water),
-    _Place('Centre sportif des Vernets', 'Abri / ressource', 46.1948, 6.1347, _PlaceKind.shelter),
-    _Place('Croix-Rouge genevoise', 'Aide', 46.1990, 6.1380, _PlaceKind.aid),
+    _Place('HUG — Hôpital universitaire', 'Repère santé à vérifier', 46.1933, 6.1484, _PlaceKind.health),
+    _Place('Pharmacie — repère exemple', 'À vérifier avant usage', 46.2107, 6.1422, _PlaceKind.pharmacy),
+    _Place('Plainpalais', 'Point de rassemblement personnel possible', 46.1985, 6.1427, _PlaceKind.meeting),
+    _Place('Parc des Bastions', 'Repère de rassemblement à vérifier', 46.2003, 6.1459, _PlaceKind.meeting),
+    _Place('Point d’eau — Jardin Anglais', 'Disponibilité et potabilité à vérifier', 46.2031, 6.1527, _PlaceKind.water),
+    _Place('Centre sportif des Vernets', 'Repère potentiel — statut d’abri à vérifier', 46.1948, 6.1347, _PlaceKind.shelter),
+    _Place('Croix-Rouge genevoise', 'Ressource locale — horaires à vérifier', 46.1990, 6.1380, _PlaceKind.aid),
     _Place('Genève', 'Ville', 46.2044, 6.1432, _PlaceKind.city),
     _Place('Gare Cornavin', 'Transport', 46.2102, 6.1425, _PlaceKind.city),
     _Place('Aéroport de Genève', 'Transport', 46.2381, 6.1090, _PlaceKind.city),
