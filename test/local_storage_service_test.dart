@@ -66,4 +66,40 @@ void main() {
     expect(savedDate?.day, 18);
     expect(checks, containsAll({'contacts', 'kit', 'alerts'}));
   });
+
+  test('support needs and practical notes persist locally', () async {
+    SharedPreferences.setMockInitialValues({});
+    final storage = LocalStorageService();
+
+    await storage.saveSupportNeeds({'mobility', 'power'});
+    await storage.saveSupportNeedsNotes('Batterie de secours dans le placard.');
+
+    expect(await storage.supportNeeds(), containsAll({'mobility', 'power'}));
+    expect(
+      await storage.supportNeedsNotes(),
+      'Batterie de secours dans le placard.',
+    );
+  });
+
+  test('home safety and offline checks persist locally', () async {
+    SharedPreferences.setMockInitialValues({});
+    final storage = LocalStorageService();
+
+    await storage.saveHomeSafetyPlan({
+      'waterShutoff': 'Cave',
+      'gasShutoff': '',
+      'electricPanel': 'Entrée',
+      'primaryExit': 'Porte principale',
+      'secondaryExit': 'Cour',
+      'safeRoom': 'Couloir intérieur',
+    });
+    await storage.saveHomeSafetyChecks({'smoke', 'routes', 'utilities'});
+    await storage.saveOfflineReadinessChecks({'paper_contacts', 'radio', 'power'});
+
+    final plan = await storage.homeSafetyPlan();
+    expect(plan['waterShutoff'], 'Cave');
+    expect(plan['electricPanel'], 'Entrée');
+    expect(await storage.homeSafetyChecks(), containsAll({'smoke', 'routes', 'utilities'}));
+    expect(await storage.offlineReadinessChecks(), containsAll({'paper_contacts', 'radio', 'power'}));
+  });
 }
