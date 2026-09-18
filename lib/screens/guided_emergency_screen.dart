@@ -13,9 +13,10 @@ class GuidedEmergencyScreen extends StatelessWidget {
       firstAidGuides.firstWhere((guide) => guide.id == id);
 
   void _openGuide(BuildContext context, String id) {
+    final guide = _guide(id);
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => FirstAidDetailScreen(guide: _guide(id)),
+        builder: (_) => FirstAidEmergencyModeScreen(guide: guide),
       ),
     );
   }
