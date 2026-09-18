@@ -23,6 +23,7 @@ import 'secure_vault_screen.dart';
 import 'settings_screen.dart';
 import 'support_needs_screen.dart';
 import 'training_screen.dart';
+import 'travel_emergency_screen.dart';
 import 'vehicle_emergency_screen.dart';
 
 class MoreScreen extends StatelessWidget {
@@ -136,6 +137,12 @@ class MoreScreen extends StatelessWidget {
             en ? 'Exits, utilities, alarms and safe indoor area' : 'Sorties, coupures techniques, détecteurs et zone sûre',
             Icons.home_work_rounded,
             const HomeSafetyScreen(),
+          ),
+          _MoreItem(
+            en ? 'Travel emergency' : 'Urgence en voyage',
+            en ? 'Local emergency numbers, documents and consular references' : 'Numéros locaux, documents et références consulaires',
+            Icons.luggage_rounded,
+            const TravelEmergencyScreen(),
           ),
           _MoreItem(
             en ? 'Vehicle emergency' : 'Urgence véhicule',
