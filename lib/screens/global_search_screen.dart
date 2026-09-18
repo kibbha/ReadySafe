@@ -4,6 +4,8 @@ import '../app/localizations.dart';
 
 import '../data/content.dart';
 import '../data/first_aid_repository.dart';
+import 'avalanche_safety_screen.dart';
+import 'carbon_monoxide_screen.dart';
 import 'checklist_screen.dart';
 import 'communication_plan_screen.dart';
 import 'emergency_food_safety_screen.dart';
@@ -147,6 +149,11 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
       'retour maison': _SearchHit('Après l’urgence', 'Récupération', Icons.restore_rounded, RecoveryScreen()),
       'signal sos': _SearchHit('Outils', 'Outils d’urgence', Icons.sos_rounded, SafetyToolsScreen()),
       'outil': _SearchHit('Outils', 'Outils d’urgence', Icons.handyman_rounded, SafetyToolsScreen()),
+      'monoxyde': _SearchHit('Risques', 'Monoxyde de carbone', Icons.warning_amber_rounded, CarbonMonoxideScreen()),
+      'co': _SearchHit('Risques', 'Monoxyde de carbone', Icons.warning_amber_rounded, CarbonMonoxideScreen()),
+      'groupe électrogène': _SearchHit('Risques', 'Monoxyde de carbone', Icons.warning_amber_rounded, CarbonMonoxideScreen()),
+      'avalanche': _SearchHit('Risques', 'Sécurité avalanche', Icons.landscape_rounded, AvalancheSafetyScreen()),
+      'rega': _SearchHit('Risques', 'Sécurité avalanche', Icons.landscape_rounded, AvalancheSafetyScreen()),
       'panne électrique': _SearchHit('Préparation', 'Panne électrique', Icons.power_off_rounded, PowerOutageScreen()),
       'blackout': _SearchHit('Préparation', 'Panne électrique', Icons.power_off_rounded, PowerOutageScreen()),
       'courant': _SearchHit('Préparation', 'Panne électrique', Icons.power_off_rounded, PowerOutageScreen()),
