@@ -9,8 +9,10 @@ import 'first_aid_screen.dart';
 import 'guide_list_screen.dart';
 import 'home_safety_screen.dart';
 import 'maintenance_screen.dart';
+import 'medical_continuity_screen.dart';
 import 'offline_readiness_screen.dart';
 import 'official_sources_screen.dart';
+import 'pet_emergency_screen.dart';
 import 'power_outage_screen.dart';
 import 'preparedness_review_screen.dart';
 import 'recovery_screen.dart';
@@ -105,6 +107,18 @@ class MoreScreen extends StatelessWidget {
         en ? 'Exits, utilities, alarms and safe indoor area' : 'Sorties, coupures techniques, détecteurs et zone sûre',
         Icons.home_work_rounded,
         const HomeSafetyScreen(),
+      ),
+      _MoreItem(
+        en ? 'Medical continuity' : 'Continuité médicale',
+        en ? 'Medicines, devices, refrigeration and backup care' : 'Traitements, appareils, froid et solution de secours',
+        Icons.medical_services_rounded,
+        const MedicalContinuityScreen(),
+      ),
+      _MoreItem(
+        en ? 'Pets' : 'Animaux',
+        en ? 'Evacuation, shelter, identification and supplies' : 'Évacuation, hébergement, identification et matériel',
+        Icons.pets_rounded,
+        const PetEmergencyScreen(),
       ),
       _MoreItem(
         en ? 'Accessibility & support needs' : 'Besoins spécifiques',
