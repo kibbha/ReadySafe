@@ -393,8 +393,17 @@ class LocalStorageService {
       return base;
     }
 
+    bool stockItemApplicable(ChecklistItem item) {
+      final unit = item.unit ?? '';
+      if (unit.contains('/ enfant')) return childrenForStock > 0;
+      if (unit.contains('/ animal')) return petsForStock > 0;
+      return true;
+    }
+
     var readyKitItems = 0;
     for (final item in kitItems) {
+      if (!stockItemApplicable(item)) continue;
+
       final entry = stock[item.id];
       if (entry == null || entry.isExpired) continue;
 
@@ -404,7 +413,7 @@ class LocalStorageService {
       }
 
       final target = targetFor(item);
-      if (target <= 0 || entry.quantityOwned >= target) {
+      if (entry.quantityOwned >= target) {
         readyKitItems++;
       }
     }
