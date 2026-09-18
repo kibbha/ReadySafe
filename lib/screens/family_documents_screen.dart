@@ -387,6 +387,32 @@ class _FamilyDocumentsScreenState extends State<FamilyDocumentsScreen>
             ],
           ),
           const SizedBox(height: 6),
+          if (_contacts.isEmpty)
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.person_add_alt_1_outlined,
+                      color: Color(0xff087f83),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        en
+                            ? 'No emergency contact saved yet.'
+                            : 'Aucun contact d’urgence enregistré.',
+                        style: const TextStyle(
+                          color: Color(0xff65747a),
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ..._contacts.indexed.map((entry) {
             final index = entry.$1;
             final contact = entry.$2;
@@ -426,8 +452,11 @@ class _FamilyDocumentsScreenState extends State<FamilyDocumentsScreen>
                         setState(() => _contacts = next);
                         await _storage.saveFamilyContacts(next);
                       },
-                      itemBuilder: (_) => const [
-                        PopupMenuItem(value: 'delete', child: Text(en ? 'Delete' : 'Supprimer')),
+                      itemBuilder: (_) => [
+                        PopupMenuItem(
+                          value: 'delete',
+                          child: Text(en ? 'Delete' : 'Supprimer'),
+                        ),
                       ],
                     ),
                   ],
