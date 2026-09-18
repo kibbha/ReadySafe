@@ -102,4 +102,18 @@ void main() {
     expect(await storage.homeSafetyChecks(), containsAll({'smoke', 'routes', 'utilities'}));
     expect(await storage.offlineReadinessChecks(), containsAll({'paper_contacts', 'radio', 'power'}));
   });
+
+  test('maintenance verification dates persist locally', () async {
+    SharedPreferences.setMockInitialValues({});
+    final storage = LocalStorageService();
+    final checkedAt = DateTime(2026, 9, 18, 10, 0);
+
+    await storage.saveMaintenanceDate('radio', checkedAt);
+    await storage.saveMaintenanceDate('water', checkedAt);
+
+    final dates = await storage.maintenanceDates();
+    expect(dates['radio']?.year, 2026);
+    expect(dates['radio']?.month, 9);
+    expect(dates['water']?.day, 18);
+  });
 }
