@@ -50,6 +50,11 @@ class CountryRepository {
     'MD':[Uri.parse('https://www.gov.md/index.php/en/useful-information')],
     'AL':[Uri.parse('https://akmc.gov.al/en/home/')],
     'MK':[Uri.parse('https://cuk.gov.mk/Page/Contact')],
+    'AD':[Uri.parse('https://policia.ad/ca/')],
+    'MC':[Uri.parse('https://journaldemonaco.gouv.mc/Journaux/2025/Journal-8756/Arrete-Ministeriel-n-2025-354-du-10-juillet-2025-definissant-un-plan-national-de-numerotation-telephonique')],
+    'SM':[Uri.parse('https://www.gov.sm/pub2/GovSM/poliziacivile/')],
+    'ME':[Uri.parse('https://www.gov.me/clanak/dan-jedinstvenog-evropskog-broja-za-pozive-u-hitnim-situacijama-112-2')],
+    'RS':[Uri.parse('https://www.mup.gov.rs/wps/wcm/connect/4331209d-e5f1-4f3e-82c8-17cae77c84d3/2024-07-01-projekat%2Bturista%2B-%2Bverzija%2Bna%2Bengleskom.pdf?CVID=p1L0AXD&MOD=AJPERES')],
   };
 
   static final Map<String,List<EmergencyService>> _verifiedServices = {
@@ -86,6 +91,32 @@ class CountryRepository {
     ],
     'MK':[
       _service('general','service_emergency','112','service_mk_112_desc'),
+    ],
+    'AD':[
+      _service('police','service_police','110','service_ad_police_desc'),
+      _service('mountain','service_mountain_rescue','112','service_ad_mountain_desc'),
+      _service('medical','service_ambulance','116','service_ad_ambulance_desc'),
+      _service('fire','service_fire','118','service_ad_fire_desc'),
+    ],
+    'MC':[
+      _service('medical','service_ambulance','15','service_mc_ambulance_desc'),
+      _service('police','service_police','17','service_mc_police_desc'),
+      _service('fire','service_fire','18','service_mc_fire_desc'),
+      _service('eu','service_emergency','112','service_mc_112_desc'),
+      _service('sea_rescue','service_sea_rescue','196','service_mc_sea_desc'),
+    ],
+    'SM':[
+      _service('general','service_emergency','112','service_sm_emergency_desc'),
+      _service('general_113','service_emergency','113','service_sm_emergency_desc'),
+      _service('general_115','service_emergency','115','service_sm_emergency_desc'),
+    ],
+    'ME':[
+      _service('general','service_emergency','112','service_me_112_desc'),
+    ],
+    'RS':[
+      _service('police','service_police','192','service_rs_police_desc'),
+      _service('fire','service_fire','193','service_rs_fire_desc'),
+      _service('medical','service_ambulance','194','service_rs_ambulance_desc'),
     ],
     'CH':[
       _service('eu','service_emergency','112','service_112_desc'),
