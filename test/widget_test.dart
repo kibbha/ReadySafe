@@ -11,19 +11,23 @@ void main() {
     expect(find.text('Continuer'), findsOneWidget);
   });
 
-  testWidgets('saved residence opens emergency-first home', (tester) async {
+  testWidgets('saved residence opens all-in-one ReadySafe dashboard', (tester) async {
     SharedPreferences.setMockInitialValues({'settings.residenceCountry': 'FR'});
     await tester.pumpWidget(const ReadySafeApp());
     await tester.pumpAndSettle();
 
-    expect(find.text('READYSAFE'), findsOneWidget);
+    expect(find.text('ReadySafe'), findsOneWidget);
     expect(find.textContaining('France'), findsOneWidget);
     expect(find.text('URGENCE — GUIDEZ-MOI'), findsOneWidget);
-    expect(find.text('Préparer'), findsWidgets);
     expect(find.text('Premiers secours'), findsWidgets);
+    expect(find.text('Kit & check-lists'), findsOneWidget);
+    expect(find.text('Famille & documents'), findsOneWidget);
+    expect(find.text('Carte & repères'), findsOneWidget);
+    expect(find.text('Kits'), findsWidgets);
+    expect(find.text('Carte'), findsWidgets);
   });
 
-  testWidgets('saved English locale renders the shell in English', (tester) async {
+  testWidgets('saved English locale renders primary shell navigation in English', (tester) async {
     SharedPreferences.setMockInitialValues({
       'settings.residenceCountry': 'FR',
       'settings.locale': 'en',
@@ -31,12 +35,11 @@ void main() {
     await tester.pumpWidget(const ReadySafeApp());
     await tester.pumpAndSettle();
 
-    expect(find.text('READYSAFE'), findsOneWidget);
+    expect(find.text('ReadySafe'), findsOneWidget);
     expect(find.text('Home'), findsWidgets);
     expect(find.text('Emergency'), findsWidgets);
-    expect(find.text('Prepare'), findsWidgets);
-    expect(find.text('First aid'), findsWidgets);
+    expect(find.text('Map'), findsWidgets);
+    expect(find.text('First aid'), findsOneWidget);
     expect(find.text('Accueil'), findsNothing);
-    expect(find.text('Préparer'), findsNothing);
   });
 }
