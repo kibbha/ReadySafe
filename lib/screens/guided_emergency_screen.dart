@@ -288,6 +288,15 @@ class GuidedEmergencyScreen extends StatelessWidget {
         () => _openPage(context, const AvalancheSafetyScreen()),
       ),
       _Situation(
+        en ? 'Gas smell / suspected leak' : 'Odeur de gaz / fuite suspectée',
+        en
+            ? 'Leave the area and avoid switches, flames and sparks'
+            : 'Quitter la zone et éviter interrupteurs, flammes et étincelles',
+        Icons.warning_amber_rounded,
+        () => _openHazard(context, 'gas_leak'),
+        urgentColor: const Color(0xffd92d36),
+      ),
+      _Situation(
         en ? 'Industrial / chemical incident' : 'Accident industriel / chimique',
         en ? 'Leak, plume or official shelter warning' : 'Fuite, nuage ou consigne officielle de confinement',
         Icons.factory_rounded,
