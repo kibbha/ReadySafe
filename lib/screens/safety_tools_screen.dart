@@ -16,7 +16,7 @@ class SafetyToolsScreen extends StatefulWidget {
 
 class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
   final _storage = LocalStorageService();
-  String _safeMessage = 'Je suis en sécurité. Je te contacte dès que possible.';
+  String? _storedSafeMessage;
 
   @override
   void initState() {
@@ -28,24 +28,35 @@ class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
     final plan = await _storage.communicationPlan();
     if (!mounted) return;
     setState(() {
-      _safeMessage = (plan['safeMessage'] ?? '').trim().isEmpty
-          ? _safeMessage
-          : plan['safeMessage']!.trim();
+      final saved = (plan['safeMessage'] ?? '').trim();
+      _storedSafeMessage = saved.isEmpty ? null : saved;
     });
   }
 
   Future<void> _copyMessage() async {
-    await Clipboard.setData(ClipboardData(text: _safeMessage));
-    if (!mounted) return;
     final en = Localizations.localeOf(context).languageCode == 'en';
+    final message = _messageFor(en);
+    await Clipboard.setData(ClipboardData(text: message));
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(en ? 'Message copied.' : 'Message copié.')),
     );
   }
 
   Future<void> _openSms() async {
-    final uri = Uri(scheme: 'sms', queryParameters: {'body': _safeMessage});
+    final en = Localizations.localeOf(context).languageCode == 'en';
+    final uri = Uri(
+      scheme: 'sms',
+      queryParameters: {'body': _messageFor(en)},
+    );
     if (await canLaunchUrl(uri)) await launchUrl(uri);
+  }
+
+  String _messageFor(bool en) {
+    return _storedSafeMessage ??
+        (en
+            ? 'I am safe. I will contact you again as soon as possible.'
+            : 'Je suis en sécurité. Je te contacte dès que possible.');
   }
 
   @override
@@ -96,9 +107,13 @@ class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text(en ? 'Emergency tools' : 'Outils d’urgence')),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(14, 4, 14, 28),
-        children: [
+      body: Align(
+        alignment: Alignment.topCenter,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 960),
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(14, 4, 14, 28),
+            children: [
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -139,17 +154,29 @@ class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
             ),
           ),
           const SizedBox(height: 14),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: tools.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisExtent: 150,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-            ),
-            itemBuilder: (context, index) => _ToolCard(tool: tools[index]),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final columns = constraints.maxWidth >= 820
+                  ? 4
+                  : constraints.maxWidth >= 560
+                      ? 2
+                      : 1;
+              return GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: tools.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: columns,
+                  mainAxisExtent: columns == 1 ? 108 : 150,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                ),
+                itemBuilder: (context, index) => _ToolCard(
+                  tool: tools[index],
+                  compact: columns == 1,
+                ),
+              );
+            },
           ),
           const SizedBox(height: 16),
           Text(en ? 'Quick message' : 'Message rapide', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
@@ -175,7 +202,7 @@ class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
                   ],
                 ),
                 const SizedBox(height: 8),
-                Text(_safeMessage, style: const TextStyle(height: 1.35)),
+                Text(_messageFor(en), style: const TextStyle(height: 1.35)),
                 const SizedBox(height: 10),
                 Row(
                   children: [
@@ -222,7 +249,9 @@ class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
               ],
             ),
           ),
-        ],
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -369,8 +398,13 @@ class _Tool {
 }
 
 class _ToolCard extends StatelessWidget {
-  const _ToolCard({required this.tool});
+  const _ToolCard({
+    required this.tool,
+    required this.compact,
+  });
+
   final _Tool tool;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) => Material(
@@ -385,34 +419,86 @@ class _ToolCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(19),
               border: Border.all(color: const Color(0xffdbe6e7)),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: tool.color.withValues(alpha: .12),
-                    borderRadius: BorderRadius.circular(13),
+            child: compact
+                ? Row(
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: tool.color.withValues(alpha: .12),
+                          borderRadius: BorderRadius.circular(13),
+                        ),
+                        child: Icon(tool.icon, color: tool.color),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              tool.title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                            const SizedBox(height: 3),
+                            Text(
+                              tool.subtitle,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 11.5,
+                                color: Color(0xff65747a),
+                                height: 1.2,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Icon(
+                        Icons.chevron_right_rounded,
+                        color: Color(0xff87969a),
+                      ),
+                    ],
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: tool.color.withValues(alpha: .12),
+                          borderRadius: BorderRadius.circular(13),
+                        ),
+                        child: Icon(tool.icon, color: tool.color),
+                      ),
+                      const Spacer(),
+                      Text(
+                        tool.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        tool.subtitle,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 11.5,
+                          color: Color(0xff65747a),
+                          height: 1.2,
+                        ),
+                      ),
+                    ],
                   ),
-                  child: Icon(tool.icon, color: tool.color),
-                ),
-                const Spacer(),
-                Text(
-                  tool.title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontWeight: FontWeight.w900),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  tool.subtitle,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 11.5, color: Color(0xff65747a), height: 1.2),
-                ),
-              ],
-            ),
           ),
         ),
       );
