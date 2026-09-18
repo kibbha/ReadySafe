@@ -124,10 +124,16 @@ class OfficialSourcesScreen extends StatelessWidget {
             Icons.warning_amber_rounded,
           ),
           _OfficialSource(
-            'MétéoSuisse',
-            'Dangers météorologiques et informations sur les phénomènes sévères.',
-            'https://www.meteoswiss.admin.ch/weather/hazards.html',
+            'Dangers naturels Suisse',
+            'Portail fédéral des avertissements : météo, crues, incendies, avalanches et séismes.',
+            'https://www.naturgefahren.ch/',
             Icons.thunderstorm_rounded,
+          ),
+          _OfficialSource(
+            'MétéoSuisse',
+            'Informations officielles sur les avertissements météorologiques.',
+            'https://www.meteoswiss.admin.ch/weather/hazards/how-severe-weather-warnings-are-prepared.html',
+            Icons.cloud_outlined,
           ),
           _OfficialSource(
             '112 Europe',
