@@ -21,71 +21,93 @@ class _PreparednessReviewScreenState extends State<PreparednessReviewScreen> {
   DateTime? _lastReview;
   bool _loading = true;
 
-  static const _items = <_ReviewItem>[
+  List<_ReviewItem> _items(bool en) => <_ReviewItem>[
     _ReviewItem(
       'contacts',
-      'Contacts familiaux',
-      'Les numéros principaux et le contact extérieur sont à jour.',
+      en ? 'Family contacts' : 'Contacts familiaux',
+      en
+          ? 'Primary numbers and the out-of-area contact are up to date.'
+          : 'Les numéros principaux et le contact extérieur sont à jour.',
       Icons.contacts_rounded,
     ),
     _ReviewItem(
       'meeting',
-      'Points de rassemblement',
-      'Le point principal et l’alternative sont connus de tous.',
+      en ? 'Meeting points' : 'Points de rassemblement',
+      en
+          ? 'Everyone knows the primary and backup meeting points.'
+          : 'Le point principal et l’alternative sont connus de tous.',
       Icons.location_on_rounded,
     ),
     _ReviewItem(
       'documents',
-      'Documents essentiels',
-      'Les documents importants sont identifiés et accessibles.',
+      en ? 'Essential documents' : 'Documents essentiels',
+      en
+          ? 'Important documents are identified and accessible.'
+          : 'Les documents importants sont identifiés et accessibles.',
       Icons.folder_copy_rounded,
     ),
     _ReviewItem(
       'kit',
-      'Kit & réserves',
-      'Eau, nourriture, médicaments et matériel ont été vérifiés.',
+      en ? 'Kit & supplies' : 'Kit & réserves',
+      en
+          ? 'Water, food, medicines and equipment have been checked.'
+          : 'Eau, nourriture, médicaments et matériel ont été vérifiés.',
       Icons.backpack_rounded,
     ),
     _ReviewItem(
       'power',
-      'Énergie & radio',
-      'Lampes, piles, batterie externe et radio sont prêtes.',
+      en ? 'Power & radio' : 'Énergie & radio',
+      en
+          ? 'Lights, batteries, power banks and radio are ready.'
+          : 'Lampes, piles, batterie externe et radio sont prêtes.',
       Icons.battery_charging_full_rounded,
     ),
     _ReviewItem(
       'alerts',
-      'Alertes officielles',
-      'Les alertes système et les sources officielles sont connues.',
+      en ? 'Official alerts' : 'Alertes officielles',
+      en
+          ? 'System alerts and official information sources are known.'
+          : 'Les alertes système et les sources officielles sont connues.',
       Icons.campaign_rounded,
     ),
     _ReviewItem(
       'routes',
-      'Évacuation',
-      'Au moins un itinéraire principal et une alternative sont connus.',
+      en ? 'Evacuation' : 'Évacuation',
+      en
+          ? 'At least one main route and one alternative are known.'
+          : 'Au moins un itinéraire principal et une alternative sont connus.',
       Icons.route_rounded,
     ),
     _ReviewItem(
       'needs',
-      'Besoins particuliers',
-      'Enfants, seniors, traitements, handicap et animaux sont pris en compte.',
+      en ? 'Support needs' : 'Besoins particuliers',
+      en
+          ? 'Children, older adults, medicines, disabilities and pets are considered.'
+          : 'Enfants, seniors, traitements, handicap et animaux sont pris en compte.',
       Icons.accessible_forward_rounded,
     ),
     _ReviewItem(
       'medical',
-      'Continuité médicale',
-      'Traitements, appareils, chaîne du froid et soins réguliers ont un plan de secours.',
+      en ? 'Medical continuity' : 'Continuité médicale',
+      en
+          ? 'Medicines, devices, cold chain and regular care have a backup plan.'
+          : 'Traitements, appareils, chaîne du froid et soins réguliers ont un plan de secours.',
       Icons.medical_services_rounded,
     ),
     _ReviewItem(
       'pets',
-      'Animaux',
-      'Transport, identification, matériel et hébergement ont été envisagés si nécessaire.',
+      en ? 'Pets' : 'Animaux',
+      en
+          ? 'Transport, identification, supplies and shelter have been considered where relevant.'
+          : 'Transport, identification, matériel et hébergement ont été envisagés si nécessaire.',
       Icons.pets_rounded,
     ),
     _ReviewItem(
       'practice',
-      'Exercice familial',
-      'Le foyer a revu ou simulé les actions essentielles.',
+      en ? 'Household drill' : 'Exercice familial',
+      en
+          ? 'The household has reviewed or practised the essential actions.'
+          : 'Le foyer a revu ou simulé les actions essentielles.',
       Icons.school_rounded,
     ),
   ];
@@ -120,8 +142,11 @@ class _PreparednessReviewScreenState extends State<PreparednessReviewScreen> {
     await _storage.savePreparednessReviewChecks(_checked);
     if (!mounted) return;
     setState(() => _lastReview = now);
+    final en = Localizations.localeOf(context).languageCode == 'en';
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Revue de préparation enregistrée.')),
+      SnackBar(
+        content: Text(en ? 'Preparedness review saved.' : 'Revue de préparation enregistrée.'),
+      ),
     );
   }
 
@@ -133,14 +158,16 @@ class _PreparednessReviewScreenState extends State<PreparednessReviewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final progress = _items.isEmpty ? 0.0 : _checked.length / _items.length;
+    final en = Localizations.localeOf(context).languageCode == 'en';
+    final items = _items(en);
+    final progress = items.isEmpty ? 0.0 : _checked.length / items.length;
     final nextReview = _lastReview == null
         ? null
         : DateTime(_lastReview!.year + 1, _lastReview!.month, _lastReview!.day);
 
     return Scaffold(
       backgroundColor: const Color(0xfff7faf9),
-      appBar: AppBar(title: const Text('Revue de préparation')),
+      appBar: AppBar(title: Text(en ? 'Preparedness review' : 'Revue de préparation')),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : ListView(
@@ -157,17 +184,19 @@ class _PreparednessReviewScreenState extends State<PreparednessReviewScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Row(
+                      Row(
                         children: [
-                          CircleAvatar(
+                          const CircleAvatar(
                             backgroundColor: Color(0xff087f83),
                             child: Icon(Icons.fact_check_rounded, color: Colors.white),
                           ),
-                          SizedBox(width: 10),
+                          const SizedBox(width: 10),
                           Expanded(
                             child: Text(
-                              'Passez tout en revue au moins une fois par an',
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+                              en
+                                  ? 'Review everything at least once a year'
+                                  : 'Passez tout en revue au moins une fois par an',
+                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
                             ),
                           ),
                         ],
@@ -184,14 +213,19 @@ class _PreparednessReviewScreenState extends State<PreparednessReviewScreen> {
                       ),
                       const SizedBox(height: 7),
                       Text(
-                        '${_checked.length} / ${_items.length} points vérifiés',
+                        en
+                            ? '${_checked.length} / ${items.length} points checked'
+                            : '${_checked.length} / ${items.length} points vérifiés',
                         style: const TextStyle(fontWeight: FontWeight.w900),
                       ),
                       if (_lastReview != null) ...[
                         const SizedBox(height: 4),
                         Text(
-                          'Dernière revue : ${_formatDate(_lastReview!)}'
-                          '${nextReview == null ? '' : ' · prochaine : ${_formatDate(nextReview)}'}',
+                          en
+                              ? 'Last review: ${_formatDate(_lastReview!)}'
+                                  '${nextReview == null ? '' : ' · next: ${_formatDate(nextReview)}'}'
+                              : 'Dernière revue : ${_formatDate(_lastReview!)}'
+                                  '${nextReview == null ? '' : ' · prochaine : ${_formatDate(nextReview)}'}',
                           style: const TextStyle(color: Color(0xff65747a)),
                         ),
                       ],
@@ -199,7 +233,7 @@ class _PreparednessReviewScreenState extends State<PreparednessReviewScreen> {
                   ),
                 ),
                 const SizedBox(height: 14),
-                ..._items.map((item) {
+                ...items.map((item) {
                   final checked = _checked.contains(item.id);
                   return Card(
                     margin: const EdgeInsets.only(bottom: 8),
@@ -227,14 +261,14 @@ class _PreparednessReviewScreenState extends State<PreparednessReviewScreen> {
                 }),
                 const SizedBox(height: 8),
                 FilledButton.icon(
-                  onPressed: _checked.length == _items.length ? _completeReview : null,
+                  onPressed: _checked.length == items.length ? _completeReview : null,
                   icon: const Icon(Icons.verified_rounded),
-                  label: const Text('Marquer la revue comme terminée'),
+                  label: Text(en ? 'Mark review as complete' : 'Marquer la revue comme terminée'),
                 ),
                 const SizedBox(height: 14),
-                const Text(
-                  'Raccourcis utiles',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
+                Text(
+                  en ? 'Useful shortcuts' : 'Raccourcis utiles',
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
                 ),
                 const SizedBox(height: 7),
                 Wrap(
@@ -242,7 +276,7 @@ class _PreparednessReviewScreenState extends State<PreparednessReviewScreen> {
                   runSpacing: 8,
                   children: [
                     _QuickLink(
-                      'Kit',
+                      en ? 'Kit' : 'Kit',
                       Icons.backpack_rounded,
                       () => Navigator.push(
                         context,
@@ -250,7 +284,7 @@ class _PreparednessReviewScreenState extends State<PreparednessReviewScreen> {
                       ),
                     ),
                     _QuickLink(
-                      'Famille',
+                      en ? 'Family' : 'Famille',
                       Icons.family_restroom_rounded,
                       () => Navigator.push(
                         context,
@@ -258,7 +292,7 @@ class _PreparednessReviewScreenState extends State<PreparednessReviewScreen> {
                       ),
                     ),
                     _QuickLink(
-                      'Communication',
+                      en ? 'Communication' : 'Communication',
                       Icons.connect_without_contact_rounded,
                       () => Navigator.push(
                         context,
@@ -266,7 +300,7 @@ class _PreparednessReviewScreenState extends State<PreparednessReviewScreen> {
                       ),
                     ),
                     _QuickLink(
-                      'Santé',
+                      en ? 'Health' : 'Santé',
                       Icons.medical_services_rounded,
                       () => Navigator.push(
                         context,
@@ -274,7 +308,7 @@ class _PreparednessReviewScreenState extends State<PreparednessReviewScreen> {
                       ),
                     ),
                     _QuickLink(
-                      'Animaux',
+                      en ? 'Pets' : 'Animaux',
                       Icons.pets_rounded,
                       () => Navigator.push(
                         context,
@@ -282,7 +316,7 @@ class _PreparednessReviewScreenState extends State<PreparednessReviewScreen> {
                       ),
                     ),
                     _QuickLink(
-                      'Repères',
+                      en ? 'Landmarks' : 'Repères',
                       Icons.map_rounded,
                       () => Navigator.push(
                         context,
