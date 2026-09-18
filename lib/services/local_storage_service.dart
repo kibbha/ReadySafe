@@ -92,21 +92,19 @@ class LocalStorageService {
       (await _prefs).setString('family', jsonEncode(value));
 
   Future<List<Map<String, String>>> familyContacts() async {
-    final defaults = <Map<String, String>>[
-      {'name': 'Contact principal', 'role': 'À définir', 'phone': ''},
-    ];
     try {
       final raw = (await _prefs).getString(_contactsKey);
-      if (raw == null) return defaults;
+      if (raw == null) return [];
       final decoded = jsonDecode(raw);
-      if (decoded is! List) return defaults;
+      if (decoded is! List) return [];
       return decoded.whereType<Map>().map((item) {
         return <String, String>{
-          for (final entry in item.entries) '${entry.key}': '${entry.value ?? ''}',
+          for (final entry in item.entries)
+            '${entry.key}': '${entry.value ?? ''}',
         };
       }).toList();
     } catch (_) {
-      return defaults;
+      return [];
     }
   }
 
