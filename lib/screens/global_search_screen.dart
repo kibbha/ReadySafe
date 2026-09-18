@@ -106,10 +106,14 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
     }
 
     for (final guide in disasterGuides) {
+      final localized = localizedGuide(guide, en);
       final terms = [
         guide.title,
         guide.immediate,
         ...guide.steps,
+        localized.title,
+        localized.immediate,
+        ...localized.steps,
         ...(_hazardAliases[guide.id] ?? const <String>[]),
       ].join(' ').toLowerCase();
 
@@ -117,33 +121,33 @@ class _GlobalSearchScreenState extends State<GlobalSearchScreen> {
         hits.add(
           _SearchHit(
             en ? 'Risks' : 'Risques',
-            en
-                ? (_hazardTitlesEn[guide.id] ?? guide.title)
-                : guide.title,
+            localized.title,
             Icons.warning_amber_rounded,
-            const GuideListScreen(kind: GuideKind.disasters),
+            GuideDetail(guide: localized),
           ),
         );
       }
     }
 
     for (final guide in emergencyGuides) {
+      final localized = localizedGuide(guide, en);
       final terms = [
         guide.title,
         guide.immediate,
         ...guide.steps,
-        ..._hazardAliases[guide.id] ?? const <String>[],
+        localized.title,
+        localized.immediate,
+        ...localized.steps,
+        ...(_hazardAliases[guide.id] ?? const <String>[]),
       ].join(' ').toLowerCase();
 
       if (terms.contains(q)) {
         hits.add(
           _SearchHit(
             en ? 'Survival actions' : 'Réflexes de survie',
-            en
-                ? (_hazardTitlesEn[guide.id] ?? guide.title)
-                : guide.title,
+            localized.title,
             Icons.shield_outlined,
-            const GuideListScreen(kind: GuideKind.emergencies),
+            GuideDetail(guide: localized),
           ),
         );
       }
@@ -838,6 +842,13 @@ const _hazardAliases = <String, List<String>>{
   'shelter': ['shelter in place', 'confinement'],
   'wildfire': ['wildfire', 'feu de végétation'],
   'landslide': ['landslide', 'glissement de terrain'],
+  'gas_leak': [
+    'gas leak',
+    'smell gas',
+    'gas smell',
+    'fuite de gaz',
+    'odeur de gaz',
+  ],
   'industrial': ['chemical incident', 'industrial incident', 'accident industriel'],
   'radiological': ['radiological', 'radiologique'],
   'outbreak': ['outbreak', 'epidemic', 'épidémie'],
@@ -857,6 +868,7 @@ const _hazardTitlesEn = <String, String>{
   'shelter': 'Shelter in place',
   'wildfire': 'Wildfire',
   'landslide': 'Landslide',
+  'gas_leak': 'Gas leak / suspicious gas smell',
   'industrial': 'Industrial / chemical incident',
   'radiological': 'Radiological incident',
   'outbreak': 'Health outbreak',
