@@ -433,7 +433,7 @@ class _PosterGuideCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 6),
                 color: const Color(0xffffeded),
                 child: Text(
-                  (en ? 'Urgence ' : 'Urgence ') + emergencyNumber,
+                  en ? 'Emergency $emergencyNumber' : 'Urgence $emergencyNumber',
                   textAlign: TextAlign.center,
                   style: const TextStyle(fontSize: 10.5, color: Color(0xffc8212c), fontWeight: FontWeight.w900),
                 ),
@@ -494,7 +494,7 @@ class _AdditionalGuides extends StatelessWidget {
           style: const TextStyle(fontWeight: FontWeight.w900),
         ),
         subtitle: Text(
-          guides.length.toString() + (en ? ' additional situations' : ' situations supplémentaires'),
+          en ? '${guides.length} additional situations' : '${guides.length} situations supplémentaires',
         ),
         children: [
           for (final guide in guides)
@@ -701,7 +701,7 @@ class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScree
               borderRadius: BorderRadius.circular(14),
             ),
             child: Text(
-              (index + 1).toString() + '/' + widget.guide.steps.length.toString(),
+              '${index + 1}/${widget.guide.steps.length}',
               style: const TextStyle(color: Color(0xffc8212c), fontWeight: FontWeight.w900),
             ),
           ),
@@ -754,7 +754,7 @@ class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScree
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  (en ? 'STEP ' : 'ÉTAPE ') + (pageIndex + 1).toString(),
+                                  en ? 'STEP ${pageIndex + 1}' : 'ÉTAPE ${pageIndex + 1}',
                                   style: const TextStyle(
                                     color: Color(0xff087f83),
                                     fontWeight: FontWeight.w900,
@@ -884,7 +884,7 @@ class _StepCard extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               Text(
-                (en ? 'Step ' : 'Étape ') + number.toString(),
+                en ? 'Step $number' : 'Étape $number',
                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Color(0xff075e68)),
               ),
             ],
