@@ -63,8 +63,6 @@ class _MainShellState extends State<MainShell> {
 
         return Scaffold(
           body: SafeArea(
-            top: false,
-            bottom: false,
             child: Row(
               children: [
                 NavigationRail(

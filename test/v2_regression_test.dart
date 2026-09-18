@@ -1,10 +1,24 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:readysafe/app/localizations.dart';
 import 'package:readysafe/data/country_repository.dart';
 import 'package:readysafe/data/content.dart';
 import 'package:readysafe/data/first_aid_repository.dart';
 import 'package:readysafe/screens/guide_list_screen.dart';
 
 void main() {
+  test('map labels describe the real online-map capability', () {
+    final fr = AppLocalizations(const Locale('fr'));
+    final en = AppLocalizations(const Locale('en'));
+
+    expect(fr.get('maps'), 'Carte & repères');
+    expect(en.get('maps'), 'Map & landmarks');
+    expect(fr.get('map_architecture').toLowerCase(), isNot(contains('hors-ligne')));
+    expect(en.get('map_architecture').toLowerCase(), isNot(contains('offline')));
+    expect(fr.get('search_maps'), 'Rechercher une ville ou un repère');
+    expect(en.get('search_maps'), 'Search a city or landmark');
+  });
+
   test('first aid never proposes a number for an unverified country', () {
     final pending = CountryRepository.byCode('AM')!;
     expect(pending.verifiedOn, isNull);

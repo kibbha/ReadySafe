@@ -185,10 +185,16 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
 
       if (lat is! num || lng is! num) continue;
 
+      final savedNote = '${marker['note'] ?? ''}'.trim();
+      final normalizedNote = savedNote == 'Repère personnel hors ligne' ||
+              savedNote == 'Offline personal landmark'
+          ? ''
+          : savedNote;
+
       places.add(
         _Place(
           '${marker['name'] ?? 'Mon repère'}',
-          '${marker['note'] ?? 'Repère personnel hors ligne'}',
+          normalizedNote,
           lat.toDouble(),
           lng.toDouble(),
           _kindFromName('${marker['kind'] ?? 'personal'}'),
@@ -432,11 +438,7 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                   dialogContext,
                   _NewMarker(
                     name.text.trim(),
-                    note.text.trim().isEmpty
-                        ? (en
-                            ? 'Offline personal landmark'
-                            : 'Repère personnel hors ligne')
-                        : note.text.trim(),
+                    note.text.trim(),
                     kind,
                   ),
                 );
@@ -525,12 +527,12 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                               ),
                             ),
                             title: Text(
-                              place.name,
+                              _displayName(place, en),
                               style: const TextStyle(
                                 fontWeight: FontWeight.w800,
                               ),
                             ),
-                            subtitle: Text(place.subtitle),
+                            subtitle: Text(_displaySubtitle(place, en)),
                             trailing: IconButton(
                               tooltip: en ? 'Delete' : 'Supprimer',
                               onPressed: () async {
@@ -586,7 +588,8 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
   String _displaySubtitle(_Place place, bool en) {
     if (place.personal) {
       final status = en ? 'Personal · unverified' : 'Personnel · non vérifié';
-      return '$status · ${place.subtitle}';
+      final note = place.subtitle.trim();
+      return note.isEmpty ? status : '$status · $note';
     }
     if (place.kind == _PlaceKind.city) {
       return en ? 'City' : 'Ville';
