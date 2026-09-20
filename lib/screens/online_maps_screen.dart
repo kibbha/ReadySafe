@@ -469,6 +469,7 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
           Navigator.pop(context);
           _locationService.openLocationSettings();
         };
+        break;
       case DeviceLocationFailure.permissionDeniedForever:
         message = en
             ? 'Location permission is blocked for ReadySafe. You can enable it in app settings.'
@@ -477,14 +478,17 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
           Navigator.pop(context);
           _locationService.openSettings();
         };
+        break;
       case DeviceLocationFailure.permissionDenied:
         message = en
             ? 'Location permission was not granted. The map remains usable manually.'
             : 'La permission de localisation n’a pas été accordée. La carte reste utilisable manuellement.';
+        break;
       case DeviceLocationFailure.unavailable:
         message = en
             ? 'The phone could not determine a position right now.'
             : 'Le téléphone n’a pas pu déterminer votre position pour le moment.';
+        break;
     }
 
     if (!mounted) return;
