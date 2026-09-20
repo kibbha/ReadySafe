@@ -136,6 +136,48 @@ class AppLocalizations {
         'Surveillez-la et répétez la vérification selon son plan habituel ou les instructions professionnelles.',
     'aid_hypoglycemia_3':
         'Si elle est inconsciente, convulse ou ne peut pas avaler, ne donnez rien par la bouche et appelez les secours.',
+    'aid_pls_definition_title': 'DÉFINITION — PLS',
+    'aid_pls_definition_body':
+        'La position latérale de sécurité maintient les voies aériennes ouvertes chez une personne inconsciente qui respire normalement et ne présente pas de traumatisme imposant de ne pas la mobiliser.',
+    'aid_pls_warning':
+        'Ne mettez pas en PLS une personne qui présente une respiration agonique ou qui doit recevoir une RCP.',
+    'aid_wounds': 'Plaies graves',
+    'aid_wounds_summary':
+        'Plaie du thorax, de l’abdomen ou présence d’un objet fiché.',
+    'aid_wounds_chest_heading': 'PLAIE GRAVE AU THORAX',
+    'aid_wounds_chest':
+        'Appelez les secours. Laissez une plaie thoracique ouverte exposée à l’air et ne l’obturez pas avec un pansement improvisé.',
+    'aid_wounds_chest_detail':
+        'Contrôlez seulement un saignement localisé par pression directe si nécessaire. Un pansement spécialisé non occlusif ou ventilé ne doit être utilisé que si vous êtes formé et équipé.',
+    'aid_wounds_abdomen_heading': 'PLAIE GRAVE À L’ABDOMEN',
+    'aid_wounds_abdomen':
+        'Appelez les secours. Si des organes sont visibles, ne les repoussez jamais dans l’abdomen et n’appuyez pas dessus.',
+    'aid_wounds_abdomen_detail':
+        'Couvrez-les sans pression avec des compresses stériles humidifiées à l’eau propre ou au sérum physiologique si disponible, puis surveillez respiration et conscience.',
+    'aid_wounds_embedded_heading': 'CORPS ÉTRANGER / OBJET FICHÉ',
+    'aid_wounds_embedded':
+        'Ne retirez jamais un objet fiché. Comprimez autour sans appuyer dessus, stabilisez-le et appelez les secours.',
+    'aid_wounds_embedded_detail':
+        'L’objet peut limiter le saignement. Son retrait peut aggraver brutalement l’hémorragie.',
+    'aid_wounds_warning':
+        'Une plaie grave nécessite un avis urgent. Ne donnez ni nourriture ni boisson et suivez les instructions de l’opérateur.',
+    'aid_waiting_positions': 'Positions d’attente',
+    'aid_waiting_positions_summary':
+        'Installer la victime sans aggraver sa respiration, son saignement ou un traumatisme.',
+    'aid_waiting_positions_chest_heading': 'THORAX / RESPIRATION DIFFICILE',
+    'aid_waiting_positions_chest':
+        'Si la personne est consciente, laissez-la dans la position où elle respire le mieux, souvent assise ou semi-assise, sans la forcer.',
+    'aid_waiting_positions_abdomen_heading': 'PLAIE ABDOMINALE',
+    'aid_waiting_positions_abdomen':
+        'Installez-la sur le dos avec les jambes fléchies si cette position diminue la douleur et qu’aucun traumatisme ne l’interdit.',
+    'aid_waiting_positions_unconscious_heading': 'INCONSCIENTE MAIS RESPIRE NORMALEMENT',
+    'aid_waiting_positions_unconscious':
+        'En l’absence de traumatisme, placez-la sur le côté en PLS et contrôlez continuellement sa respiration.',
+    'aid_waiting_positions_trauma_heading': 'TRAUMATISME SUSPECTÉ',
+    'aid_waiting_positions_trauma':
+        'Évitez de déplacer la personne sauf danger immédiat, nécessité de RCP ou instruction des secours.',
+    'aid_waiting_positions_warning':
+        'Ne forcez jamais une position. Si la respiration ou la conscience se dégrade, réévaluez immédiatement et suivez les secours.',
     'home': 'Accueil',
     'more': 'Plus',
     'title': 'READYSAFE',
@@ -184,7 +226,7 @@ class AppLocalizations {
     'emergency_hint':
         'En danger immédiat, mettez-vous en sécurité puis appelez les secours.',
     'medicalNotice':
-        'Informations générales uniquement. ReadySafe ne remplace ni les services d’urgence, ni un professionnel de santé, ni une formation de secourisme. Suivez les instructions de l’opérateur.',
+        'Informations générales uniquement. ReadySafe ne remplace ni les services d’urgence, ni un professionnel de santé, ni une formation de secourisme. Suivez les instructions de l’opérateur. Contenu à valider par un organisme de formation aux premiers secours avant publication.',
     'country_france': 'France',
     'country_belgium': 'Belgique',
     'country_germany': 'Allemagne',
@@ -540,6 +582,48 @@ class AppLocalizations {
         'Monitor them and repeat checks according to their usual plan or professional instructions.',
     'aid_hypoglycemia_3':
         'If unconscious, having a seizure, or unable to swallow, give nothing by mouth and call emergency services.',
+    'aid_pls_definition_title': 'DEFINITION — RECOVERY POSITION',
+    'aid_pls_definition_body':
+        'The lateral recovery position helps keep the airway open in an unresponsive person who is breathing normally and has no trauma requiring them to remain still.',
+    'aid_pls_warning':
+        'Do not use the recovery position for agonal breathing or when CPR is required.',
+    'aid_wounds': 'Serious wounds',
+    'aid_wounds_summary':
+        'Chest wound, abdominal wound, or an embedded object.',
+    'aid_wounds_chest_heading': 'SERIOUS CHEST WOUND',
+    'aid_wounds_chest':
+        'Call emergency services. Leave an open chest wound exposed to air and do not seal it with an improvised occlusive dressing.',
+    'aid_wounds_chest_detail':
+        'Use direct pressure only for localised bleeding if needed. A specialised non-occlusive or vented dressing should be used only when trained and equipped.',
+    'aid_wounds_abdomen_heading': 'SERIOUS ABDOMINAL WOUND',
+    'aid_wounds_abdomen':
+        'Call emergency services. If organs are visible, never push them back into the abdomen and do not press on them.',
+    'aid_wounds_abdomen_detail':
+        'Cover loosely without pressure using sterile dressings moistened with clean water or saline if available, then monitor breathing and responsiveness.',
+    'aid_wounds_embedded_heading': 'EMBEDDED / IMPALED OBJECT',
+    'aid_wounds_embedded':
+        'Never remove an embedded object. Apply pressure around it without pressing on it, stabilise it, and call emergency services.',
+    'aid_wounds_embedded_detail':
+        'The object may be limiting blood loss. Removing it can cause severe bleeding to worsen suddenly.',
+    'aid_wounds_warning':
+        'A serious wound needs urgent professional assessment. Give no food or drink and follow the emergency operator’s instructions.',
+    'aid_waiting_positions': 'Waiting positions',
+    'aid_waiting_positions_summary':
+        'Position the person without worsening breathing, bleeding, or suspected trauma.',
+    'aid_waiting_positions_chest_heading': 'CHEST / BREATHING DIFFICULTY',
+    'aid_waiting_positions_chest':
+        'If conscious, let the person stay in the position that makes breathing easiest, often sitting or semi-sitting, without forcing them.',
+    'aid_waiting_positions_abdomen_heading': 'ABDOMINAL WOUND',
+    'aid_waiting_positions_abdomen':
+        'Lay them on their back with knees bent if this reduces pain and no suspected trauma makes movement unsafe.',
+    'aid_waiting_positions_unconscious_heading': 'UNRESPONSIVE BUT BREATHING NORMALLY',
+    'aid_waiting_positions_unconscious':
+        'If there is no trauma, place them on their side in the recovery position and continuously monitor breathing.',
+    'aid_waiting_positions_trauma_heading': 'SUSPECTED TRAUMA',
+    'aid_waiting_positions_trauma':
+        'Avoid moving the person unless there is immediate danger, CPR is required, or emergency services instruct you to do so.',
+    'aid_waiting_positions_warning':
+        'Never force a position. If breathing or responsiveness worsens, reassess immediately and follow emergency instructions.',
     'home': 'Home',
     'more': 'More',
     'title': 'READYSAFE',
@@ -588,7 +672,7 @@ class AppLocalizations {
     'emergency_hint':
         'If in immediate danger, move to safety and call emergency services.',
     'medicalNotice':
-        'General information only. ReadySafe does not replace emergency services, healthcare professionals, or first-aid training. Follow the operator’s instructions.',
+        'General information only. ReadySafe does not replace emergency services, healthcare professionals, or first-aid training. Follow the operator’s instructions. Content must be validated by a recognised first-aid training organisation before publication.',
     'country_france': 'France',
     'country_belgium': 'Belgium',
     'country_germany': 'Germany',
