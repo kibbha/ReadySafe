@@ -1074,6 +1074,118 @@ class _PosterFullStep extends StatelessWidget {
       );
 }
 
+class _SquareBullet extends StatelessWidget {
+  const _SquareBullet({
+    required this.text,
+    this.fontSize = 11.5,
+  });
+
+  final String text;
+  final double fontSize;
+
+  @override
+  Widget build(BuildContext context) => Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 7,
+            height: 7,
+            margin: EdgeInsets.only(top: fontSize * .45, right: 7),
+            color: Colors.black87,
+          ),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: fontSize,
+                height: 1.3,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      );
+}
+
+class _DefinitionBox extends StatelessWidget {
+  const _DefinitionBox({
+    required this.title,
+    required this.body,
+  });
+
+  final String title;
+  final String body;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: const Color(0xffeaf3ff),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xffaacbf6)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                color: Color(0xff1268d8),
+                fontWeight: FontWeight.w900,
+                fontSize: 13,
+              ),
+            ),
+            const SizedBox(height: 5),
+            Text(
+              body,
+              style: const TextStyle(
+                height: 1.35,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      );
+}
+
+class _GuideWarning extends StatelessWidget {
+  const _GuideWarning({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(11),
+        decoration: BoxDecoration(
+          color: const Color(0xffffeeee),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xffffb8bd)),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Icon(
+              Icons.warning_amber_rounded,
+              color: Color(0xffc8212c),
+              size: 22,
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                text,
+                style: const TextStyle(
+                  height: 1.35,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+}
+
 class _MetricBadge extends StatelessWidget {
   const _MetricBadge({required this.label, this.alert = false});
   final String label;
@@ -1106,8 +1218,12 @@ class FirstAidEmergencyModeScreen extends StatefulWidget {
 }
 
 class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScreen> {
+  static const _cprBeat = Duration(milliseconds: 545); // ≈110/min
+
   int index = 0;
   late final PageController controller;
+  Timer? _metronome;
+  bool _metronomeOn = false;
 
   @override
   void initState() {
@@ -1115,8 +1231,37 @@ class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScree
     controller = PageController();
   }
 
+  void _pulse() {
+    unawaited(SystemSound.play(SystemSoundType.click));
+    unawaited(HapticFeedback.selectionClick());
+  }
+
+  void _startMetronome() {
+    _metronome?.cancel();
+    _pulse();
+    _metronome = Timer.periodic(_cprBeat, (_) => _pulse());
+    _metronomeOn = true;
+  }
+
+  void _stopMetronome() {
+    _metronome?.cancel();
+    _metronome = null;
+    _metronomeOn = false;
+  }
+
+  void _toggleMetronome() {
+    setState(() {
+      if (_metronomeOn) {
+        _stopMetronome();
+      } else {
+        _startMetronome();
+      }
+    });
+  }
+
   @override
   void dispose() {
+    _stopMetronome();
     controller.dispose();
     super.dispose();
   }
