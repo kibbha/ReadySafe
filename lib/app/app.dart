@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import '../screens/main_shell.dart';
 import '../screens/onboarding_screen.dart';
 import '../services/app_settings_service.dart';
+import 'accessibility.dart';
 import 'app_controller.dart';
 import 'app_scope.dart';
 import 'localizations.dart';
@@ -72,11 +73,15 @@ class _ReadySafeAppState extends State<ReadySafeApp> {
             ],
             builder: (context, child) {
               final media = MediaQuery.of(context);
-              final scale = controller.settings.largeText ? 1.18 : 1.0;
+              final multiplier = controller.settings.largeText ? 1.18 : 1.0;
               return MediaQuery(
                 data: media.copyWith(
-                  textScaler: TextScaler.linear(scale),
-                  highContrast: controller.settings.highContrast,
+                  textScaler: ReadySafeTextScaler(
+                    base: media.textScaler,
+                    multiplier: multiplier,
+                  ),
+                  highContrast:
+                      media.highContrast || controller.settings.highContrast,
                 ),
                 child: child ?? const SizedBox.shrink(),
               );
