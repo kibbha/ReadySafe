@@ -136,8 +136,8 @@ class CountryRepository {
     'CH':[
       _service('eu','service_emergency','112','service_112_desc'),
       _service('medical','service_ambulance','144','service_ch_ambulance_desc'),
-      _service('police','service_police','117','service_police_desc'),
-      _service('fire','service_fire','118','service_fire_desc'),
+      _service('police','service_police','117','service_ch_police_desc'),
+      _service('fire','service_fire','118','service_ch_fire_desc'),
       _service('rega','service_rega','1414','service_rega_desc'),
       _service('poison','service_poison','145','service_poison_desc'),
       _service('adult_help','service_adult_help','143','service_adult_help_desc'),
