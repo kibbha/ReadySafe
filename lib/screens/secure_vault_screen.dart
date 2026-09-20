@@ -243,8 +243,10 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
   Widget build(BuildContext context) {
     final en = _en;
 
+    final scheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      backgroundColor: const Color(0xfff7faf9),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(en ? 'Secure vault' : 'Coffre sécurisé'),
         actions: [
@@ -263,7 +265,9 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
           ),
         ],
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'readysafe-vault-add',
         onPressed: _loading || _error == 'storage_unavailable'
             ? null
             : () => _edit(),
@@ -283,22 +287,17 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [
-                            Color(0xffe4f3f0),
-                            Color(0xfffff4e8),
-                          ],
-                        ),
+                        color: scheme.surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(22),
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const CircleAvatar(
-                            backgroundColor: Color(0xff087f83),
+                          CircleAvatar(
+                            backgroundColor: scheme.secondaryContainer,
                             child: Icon(
                               Icons.lock_rounded,
-                              color: Colors.white,
+                              color: scheme.onSecondaryContainer,
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -321,8 +320,8 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
                                   en
                                       ? 'Store useful references, locations and emergency notes here. Values are hidden on screen by default.'
                                       : 'Utilisez ce coffre pour les références, emplacements et notes utiles. Les valeurs sont masquées à l’écran par défaut.',
-                                  style: const TextStyle(
-                                    color: Color(0xff65747a),
+                                  style: TextStyle(
+                                    color: scheme.onSurfaceVariant,
                                     height: 1.35,
                                   ),
                                 ),
@@ -337,13 +336,13 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: const Color(0xffffeeee),
+                          color: scheme.errorContainer,
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Text(
                           _errorMessage(_error!, en),
-                          style: const TextStyle(
-                            color: Color(0xffb00020),
+                          style: TextStyle(
+                            color: scheme.onErrorContainer,
                             fontWeight: FontWeight.w800,
                           ),
                         ),
@@ -362,10 +361,10 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
                           padding: const EdgeInsets.all(18),
                           child: Column(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.lock_open_rounded,
                                 size: 40,
-                                color: Color(0xff087f83),
+                                color: scheme.primary,
                               ),
                               const SizedBox(height: 8),
                               Text(
@@ -383,8 +382,8 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
                                     ? 'Add only information that would be useful to retrieve quickly during an emergency.'
                                     : 'Ajoutez uniquement les informations dont vous auriez besoin rapidement en situation d’urgence.',
                                 textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  color: Color(0xff65747a),
+                                style: TextStyle(
+                                  color: scheme.onSurfaceVariant,
                                 ),
                               ),
                             ],
@@ -399,10 +398,10 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
                           child: ExpansionTile(
                             leading: CircleAvatar(
                               backgroundColor:
-                                  const Color(0xffe4f2f0),
+                                  scheme.secondaryContainer,
                               child: Icon(
                                 _icon(item.category),
-                                color: const Color(0xff087f83),
+                                color: scheme.onSecondaryContainer,
                               ),
                             ),
                             title: Text(
@@ -470,15 +469,15 @@ class _SecureVaultScreenState extends State<SecureVaultScreen> {
                     Container(
                       padding: const EdgeInsets.all(13),
                       decoration: BoxDecoration(
-                        color: const Color(0xfffff4c7),
+                        color: scheme.tertiaryContainer,
                         borderRadius: BorderRadius.circular(17),
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.security_rounded,
-                            color: Color(0xff9a6a00),
+                            color: scheme.onTertiaryContainer,
                           ),
                           const SizedBox(width: 9),
                           Expanded(
@@ -575,9 +574,9 @@ class _Line extends StatelessWidget {
               width: 92,
               child: Text(
                 label,
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w800,
-                  color: Color(0xff65747a),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
             ),
