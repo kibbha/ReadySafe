@@ -125,6 +125,49 @@ class SettingsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 Text(
+                  en ? 'Appearance' : 'Apparence',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Card(
+                  child: RadioGroup<String>(
+                    groupValue: app.settings.themeModeCode,
+                    onChanged: (value) {
+                      if (value != null) app.setThemeMode(value);
+                    },
+                    child: Column(
+                      children: [
+                        RadioListTile(
+                          value: 'system',
+                          secondary: const Icon(Icons.settings_brightness_rounded),
+                          title: Text(en ? 'Follow phone' : 'Suivre le téléphone'),
+                          subtitle: Text(
+                            en
+                                ? 'Uses the light or dark mode selected on your device.'
+                                : 'Utilise le mode clair ou sombre choisi sur votre téléphone.',
+                          ),
+                        ),
+                        const Divider(height: 1),
+                        RadioListTile(
+                          value: 'light',
+                          secondary: const Icon(Icons.light_mode_rounded),
+                          title: Text(en ? 'Light' : 'Clair'),
+                        ),
+                        const Divider(height: 1),
+                        RadioListTile(
+                          value: 'dark',
+                          secondary: const Icon(Icons.dark_mode_rounded),
+                          title: Text(en ? 'Dark' : 'Sombre'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
                   en ? 'Accessibility' : 'Accessibilité',
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
                 ),
@@ -168,13 +211,16 @@ class SettingsScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xffeaf6f4),
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(Icons.accessibility_new_rounded, color: Color(0xff087f83)),
+                      Icon(
+                        Icons.accessibility_new_rounded,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                       const SizedBox(width: 9),
                       Expanded(
                         child: Text(
@@ -197,9 +243,13 @@ class SettingsScreen extends StatelessWidget {
                 const SizedBox(height: 6),
                 Card(
                   child: ListTile(
-                    leading: const CircleAvatar(
-                      backgroundColor: Color(0xffe4f2f0),
-                      child: Icon(Icons.health_and_safety_outlined, color: Color(0xff087f83)),
+                    leading: CircleAvatar(
+                      backgroundColor:
+                          Theme.of(context).colorScheme.secondaryContainer,
+                      child: Icon(
+                        Icons.health_and_safety_outlined,
+                        color: Theme.of(context).colorScheme.onSecondaryContainer,
+                      ),
                     ),
                     title: Text(
                       en ? 'ReadySafe self-check' : 'Auto-contrôle ReadySafe',
