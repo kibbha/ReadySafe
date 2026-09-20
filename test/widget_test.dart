@@ -51,6 +51,13 @@ void main() {
       expect(find.text('Je dois me protéger'), findsOneWidget);
       expect(find.text('Je cherche un lieu utile'), findsOneWidget);
       expect(find.text('Je veux me préparer'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text('Gestes qui sauvent'),
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
+
       expect(find.text('Gestes qui sauvent'), findsOneWidget);
       expect(find.text('Famille & documents'), findsOneWidget);
       expect(find.text('Kits'), findsWidgets);
