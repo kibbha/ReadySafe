@@ -401,13 +401,18 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
       body: LayoutBuilder(
         builder: (context, constraints) {
           final wide = constraints.maxWidth >= 760;
-          final columns = constraints.maxWidth >= 1040
-              ? 4
-              : constraints.maxWidth >= 760
-                  ? 3
-                  : constraints.maxWidth >= 520
-                      ? 2
-                      : 1;
+          final textScale =
+              MediaQuery.textScalerOf(context).scale(16) / 16;
+          final columns = textScale > 1.30
+              ? 1
+              : constraints.maxWidth >= 1040
+                  ? 4
+                  : constraints.maxWidth >= 760
+                      ? 3
+                      : constraints.maxWidth >= 520
+                          ? 2
+                          : 1;
+          final accessibleList = columns == 1;
           return ListView(
             padding: EdgeInsets.fromLTRB(
               wide ? 24 : 14,
@@ -419,9 +424,7 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
               Container(
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xffdff2ef), Color(0xfffff1df)],
-                  ),
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(24),
                 ),
                 child: Row(
@@ -430,7 +433,7 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
                       width: 58,
                       height: 58,
                       decoration: BoxDecoration(
-                        color: const Color(0xff087f83),
+                        color: Theme.of(context).colorScheme.secondary,
                         borderRadius: BorderRadius.circular(18),
                       ),
                       child: const Icon(Icons.backpack_rounded, color: Colors.white, size: 30),
@@ -447,7 +450,10 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
                           const SizedBox(height: 4),
                           Text(
                             en ? '$_ready / $_total core items ready' : '$_ready / $_total éléments de base prêts',
-                            style: const TextStyle(fontWeight: FontWeight.w800, color: Color(0xff52666b)),
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
                           ),
                           const SizedBox(height: 8),
                           ClipRRect(
@@ -455,8 +461,9 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
                             child: LinearProgressIndicator(
                               minHeight: 8,
                               value: progress,
-                              backgroundColor: Colors.white,
-                              color: const Color(0xff087f83),
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.surface,
+                              color: Theme.of(context).colorScheme.secondary,
                             ),
                           ),
                         ],
@@ -513,12 +520,18 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
                     decoration: BoxDecoration(
-                      color: const Color(0xffe8f4f2),
+                      color: Theme.of(context).colorScheme.secondaryContainer,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.grid_view_rounded, size: 16, color: Color(0xff087f83)),
+                        Icon(
+                          Icons.grid_view_rounded,
+                          size: 16,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSecondaryContainer,
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           '${visibleModules.length}',
@@ -530,41 +543,62 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
                 ],
               ),
               const SizedBox(height: 10),
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: visibleModules.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: columns,
-                  mainAxisExtent: wide ? 166 : 154,
-                  crossAxisSpacing: 11,
-                  mainAxisSpacing: 11,
+              if (accessibleList)
+                Column(
+                  children: [
+                    for (var index = 0;
+                        index < visibleModules.length;
+                        index++) ...[
+                      _ModuleCard(
+                        module: visibleModules[index],
+                        compact: true,
+                        onReturn: _load,
+                      ),
+                      if (index != visibleModules.length - 1)
+                        const SizedBox(height: 10),
+                    ],
+                  ],
+                )
+              else
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: visibleModules.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: columns,
+                    mainAxisExtent: wide ? 178 : 166,
+                    crossAxisSpacing: 11,
+                    mainAxisSpacing: 11,
+                  ),
+                  itemBuilder: (context, index) => _ModuleCard(
+                    module: visibleModules[index],
+                    compact: false,
+                    onReturn: _load,
+                  ),
                 ),
-                itemBuilder: (context, index) => _ModuleCard(
-                  module: visibleModules[index],
-                  compact: columns == 1,
-                  onReturn: _load,
-                ),
-              ),
               const SizedBox(height: 18),
               Text(en ? 'Quick reminders' : 'Réflexes rapides', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
               const SizedBox(height: 8),
               _tip(
+                context,
                 Icons.water_drop_outlined,
                 en ? 'Water' : 'Eau',
                 en ? 'Keep a household-appropriate reserve and treat water whenever its safety is uncertain.' : 'Stockez une réserve adaptée au foyer et traitez toute eau dont la potabilité est incertaine.',
               ),
               _tip(
+                context,
                 Icons.bolt_outlined,
                 en ? 'Power' : 'Énergie',
                 en ? 'Keep lights, batteries, power banks and radio where everyone can find them.' : 'Gardez lampes, piles, batterie externe et radio dans un endroit connu de toute la famille.',
               ),
               _tip(
+                context,
                 Icons.directions_run_rounded,
                 en ? 'Evacuation' : 'Évacuation',
                 en ? 'People, medicines, phone, water, kit, pets and meeting point: keep the sequence simple.' : 'Documents, médicaments, téléphone, eau, kit, animaux et point de rassemblement : gardez l’ordre simple.',
               ),
               _tip(
+                context,
                 Icons.forum_outlined,
                 en ? 'Communication' : 'Communication',
                 en ? 'Plan an out-of-area contact, a reconnection point and a paper copy of key numbers.' : 'Prévoyez un contact extérieur, un point de reconnexion et une copie papier des numéros importants.',
@@ -600,12 +634,22 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
         ),
       );
 
-  Widget _tip(IconData icon, String title, String body) => Card(
+  Widget _tip(
+    BuildContext context,
+    IconData icon,
+    String title,
+    String body,
+  ) =>
+      Card(
         margin: const EdgeInsets.only(bottom: 8),
         child: ListTile(
           leading: CircleAvatar(
-            backgroundColor: const Color(0xffe7f3f1),
-            child: Icon(icon, color: const Color(0xff087f83)),
+            backgroundColor:
+                Theme.of(context).colorScheme.secondaryContainer,
+            child: Icon(
+              icon,
+              color: Theme.of(context).colorScheme.onSecondaryContainer,
+            ),
           ),
           title: Text(title, style: const TextStyle(fontWeight: FontWeight.w900)),
           subtitle: Text(body),
@@ -635,8 +679,10 @@ class _ModuleCard extends StatelessWidget {
   final Future<void> Function() onReturn;
 
   @override
-  Widget build(BuildContext context) => Material(
-        color: Colors.white,
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Material(
+        color: scheme.surface,
         borderRadius: BorderRadius.circular(20),
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
@@ -651,7 +697,7 @@ class _ModuleCard extends StatelessWidget {
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: const Color(0xffdbe6e7)),
+              border: Border.all(color: scheme.outline),
             ),
             child: compact
                 ? Row(
@@ -673,8 +719,6 @@ class _ModuleCard extends StatelessWidget {
                           children: [
                             Text(
                               module.title,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
                                 fontSize: 15.5,
                                 fontWeight: FontWeight.w900,
@@ -683,20 +727,18 @@ class _ModuleCard extends StatelessWidget {
                             const SizedBox(height: 4),
                             Text(
                               module.subtitle,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 11.5,
-                                color: Color(0xff65747a),
-                                height: 1.22,
+                                color: scheme.onSurfaceVariant,
+                                height: 1.25,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const Icon(
+                      Icon(
                         Icons.chevron_right_rounded,
-                        color: Color(0xff87969a),
+                        color: scheme.onSurfaceVariant,
                       ),
                     ],
                   )
@@ -726,11 +768,10 @@ class _ModuleCard extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         module.subtitle,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        maxLines: 3,
+                        style: TextStyle(
                           fontSize: 11.5,
-                          color: Color(0xff65747a),
+                          color: scheme.onSurfaceVariant,
                           height: 1.22,
                         ),
                       ),
@@ -739,4 +780,5 @@ class _ModuleCard extends StatelessWidget {
           ),
         ),
       );
+  }
 }
