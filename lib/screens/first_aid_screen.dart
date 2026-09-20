@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -10,16 +13,23 @@ import '../models/first_aid_guide.dart';
 import 'emergency_screen.dart';
 
 const _essentialIds = <String>[
-  'cpr_adult',
-  'choking_adult',
   'unconscious',
-  'bleeding',
+  'cpr_adult',
   'aed',
-  'cpr_child',
-  'cpr_infant',
+  'bleeding',
+  'wounds',
+  'waiting_positions',
+  'choking_adult',
+  'choking_child',
   'choking_infant',
-  'drowning',
+  'burn',
+  'stroke',
+  'chest_pain',
   'anaphylaxis',
+  'seizure',
+  'drowning',
+  'hypothermia',
+  'heatstroke',
 ];
 
 const _referencePosterAssets = <String, String>{
@@ -71,6 +81,7 @@ bool _posterCritical(String id) => const {
       'bleeding',
       'choking_infant',
       'anaphylaxis',
+      'wounds',
     }.contains(id);
 
 String? _emergencyNumber(BuildContext context) {
@@ -89,6 +100,14 @@ String _posterTag(String id, bool en) {
     'choking_infant': 'DÉSOBSTRUER LES VOIES AÉRIENNES',
     'drowning': 'RÉAGIR RAPIDEMENT',
     'anaphylaxis': 'RÉACTION ALLERGIQUE SÉVÈRE',
+    'wounds': 'NE JAMAIS RETIRER UN OBJET FICHÉ',
+    'waiting_positions': 'INSTALLER SANS AGGRAVER',
+    'burn': 'REFROIDIR RAPIDEMENT',
+    'stroke': 'RECONNAÎTRE · ALERTER',
+    'chest_pain': 'MALAISE CARDIAQUE',
+    'seizure': 'PROTÉGER · CHRONOMÉTRER',
+    'hypothermia': 'RÉCHAUFFER PROGRESSIVEMENT',
+    'heatstroke': 'REFROIDIR SANS ATTENDRE',
   };
   const english = <String, String>{
     'cpr_adult': 'ACT FAST — SAVE A LIFE',
@@ -101,6 +120,14 @@ String _posterTag(String id, bool en) {
     'choking_infant': 'CLEAR THE AIRWAY',
     'drowning': 'ACT QUICKLY',
     'anaphylaxis': 'SEVERE ALLERGIC REACTION',
+    'wounds': 'NEVER REMOVE AN EMBEDDED OBJECT',
+    'waiting_positions': 'POSITION WITHOUT WORSENING',
+    'burn': 'COOL RAPIDLY',
+    'stroke': 'RECOGNISE · CALL',
+    'chest_pain': 'CARDIAC WARNING SIGNS',
+    'seizure': 'PROTECT · TIME',
+    'hypothermia': 'WARM GRADUALLY',
+    'heatstroke': 'COOL WITHOUT DELAY',
   };
   return (en ? english : fr)[id] ?? (en ? 'FIRST AID' : 'PREMIERS SECOURS');
 }
@@ -558,12 +585,10 @@ class _PosterMiniStep extends StatelessWidget {
             Expanded(
               child: Text(
                 text,
-                maxLines: 4,
-                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontSize: 9.4,
-                  height: 1.12,
-                  fontWeight: FontWeight.w700,
+                  fontSize: 9.6,
+                  height: 1.18,
+                  fontWeight: FontWeight.w800,
                   color: Color(0xff20383c),
                 ),
               ),
@@ -677,27 +702,45 @@ class FirstAidDetailScreen extends StatelessWidget {
               child: ListView(
                 padding: EdgeInsets.fromLTRB(wide ? 24 : 12, 4, wide ? 24 : 12, 26),
                 children: [
-                  if (referencePoster != null)
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.asset(
-                        referencePoster,
-                        fit: BoxFit.fitWidth,
-                        filterQuality: FilterQuality.high,
-                      ),
-                    )
-                  else
-                    _PosterDetailPanel(
-                      number: number,
-                      title: t.get(guide.titleKey),
-                      subtitle: _posterTag(guide.id, en),
-                      guide: guide,
-                      emergencyNumber: emergencyNumber,
-                      onEmergency: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const EmergencyScreen()),
-                      ),
+                  InteractiveViewer(
+                    minScale: 1,
+                    maxScale: 3.2,
+                    boundaryMargin: const EdgeInsets.all(40),
+                    child: referencePoster != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.asset(
+                              referencePoster,
+                              fit: BoxFit.fitWidth,
+                              filterQuality: FilterQuality.high,
+                            ),
+                          )
+                        : _PosterDetailPanel(
+                            number: number,
+                            title: t.get(guide.titleKey),
+                            subtitle: _posterTag(guide.id, en),
+                            guide: guide,
+                            emergencyNumber: emergencyNumber,
+                            onEmergency: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const EmergencyScreen(),
+                              ),
+                            ),
+                          ),
+                  ),
+                  if (guide.definitionTitleKey != null &&
+                      guide.definitionBodyKey != null) ...[
+                    const SizedBox(height: 10),
+                    _DefinitionBox(
+                      title: t.get(guide.definitionTitleKey!),
+                      body: t.get(guide.definitionBodyKey!),
                     ),
+                  ],
+                  for (final warningKey in guide.warningKeys) ...[
+                    const SizedBox(height: 8),
+                    _GuideWarning(text: t.get(warningKey)),
+                  ],
                   const SizedBox(height: 10),
                   _MedicalNotice(text: t.get('medicalNotice')),
                   const SizedBox(height: 8),
@@ -979,15 +1022,31 @@ class _PosterFullStep extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (step.headingKey != null) ...[
+                    Text(
+                      _aidText(context, step.headingKey!).toUpperCase(),
+                      style: const TextStyle(
+                        color: Color(0xff1268d8),
+                        fontSize: 11.5,
+                        height: 1.15,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                  ],
                   Text(
                     _aidText(context, step.textKey),
                     style: const TextStyle(
                       fontSize: 12.5,
-                      height: 1.2,
-                      fontWeight: FontWeight.w700,
+                      height: 1.25,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
-                  if (emphasizeCpr) ...[
+                  for (final detailKey in step.detailKeys) ...[
+                    const SizedBox(height: 5),
+                    _SquareBullet(text: _aidText(context, detailKey)),
+                  ],
+                  if (emphasizeCpr || step.cprPacing) ...[
                     const SizedBox(height: 7),
                     const Wrap(
                       spacing: 6,
@@ -1110,10 +1169,15 @@ class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScree
               child: PageView.builder(
                 controller: controller,
                 itemCount: widget.guide.steps.length,
-                onPageChanged: (value) => setState(() => index = value),
+                onPageChanged: (value) {
+                  if (!widget.guide.steps[value].cprPacing) {
+                    _stopMetronome();
+                  }
+                  setState(() => index = value);
+                },
                 itemBuilder: (context, pageIndex) {
                   final step = widget.guide.steps[pageIndex];
-                  final cprMetric = widget.guide.id == 'cpr_adult' && pageIndex == 2;
+                  final cprMetric = step.cprPacing;
                   return SingleChildScrollView(
                     padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
                     child: Column(
@@ -1173,18 +1237,68 @@ class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScree
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              if (step.headingKey != null) ...[
+                                Text(
+                                  _aidText(context, step.headingKey!).toUpperCase(),
+                                  style: const TextStyle(
+                                    color: Color(0xff1268d8),
+                                    fontSize: 14,
+                                    height: 1.15,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                                const SizedBox(height: 7),
+                              ],
                               Text(
                                 _aidText(context, step.textKey),
-                                style: const TextStyle(fontSize: 19, height: 1.32, fontWeight: FontWeight.w800),
+                                style: const TextStyle(
+                                  fontSize: 19,
+                                  height: 1.32,
+                                  fontWeight: FontWeight.w800,
+                                ),
                               ),
+                              for (final detailKey in step.detailKeys) ...[
+                                const SizedBox(height: 9),
+                                _SquareBullet(
+                                  text: _aidText(context, detailKey),
+                                  fontSize: 14,
+                                ),
+                              ],
                               if (cprMetric) ...[
-                                const SizedBox(height: 10),
+                                const SizedBox(height: 12),
                                 const Wrap(
                                   spacing: 8,
+                                  runSpacing: 8,
                                   children: [
                                     _MetricBadge(label: '100–120/min'),
                                     _MetricBadge(label: '5–6 cm', alert: true),
                                   ],
+                                ),
+                                const SizedBox(height: 10),
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: FilledButton.icon(
+                                    style: FilledButton.styleFrom(
+                                      backgroundColor: _metronomeOn
+                                          ? const Color(0xffd92d36)
+                                          : const Color(0xff1268d8),
+                                    ),
+                                    onPressed: _toggleMetronome,
+                                    icon: Icon(
+                                      _metronomeOn
+                                          ? Icons.stop_circle_outlined
+                                          : Icons.graphic_eq_rounded,
+                                    ),
+                                    label: Text(
+                                      _metronomeOn
+                                          ? (en
+                                              ? 'Stop CPR rhythm'
+                                              : 'Arrêter le rythme RCR')
+                                          : (en
+                                              ? 'Start 110/min rhythm'
+                                              : 'Démarrer le rythme 110/min'),
+                                    ),
+                                  ),
                                 ),
                               ],
                             ],
