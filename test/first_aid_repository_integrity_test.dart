@@ -14,7 +14,14 @@ void main() {
       for (final guide in firstAidGuides) ...[
         guide.titleKey,
         guide.summaryKey,
-        for (final step in guide.steps) step.textKey,
+        if (guide.definitionTitleKey != null) guide.definitionTitleKey!,
+        if (guide.definitionBodyKey != null) guide.definitionBodyKey!,
+        ...guide.warningKeys,
+        for (final step in guide.steps) ...[
+          step.textKey,
+          if (step.headingKey != null) step.headingKey!,
+          ...step.detailKeys,
+        ],
       ],
     };
 
@@ -28,6 +35,44 @@ void main() {
         en.get(key),
         isNot(key),
         reason: 'Missing English translation: $key',
+      );
+    }
+  });
+
+  test('priority life-saving guides required by the redesign are present', () {
+    final ids = firstAidGuides.map((guide) => guide.id).toSet();
+
+    expect(ids, contains('wounds'));
+    expect(ids, contains('waiting_positions'));
+    expect(ids, containsAll(<String>[
+      'unconscious',
+      'cpr_adult',
+      'bleeding',
+      'choking_adult',
+      'choking_child',
+      'choking_infant',
+      'burn',
+      'stroke',
+      'chest_pain',
+      'anaphylaxis',
+      'seizure',
+      'drowning',
+      'hypothermia',
+      'heatstroke',
+    ]));
+  });
+
+  test('CPR guides expose exactly the steps that can be paced', () {
+    final pacedGuides = firstAidGuides.where(
+      (guide) => guide.supportsCprMetronome,
+    );
+
+    expect(pacedGuides, isNotEmpty);
+    for (final guide in pacedGuides) {
+      expect(
+        guide.steps.where((step) => step.cprPacing),
+        isNotEmpty,
+        reason: '${guide.id} enables pacing but has no paced step',
       );
     }
   });
