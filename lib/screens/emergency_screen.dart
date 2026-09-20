@@ -54,21 +54,43 @@ class EmergencyScreen extends StatelessWidget {
             children: [
           Container(
             padding: const EdgeInsets.all(13),
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(17), border: Border.all(color: const Color(0xffdbe5e7))),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(17),
+              border: Border.all(color: Theme.of(context).colorScheme.outline),
+            ),
             child: Row(children: [
-              Container(width: 54, height: 42, alignment: Alignment.center, decoration: BoxDecoration(color: const Color(0xfff7fafb), borderRadius: BorderRadius.circular(12)), child: Text(_flag(country.isoCode), style: const TextStyle(fontSize: 28))),
+              Container(
+                width: 54,
+                height: 42,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  _flag(country.isoCode),
+                  style: const TextStyle(fontSize: 28),
+                ),
+              ),
               const SizedBox(width: 12),
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(t.get(country.nameKey), style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w900)),
-                Text(t.get('emergency_hint'), style: const TextStyle(fontSize: 12, color: Color(0xff65747a))),
+                Text(
+                  t.get('emergency_hint'),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
               ])),
               Icon(
                 country.hasVerifiedNumbers
                     ? Icons.verified_outlined
                     : Icons.info_outline_rounded,
                 color: country.hasVerifiedNumbers
-                    ? const Color(0xff087f83)
-                    : const Color(0xff9a6a00),
+                    ? Theme.of(context).colorScheme.secondary
+                    : Theme.of(context).colorScheme.tertiary,
               ),
             ]),
           ),
@@ -91,18 +113,40 @@ class EmergencyScreen extends StatelessWidget {
             const SizedBox(height: 9),
             LayoutBuilder(
               builder: (context, constraints) {
-                final columns = constraints.maxWidth >= 760
-                    ? 3
-                    : constraints.maxWidth >= 440
-                        ? 2
-                        : 1;
+                final textScale =
+                    MediaQuery.textScalerOf(context).scale(16) / 16;
+                final columns = textScale > 1.30
+                    ? 1
+                    : constraints.maxWidth >= 760
+                        ? 3
+                        : constraints.maxWidth >= 440
+                            ? 2
+                            : 1;
+
+                if (columns == 1) {
+                  return Column(
+                    children: [
+                      for (var i = 0; i < others.length; i++) ...[
+                        _EmergencyTile(
+                          service: others[i],
+                          icon: _icon(others[i]),
+                          callService: caller,
+                          compact: true,
+                        ),
+                        if (i != others.length - 1)
+                          const SizedBox(height: 10),
+                      ],
+                    ],
+                  );
+                }
+
                 return GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: others.length,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: columns,
-                    mainAxisExtent: columns == 1 ? 96 : 142,
+                    mainAxisExtent: 156,
                     crossAxisSpacing: 10,
                     mainAxisSpacing: 10,
                   ),
@@ -110,7 +154,7 @@ class EmergencyScreen extends StatelessWidget {
                     service: others[i],
                     icon: _icon(others[i]),
                     callService: caller,
-                    compact: columns == 1,
+                    compact: false,
                   ),
                 );
               },
@@ -118,7 +162,10 @@ class EmergencyScreen extends StatelessWidget {
           ],
           const SizedBox(height: 16),
           Card(child: Padding(padding: const EdgeInsets.all(14), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Row(children: [const Icon(Icons.verified_user_outlined, color: Color(0xff087f83)), const SizedBox(width: 8), Text(t.get('official_sources'), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15))]),
+            Row(children: [Icon(
+              Icons.verified_user_outlined,
+              color: Theme.of(context).colorScheme.secondary,
+            ), const SizedBox(width: 8), Text(t.get('official_sources'), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15))]),
             const SizedBox(height: 5),
             if (country.sources.isEmpty)
               Padding(
@@ -127,8 +174,8 @@ class EmergencyScreen extends StatelessWidget {
                   en
                       ? 'No country-specific official source is bundled yet.'
                       : 'Aucune source officielle spécifique au pays n’est encore intégrée.',
-                  style: const TextStyle(
-                    color: Color(0xff65747a),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -179,9 +226,9 @@ class EmergencyScreen extends StatelessWidget {
                       },
                     )
                   : t.get('numbers_unverified'),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12,
-                color: Color(0xff65747a),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           ]))),
@@ -200,11 +247,23 @@ class _DangerHero extends StatelessWidget {
   @override Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
     final en = Localizations.localeOf(context).languageCode == 'en';
-    return Container(padding: const EdgeInsets.all(16), decoration: BoxDecoration(color: const Color(0xffffeded), borderRadius: BorderRadius.circular(20), border: Border.all(color: const Color(0xffffcaca))), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Row(children: [Container(width: 48, height: 48, decoration: BoxDecoration(color: Theme.of(context).colorScheme.error, borderRadius: BorderRadius.circular(14)), child: const Icon(Icons.phone_in_talk, color: Colors.white, size: 27)), const SizedBox(width: 12), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(en ? 'IMMEDIATE DANGER' : 'DANGER IMMÉDIAT', style: const TextStyle(fontSize: 12, letterSpacing: .4, fontWeight: FontWeight.w900, color: Color(0xff9d1c24))), Text(en ? 'Call ${service.number ?? ''}' : 'Appelez le ${service.number ?? ''}', style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w900)), Text(t.get(service.nameKey), style: const TextStyle(fontSize: 13, color: Color(0xff65747a)))]))]),
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: scheme.errorContainer,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: scheme.error.withValues(alpha: .35)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+      Row(children: [Container(width: 48, height: 48, decoration: BoxDecoration(color: scheme.error, borderRadius: BorderRadius.circular(14)), child: Icon(Icons.phone_in_talk, color: scheme.onError, size: 27)), const SizedBox(width: 12), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(en ? 'IMMEDIATE DANGER' : 'DANGER IMMÉDIAT', style: TextStyle(fontSize: 12, letterSpacing: .4, fontWeight: FontWeight.w900, color: scheme.onErrorContainer)), Text(en ? 'Call ${service.number ?? ''}' : 'Appelez le ${service.number ?? ''}', style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w900)), Text(t.get(service.nameKey), style: TextStyle(fontSize: 13, color: scheme.onErrorContainer))]))]),
       const SizedBox(height: 13),
-      SizedBox(width: double.infinity, child: FilledButton.icon(style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error, minimumSize: const Size.fromHeight(48)), onPressed: () => _call(context, t, service, callService), icon: const Icon(Icons.call), label: Text(en ? 'Call ${service.number ?? ''}' : 'Appeler ${service.number ?? ''}', style: const TextStyle(fontWeight: FontWeight.w900)))),
-    ]));
+      SizedBox(width: double.infinity, child: FilledButton.icon(style: FilledButton.styleFrom(backgroundColor: scheme.error, minimumSize: const Size.fromHeight(48)), onPressed: () => _call(context, t, service, callService), icon: const Icon(Icons.call), label: Text(en ? 'Call ${service.number ?? ''}' : 'Appeler ${service.number ?? ''}', style: const TextStyle(fontWeight: FontWeight.w900)))),
+        ],
+      ),
+    );
   }
 }
 
@@ -225,9 +284,8 @@ class _EmergencyTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
     final isRega = service.id == 'rega';
-    final accent = isRega
-        ? const Color(0xff087f83)
-        : Theme.of(context).colorScheme.error;
+    final scheme = Theme.of(context).colorScheme;
+    final accent = isRega ? scheme.secondary : scheme.error;
 
     return Card(
       margin: EdgeInsets.zero,
@@ -249,8 +307,8 @@ class _EmergencyTile extends StatelessWidget {
                       height: 40,
                       decoration: BoxDecoration(
                         color: isRega
-                            ? const Color(0xffe8f5f5)
-                            : const Color(0xffffe9e9),
+                            ? scheme.secondaryContainer
+                            : scheme.errorContainer,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(
@@ -275,8 +333,6 @@ class _EmergencyTile extends StatelessWidget {
                           ),
                           Text(
                             t.get(service.nameKey),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w800,
@@ -285,9 +341,9 @@ class _EmergencyTile extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const Icon(
+                    Icon(
                       Icons.call_outlined,
-                      color: Color(0xff87969a),
+                      color: scheme.onSurfaceVariant,
                     ),
                   ],
                 )
@@ -301,8 +357,8 @@ class _EmergencyTile extends StatelessWidget {
                           height: 40,
                           decoration: BoxDecoration(
                             color: isRega
-                                ? const Color(0xffe8f5f5)
-                                : const Color(0xffffe9e9),
+                                ? scheme.secondaryContainer
+                                : scheme.errorContainer,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Icon(
@@ -312,10 +368,10 @@ class _EmergencyTile extends StatelessWidget {
                           ),
                         ),
                         const Spacer(),
-                        const Icon(
+                        Icon(
                           Icons.call_outlined,
                           size: 18,
-                          color: Color(0xff87969a),
+                          color: scheme.onSurfaceVariant,
                         ),
                       ],
                     ),
@@ -330,8 +386,7 @@ class _EmergencyTile extends StatelessWidget {
                     ),
                     Text(
                       t.get(service.nameKey),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                      maxLines: 3,
                       style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w800,
@@ -356,12 +411,14 @@ class _UnverifiedCountryNotice extends StatelessWidget {
   final String countryName;
 
   @override
-  Widget build(BuildContext context) => Container(
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: const Color(0xfffff4c7),
+          color: scheme.tertiaryContainer,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: const Color(0xffffdf75)),
+          border: Border.all(color: scheme.tertiary.withValues(alpha: .35)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -369,9 +426,9 @@ class _UnverifiedCountryNotice extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(
+                Icon(
                   Icons.warning_amber_rounded,
-                  color: Color(0xff9a6a00),
+                  color: scheme.onTertiaryContainer,
                 ),
                 const SizedBox(width: 9),
                 Expanded(
@@ -410,6 +467,7 @@ class _UnverifiedCountryNotice extends StatelessWidget {
           ],
         ),
       );
+  }
 }
 
 Future<void> _call(BuildContext context, AppLocalizations t, EmergencyService service, EmergencyCallService caller) async {
