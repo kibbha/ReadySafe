@@ -322,7 +322,7 @@ class FirstAidPdfService {
             pw.SizedBox(
               width: 52,
               height: 48,
-              child: pw.SvgImage(svg: svg),
+              child: pw.SvgImage(svg: _safe(svg)),
             ),
           ],
         ],
