@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../app/app_scope.dart';
 import '../app/localizations.dart';
+import 'emergency_screen.dart';
 import 'guided_emergency_screen.dart';
 import 'home_screen.dart';
 import 'more_screen.dart';
@@ -28,7 +30,24 @@ class _MainShellState extends State<MainShell> {
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context);
+    final app = AppScope.of(context);
     final en = Localizations.localeOf(context).languageCode == 'en';
+    final emergencyNumber = app.activeCountry?.preferredEmergencyNumber;
+
+    Widget sosButton() => FloatingActionButton.extended(
+          heroTag: 'readysafe-shell-sos',
+          backgroundColor: Theme.of(context).colorScheme.error,
+          foregroundColor: Theme.of(context).colorScheme.onError,
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const EmergencyScreen()),
+          ),
+          icon: const Icon(Icons.sos_rounded),
+          label: Text(
+            emergencyNumber == null ? 'SOS' : 'SOS · $emergencyNumber',
+            style: const TextStyle(fontWeight: FontWeight.w900),
+          ),
+        );
     final destinations = [
       (Icons.home_outlined, Icons.home_rounded, t.get('home')),
       (Icons.sos_outlined, Icons.sos_rounded, en ? 'Emergency' : 'Urgence'),
@@ -46,6 +65,8 @@ class _MainShellState extends State<MainShell> {
         if (!useRail) {
           return Scaffold(
             body: content,
+            floatingActionButton: sosButton(),
+            floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
             bottomNavigationBar: NavigationBar(
               selectedIndex: index,
               onDestinationSelected: (value) => setState(() => index = value),
@@ -62,6 +83,7 @@ class _MainShellState extends State<MainShell> {
         }
 
         return Scaffold(
+          floatingActionButton: sosButton(),
           body: SafeArea(
             child: Row(
               children: [
@@ -84,7 +106,7 @@ class _MainShellState extends State<MainShell> {
                           width: 48,
                           height: 48,
                           decoration: BoxDecoration(
-                            color: const Color(0xff087f83),
+                            color: Theme.of(context).colorScheme.primary,
                             borderRadius: BorderRadius.circular(15),
                           ),
                           child: const Icon(
@@ -107,7 +129,7 @@ class _MainShellState extends State<MainShell> {
                                 style: const TextStyle(
                                   fontSize: 8.5,
                                   letterSpacing: .8,
-                                  color: Color(0xff718084),
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   fontWeight: FontWeight.w800,
                                 ),
                               ),
