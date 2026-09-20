@@ -7,10 +7,12 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final service = AppSettingsService();
 
+    await service.saveThemeMode('dark');
     await service.saveLargeText(true);
     await service.saveHighContrast(true);
 
     final settings = await service.load();
+    expect(settings.themeModeCode, 'dark');
     expect(settings.largeText, isTrue);
     expect(settings.highContrast, isTrue);
   });
@@ -19,6 +21,7 @@ void main() {
     const settings = AppSettings(
       residenceCountryCode: 'CH',
       localeCode: 'fr',
+      themeModeCode: 'dark',
       largeText: true,
       highContrast: true,
     );
@@ -27,6 +30,7 @@ void main() {
 
     expect(changed.residenceCountryCode, 'CH');
     expect(changed.localeCode, 'en');
+    expect(changed.themeModeCode, 'dark');
     expect(changed.largeText, isTrue);
     expect(changed.highContrast, isTrue);
   });
