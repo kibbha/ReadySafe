@@ -5,6 +5,7 @@ class AppSettings {
     this.residenceCountryCode,
     this.travelCountryCode,
     this.localeCode = 'fr',
+    this.themeModeCode = 'system',
     this.largeText = false,
     this.highContrast = false,
   });
@@ -12,6 +13,7 @@ class AppSettings {
   final String? residenceCountryCode;
   final String? travelCountryCode;
   final String localeCode;
+  final String themeModeCode;
   final bool largeText;
   final bool highContrast;
 
@@ -22,6 +24,7 @@ class AppSettings {
     String? residenceCountryCode,
     String? travelCountryCode,
     String? localeCode,
+    String? themeModeCode,
     bool? largeText,
     bool? highContrast,
     bool clearTravelCountry = false,
@@ -32,6 +35,7 @@ class AppSettings {
             ? null
             : (travelCountryCode ?? this.travelCountryCode),
         localeCode: localeCode ?? this.localeCode,
+        themeModeCode: themeModeCode ?? this.themeModeCode,
         largeText: largeText ?? this.largeText,
         highContrast: highContrast ?? this.highContrast,
       );
@@ -41,6 +45,7 @@ class AppSettingsService {
   static const _residence = 'settings.residenceCountry';
   static const _travel = 'settings.travelCountry';
   static const _locale = 'settings.locale';
+  static const _themeMode = 'settings.themeMode';
   static const _largeText = 'settings.largeText';
   static const _highContrast = 'settings.highContrast';
 
@@ -50,6 +55,7 @@ class AppSettingsService {
       residenceCountryCode: prefs.getString(_residence),
       travelCountryCode: prefs.getString(_travel),
       localeCode: prefs.getString(_locale) ?? 'fr',
+      themeModeCode: prefs.getString(_themeMode) ?? 'system',
       largeText: prefs.getBool(_largeText) ?? false,
       highContrast: prefs.getBool(_highContrast) ?? false,
     );
@@ -69,6 +75,9 @@ class AppSettingsService {
 
   Future<void> saveLocale(String code) async =>
       (await SharedPreferences.getInstance()).setString(_locale, code);
+
+  Future<void> saveThemeMode(String code) async =>
+      (await SharedPreferences.getInstance()).setString(_themeMode, code);
 
   Future<void> saveLargeText(bool enabled) async =>
       (await SharedPreferences.getInstance()).setBool(_largeText, enabled);
