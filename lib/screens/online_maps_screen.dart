@@ -8,6 +8,7 @@ import '../app/app_scope.dart';
 import '../core/search_text.dart';
 import '../models/map_poi.dart';
 import '../services/local_storage_service.dart';
+import '../services/device_location_service.dart';
 import '../services/map_poi_service.dart';
 
 enum _PlaceKind {
@@ -87,6 +88,7 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
 
   final _storage = LocalStorageService();
   final _poiService = MapPoiService();
+  final _locationService = const DeviceLocationService();
   final _search = TextEditingController();
 
   MapLibreMapController? _map;
@@ -102,7 +104,9 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
   DateTime? _poiUpdatedAt;
   bool _poiFromCache = false;
   bool _poiStale = false;
+  bool _locating = false;
   LatLng? _poiCenter;
+  LatLng? _userLocation;
 
   static const _places = <_Place>[
     _Place('Genève', 'Ville', 46.2044, 6.1432, _PlaceKind.city),
@@ -183,7 +187,7 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
   }
 
   List<_Place> get _visibleSafetyPlaces {
-    return _allPlaces.where((place) {
+    final places = _allPlaces.where((place) {
       if (place.kind == _PlaceKind.city) return false;
       if (_filter != null && place.kind != _filter) return false;
 
@@ -191,6 +195,20 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
       final dLng = (place.lng - _camera.target.longitude).abs();
       return dLat < 0.35 && dLng < 0.45;
     }).toList();
+
+    if (_userLocation != null) {
+      places.sort((a, b) {
+        final aDistance = a.distanceMeters > 0
+            ? a.distanceMeters
+            : double.infinity;
+        final bDistance = b.distanceMeters > 0
+            ? b.distanceMeters
+            : double.infinity;
+        return aDistance.compareTo(bDistance);
+      });
+    }
+
+    return places;
   }
 
   Future<void> _loadPersonalMarkers() async {
@@ -258,6 +276,20 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
           circleColor: _hex(place.kind),
           circleStrokeColor: '#ffffff',
           circleStrokeWidth: place.personal ? 4 : 3,
+        ),
+      );
+      _circles.add(circle);
+    }
+
+    final user = _userLocation;
+    if (user != null) {
+      final circle = await map.addCircle(
+        CircleOptions(
+          geometry: user,
+          circleRadius: 8,
+          circleColor: '#1268d8',
+          circleStrokeColor: '#ffffff',
+          circleStrokeWidth: 4,
         ),
       );
       _circles.add(circle);
@@ -361,6 +393,118 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
       sourceUrl: poi.sourceUrl,
       openingHours: poi.openingHours,
       distanceMeters: poi.distanceMeters,
+    );
+  }
+
+  Future<void> _locateUser({bool findNearestAed = false}) async {
+    if (_locating) return;
+    final en = Localizations.localeOf(context).languageCode == 'en';
+
+    setState(() => _locating = true);
+    try {
+      final result = await _locationService.currentPosition();
+      if (!mounted) return;
+
+      if (!result.isSuccess) {
+        await _showLocationFailure(result.failure!, en);
+        return;
+      }
+
+      final user = LatLng(result.latitude!, result.longitude!);
+      _userLocation = user;
+      _camera = CameraPosition(target: user, zoom: findNearestAed ? 14.5 : 13.5);
+
+      await _map?.animateCamera(
+        CameraUpdate.newCameraPosition(_camera),
+      );
+
+      if (!mounted) return;
+      setState(() {
+        _searchOpen = false;
+        if (findNearestAed) _filter = _PlaceKind.aid;
+      });
+      await _syncMarkers();
+      await _loadUsefulPlaces(force: true);
+
+      if (!mounted || !findNearestAed) return;
+
+      final aeds = _communityPlaces
+          .where((place) => place.kind == _PlaceKind.aid)
+          .toList()
+        ..sort((a, b) => a.distanceMeters.compareTo(b.distanceMeters));
+
+      if (aeds.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              en
+                  ? 'No AED was returned for this area. Try refreshing or verify with local emergency services.'
+                  : 'Aucun DAE n’a été retourné pour cette zone. Actualisez ou vérifiez auprès des services locaux.',
+            ),
+          ),
+        );
+        return;
+      }
+
+      await _showPlaceDetails(aeds.first);
+    } finally {
+      if (mounted) setState(() => _locating = false);
+    }
+  }
+
+  Future<void> _showLocationFailure(
+    DeviceLocationFailure failure,
+    bool en,
+  ) async {
+    final title = en ? 'Location unavailable' : 'Localisation indisponible';
+    late final String message;
+    VoidCallback? action;
+
+    switch (failure) {
+      case DeviceLocationFailure.servicesDisabled:
+        message = en
+            ? 'Turn on device location to find nearby emergency places.'
+            : 'Activez la localisation du téléphone pour trouver les points d’urgence proches.';
+        action = () {
+          Navigator.pop(context);
+          _locationService.openLocationSettings();
+        };
+      case DeviceLocationFailure.permissionDeniedForever:
+        message = en
+            ? 'Location permission is blocked for ReadySafe. You can enable it in app settings.'
+            : 'La permission de localisation est bloquée pour ReadySafe. Vous pouvez l’activer dans les paramètres de l’application.';
+        action = () {
+          Navigator.pop(context);
+          _locationService.openSettings();
+        };
+      case DeviceLocationFailure.permissionDenied:
+        message = en
+            ? 'Location permission was not granted. The map remains usable manually.'
+            : 'La permission de localisation n’a pas été accordée. La carte reste utilisable manuellement.';
+      case DeviceLocationFailure.unavailable:
+        message = en
+            ? 'The phone could not determine a position right now.'
+            : 'Le téléphone n’a pas pu déterminer votre position pour le moment.';
+    }
+
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(en ? 'Close' : 'Fermer'),
+          ),
+          if (action != null)
+            FilledButton(
+              onPressed: action,
+              child: Text(en ? 'Settings' : 'Réglages'),
+            ),
+        ],
+      ),
     );
   }
 
@@ -913,6 +1057,23 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
         title: Text(en ? 'Map & landmarks' : 'Carte & repères'),
         actions: [
           IconButton(
+            tooltip: en ? 'Nearest AED' : 'DAE le plus proche',
+            onPressed: _locating
+                ? null
+                : () => _locateUser(findNearestAed: true),
+            icon: _locating
+                ? const SizedBox.square(
+                    dimension: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.favorite_rounded),
+          ),
+          IconButton(
+            tooltip: en ? 'My location' : 'Me localiser',
+            onPressed: _locating ? null : _locateUser,
+            icon: const Icon(Icons.my_location_rounded),
+          ),
+          IconButton(
             tooltip: en ? 'Load useful places around map centre' : 'Charger les points utiles autour du centre',
             onPressed: _poiLoading ? null : () => _loadUsefulPlaces(force: true),
             icon: _poiLoading
@@ -1143,6 +1304,12 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
             bottom: 210,
             child: Column(
               children: [
+                _MapButton(
+                  icon: Icons.my_location_rounded,
+                  tooltip: en ? 'My location' : 'Me localiser',
+                  onTap: _locating ? () {} : _locateUser,
+                ),
+                const SizedBox(height: 6),
                 _MapButton(
                   icon: Icons.add_rounded,
                   tooltip: en ? 'Zoom in' : 'Zoom avant',
