@@ -18,5 +18,5 @@ class ReadySafeTextScaler extends TextScaler {
   double scale(double fontSize) => base.scale(fontSize) * multiplier;
 
   @override
-  double get textScaleFactor => base.textScaleFactor * multiplier;
+  double get textScaleFactor => scale(1.0);
 }
