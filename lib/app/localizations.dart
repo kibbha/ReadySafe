@@ -291,6 +291,8 @@ class AppLocalizations {
     'service_ua_ambulance_desc': 'Aide médicale urgente en Ukraine',
     'service_ua_gas_desc': 'Service d’urgence du réseau de gaz en Ukraine',
     'service_ch_ambulance_desc': 'Ambulance et urgence médicale en Suisse',
+    'service_ch_police_desc': 'Police — numéro d’urgence en Suisse',
+    'service_ch_fire_desc': 'Pompiers — numéro d’urgence en Suisse',
     'service_rega': 'Rega — sauvetage aérien',
     'service_rega_desc': 'Sauvetage aérien médicalisé en Suisse',
     'service_poison': 'Centre antipoison',
@@ -337,10 +339,11 @@ class AppLocalizations {
     'aid_choking_summary':
         'La personne ne peut plus parler, tousser ou respirer.',
     'aid_choking_1':
-        'Demandez si la personne s’étouffe et appelez les secours.',
-    'aid_choking_2': 'Donnez jusqu’à 5 claques fermes entre les omoplates.',
+        'Demandez si la personne s’étouffe. Si elle peut tousser efficacement, encouragez-la à tousser.',
+    'aid_choking_2':
+        'Si elle ne peut plus tousser efficacement, donnez jusqu’à 5 claques fermes entre les omoplates.',
     'aid_choking_3':
-        'Si inefficace, alternez avec les gestes enseignés par les secours jusqu’à expulsion ou perte de connaissance.',
+        'Si les claques sont inefficaces, donnez jusqu’à 5 compressions abdominales puis alternez 5 claques et 5 compressions. Appelez les secours. Si elle devient inconsciente, débutez la RCP.',
     'aid_choking_infant_summary':
         'Un nourrisson conscient ne peut plus pleurer, tousser ou respirer.',
     'aid_infant_1': 'Appelez les secours et soutenez la tête du nourrisson.',
@@ -353,8 +356,9 @@ class AppLocalizations {
     'aid_bleeding_1':
         'Protégez-vous si possible et exercez une pression directe ferme.',
     'aid_bleeding_2':
-        'Appelez les secours et maintenez la pression sans retirer le premier pansement.',
-    'aid_bleeding_3': 'Allongez, couvrez et surveillez la respiration.',
+        'Appelez les secours. Maintenez une pression manuelle ferme; ajoutez un pansement directement sur la plaie si disponible.',
+    'aid_bleeding_3':
+        'Si une hémorragie menaçant la vie d’un membre n’est pas contrôlée par la pression, posez dès que possible un garrot manufacturé si vous en avez un, notez l’heure et ne le desserrez pas. Surveillez la respiration.',
     'aid_burn': 'Brûlure',
     'aid_burn_summary': 'Brûlure thermique, chimique ou électrique.',
     'aid_burn_1': 'Éloignez la source sans vous mettre en danger.',
@@ -691,6 +695,8 @@ class AppLocalizations {
     'service_ua_ambulance_desc': 'Emergency medical service in Ukraine',
     'service_ua_gas_desc': 'Gas network emergency service in Ukraine',
     'service_ch_ambulance_desc': 'Ambulance and medical emergency service in Switzerland',
+    'service_ch_police_desc': 'Police emergency number in Switzerland',
+    'service_ch_fire_desc': 'Fire brigade emergency number in Switzerland',
     'service_rega': 'Rega — air rescue',
     'service_rega_desc': 'Medical air rescue in Switzerland',
     'service_poison': 'Poison centre',
@@ -735,10 +741,11 @@ class AppLocalizations {
     'aid_choking_infant': 'Choking — infant',
     'aid_choking_summary': 'The person cannot speak, cough, or breathe.',
     'aid_choking_1':
-        'Ask whether the person is choking and call emergency services.',
-    'aid_choking_2': 'Give up to 5 firm blows between the shoulder blades.',
+        'Ask whether the person is choking. If they can cough effectively, encourage them to keep coughing.',
+    'aid_choking_2':
+        'If they cannot cough effectively, give up to 5 firm back blows between the shoulder blades.',
     'aid_choking_3':
-        'If ineffective, follow the emergency operator’s directions until the object clears or consciousness is lost.',
+        'If back blows fail, give up to 5 abdominal thrusts, then alternate 5 back blows and 5 abdominal thrusts. Call emergency services. If they become unresponsive, start CPR.',
     'aid_choking_infant_summary':
         'A conscious infant can no longer cry, cough, or breathe.',
     'aid_infant_1': 'Call emergency services and support the infant’s head.',
@@ -751,9 +758,9 @@ class AppLocalizations {
     'aid_bleeding_1':
         'Protect yourself if possible and apply firm direct pressure.',
     'aid_bleeding_2':
-        'Call emergency services and maintain pressure without removing the first dressing.',
+        'Call emergency services. Maintain firm direct manual pressure and place a dressing directly on the wound if available.',
     'aid_bleeding_3':
-        'Lay the person down, keep them warm, and monitor breathing.',
+        'For life-threatening limb bleeding not controlled by direct pressure, apply a manufactured tourniquet as soon as possible if available, record the time, and do not loosen it. Monitor breathing.',
     'aid_burn': 'Burn',
     'aid_burn_summary': 'Thermal, chemical, or electrical burn.',
     'aid_burn_1': 'Remove the source without putting yourself at risk.',
