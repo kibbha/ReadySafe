@@ -4,6 +4,7 @@ class FirstAidStep {
     required this.illustrationAsset,
     this.headingKey,
     this.detailKeys = const [],
+    this.cprPacing = false,
   });
 
   /// Short imperative instruction used by the guided emergency mode.
@@ -15,6 +16,9 @@ class FirstAidStep {
   /// Optional supporting bullets. These are intentionally separate from the
   /// short guided instruction so the emergency mode remains concise.
   final List<String> detailKeys;
+
+  /// True only for the step where chest compressions should be paced.
+  final bool cprPacing;
 
   final String illustrationAsset;
 }
