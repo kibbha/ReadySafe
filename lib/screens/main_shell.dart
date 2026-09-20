@@ -126,10 +126,12 @@ class _MainShellState extends State<MainShell> {
                               ),
                               Text(
                                 en ? 'BE READY. ACT FAST.' : 'ÊTRE PRÊT. AGIR VITE.',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 8.5,
                                   letterSpacing: .8,
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant,
                                   fontWeight: FontWeight.w800,
                                 ),
                               ),
