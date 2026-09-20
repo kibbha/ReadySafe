@@ -399,9 +399,9 @@ class _FamilyDocumentsScreenState extends State<FamilyDocumentsScreen>
                 padding: const EdgeInsets.all(16),
                 child: Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.person_add_alt_1_outlined,
-                      color: Color(0xff087f83),
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                     const SizedBox(width: 10),
                     Expanded(
@@ -409,8 +409,8 @@ class _FamilyDocumentsScreenState extends State<FamilyDocumentsScreen>
                         en
                             ? 'No emergency contact saved yet.'
                             : 'Aucun contact d’urgence enregistré.',
-                        style: const TextStyle(
-                          color: Color(0xff65747a),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -427,12 +427,16 @@ class _FamilyDocumentsScreenState extends State<FamilyDocumentsScreen>
               margin: const EdgeInsets.only(bottom: 8),
               child: ListTile(
                 leading: CircleAvatar(
-                  backgroundColor: const Color(0xffe4f2f0),
+                  backgroundColor:
+                      Theme.of(context).colorScheme.secondaryContainer,
                   child: Text(
                     (contact['name'] ?? '?').trim().isEmpty
                         ? '?'
                         : (contact['name'] ?? '?').trim()[0].toUpperCase(),
-                    style: const TextStyle(fontWeight: FontWeight.w900, color: Color(0xff087f83)),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w900,
+                      color: Theme.of(context).colorScheme.onSecondaryContainer,
+                    ),
                   ),
                 ),
                 title: Text(contact['name'] ?? '', style: const TextStyle(fontWeight: FontWeight.w900)),
@@ -449,7 +453,10 @@ class _FamilyDocumentsScreenState extends State<FamilyDocumentsScreen>
                       IconButton(
                         tooltip: en ? 'Call' : 'Appeler',
                         onPressed: () => _call(phone),
-                        icon: const Icon(Icons.call_rounded, color: Color(0xff087f83)),
+                        icon: Icon(
+                          Icons.call_rounded,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                       ),
                     PopupMenuButton<String>(
                       onSelected: (value) async {
@@ -474,13 +481,16 @@ class _FamilyDocumentsScreenState extends State<FamilyDocumentsScreen>
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: const Color(0xffeaf6f4),
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(18),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.offline_bolt_rounded, color: Color(0xff087f83)),
+                Icon(
+                  Icons.offline_bolt_rounded,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -517,7 +527,10 @@ class _FamilyDocumentsScreenState extends State<FamilyDocumentsScreen>
             en
                 ? 'This checklist is stored locally. No private file is uploaded to a server.'
                 : 'Cette version gère la checklist documentaire localement. Aucun fichier privé n’est envoyé à un serveur.',
-            style: const TextStyle(color: Color(0xff65747a), height: 1.35),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              height: 1.35,
+            ),
           ),
           const SizedBox(height: 12),
           ..._documents.indexed.map((entry) {
@@ -530,10 +543,14 @@ class _FamilyDocumentsScreenState extends State<FamilyDocumentsScreen>
                 value: ready,
                 onChanged: (value) => _toggleDocument(index, value ?? false),
                 secondary: CircleAvatar(
-                  backgroundColor: ready ? const Color(0xffdff2ed) : const Color(0xfffff2df),
+                  backgroundColor: ready
+                      ? Theme.of(context).colorScheme.secondaryContainer
+                      : Theme.of(context).colorScheme.tertiaryContainer,
                   child: Icon(
                     _docIcon('${doc['id']}'),
-                    color: ready ? const Color(0xff087f83) : const Color(0xffb7833f),
+                    color: ready
+                        ? Theme.of(context).colorScheme.onSecondaryContainer
+                        : Theme.of(context).colorScheme.onTertiaryContainer,
                   ),
                 ),
                 title: Text(_docTitle('${doc['id']}', en, '${doc['title']}'), style: const TextStyle(fontWeight: FontWeight.w900)),
@@ -545,11 +562,12 @@ class _FamilyDocumentsScreenState extends State<FamilyDocumentsScreen>
           const SizedBox(height: 12),
           Card(
             child: ListTile(
-              leading: const CircleAvatar(
-                backgroundColor: Color(0xffe9e5f5),
+              leading: CircleAvatar(
+                backgroundColor:
+                    Theme.of(context).colorScheme.primaryContainer,
                 child: Icon(
                   Icons.lock_rounded,
-                  color: Color(0xff6750a4),
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
                 ),
               ),
               title: Text(
@@ -578,13 +596,16 @@ class _FamilyDocumentsScreenState extends State<FamilyDocumentsScreen>
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: const Color(0xffffeeee),
+              color: Theme.of(context).colorScheme.errorContainer,
               borderRadius: BorderRadius.circular(18),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.lock_outline_rounded, color: Color(0xffd92d36)),
+                Icon(
+                  Icons.lock_outline_rounded,
+                  color: Theme.of(context).colorScheme.onErrorContainer,
+                ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -610,9 +631,7 @@ class _FamilyDocumentsScreenState extends State<FamilyDocumentsScreen>
       Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xffe3f3f0), Color(0xfffff4e7)],
-          ),
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(22),
         ),
         child: Row(
@@ -621,7 +640,7 @@ class _FamilyDocumentsScreenState extends State<FamilyDocumentsScreen>
               width: 52,
               height: 52,
               decoration: BoxDecoration(
-                color: const Color(0xff087f83),
+                color: Theme.of(context).colorScheme.primary,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(icon, color: Colors.white),
@@ -633,7 +652,12 @@ class _FamilyDocumentsScreenState extends State<FamilyDocumentsScreen>
                 children: [
                   Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
                   const SizedBox(height: 2),
-                  Text(subtitle, style: const TextStyle(color: Color(0xff65747a))),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -648,7 +672,12 @@ class _FamilyDocumentsScreenState extends State<FamilyDocumentsScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
-            Text(subtitle, style: const TextStyle(color: Color(0xff65747a))),
+            Text(
+              subtitle,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
           ],
         ),
       );
