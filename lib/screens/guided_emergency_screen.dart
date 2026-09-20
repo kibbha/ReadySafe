@@ -420,7 +420,7 @@ class GuidedEmergencyScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      backgroundColor: const Color(0xfff7faf9),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(en ? 'Emergency — guide me' : 'Urgence — guidez-moi'),
         actions: [
@@ -436,22 +436,28 @@ class GuidedEmergencyScreen extends StatelessWidget {
           final width = constraints.maxWidth;
           final wide = width >= 760;
           final horizontal = wide ? 28.0 : 14.0;
-          final columns = width >= 1120
-              ? 4
-              : width >= 760
-                  ? 3
-                  : width >= 440
-                      ? 2
-                      : 1;
+          final textScale =
+              MediaQuery.textScalerOf(context).scale(16) / 16;
+          final columns = textScale > 1.30
+              ? 1
+              : width >= 1120
+                  ? 4
+                  : width >= 760
+                      ? 3
+                      : width >= 440
+                          ? 2
+                          : 1;
           return ListView(
             padding: EdgeInsets.fromLTRB(horizontal, 4, horizontal, 32),
             children: [
               Container(
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  color: const Color(0xffffeded),
+                  color: Theme.of(context).colorScheme.errorContainer,
                   borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: const Color(0xffffcfd2)),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.error.withValues(alpha: .35),
+                  ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -481,7 +487,10 @@ class GuidedEmergencyScreen extends StatelessWidget {
                       en
                           ? 'Choose the closest situation. For immediate danger or uncertainty, contact emergency services first.'
                           : 'Choisissez la situation la plus proche. En cas de danger immédiat ou de doute, contactez d’abord les secours.',
-                      style: const TextStyle(color: Color(0xff5f686b), height: 1.4),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onErrorContainer,
+                        height: 1.4,
+                      ),
                     ),
                     const SizedBox(height: 14),
                     SizedBox(
@@ -534,13 +543,16 @@ class GuidedEmergencyScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: const Color(0xffeef6f5),
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(18),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.offline_bolt_rounded, color: Color(0xff087f83)),
+                    Icon(
+                      Icons.offline_bolt_rounded,
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
@@ -573,28 +585,49 @@ class _SituationGrid extends StatelessWidget {
   final bool compact;
 
   @override
-  Widget build(BuildContext context) => GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: situations.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: columns,
-          mainAxisExtent: compact ? 108 : 154,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-        ),
-        itemBuilder: (context, index) {
-          final item = situations[index];
-          return _SituationCard(
-            title: item.title,
-            subtitle: item.subtitle,
-            icon: item.icon,
-            onTap: item.onTap,
-            accent: item.urgentColor,
-            compact: compact,
-          );
-        },
+  Widget build(BuildContext context) {
+    if (compact) {
+      return Column(
+        children: [
+          for (var index = 0; index < situations.length; index++) ...[
+            _SituationCard(
+              title: situations[index].title,
+              subtitle: situations[index].subtitle,
+              icon: situations[index].icon,
+              onTap: situations[index].onTap,
+              accent: situations[index].urgentColor,
+              compact: true,
+            ),
+            if (index != situations.length - 1)
+              const SizedBox(height: 10),
+          ],
+        ],
       );
+    }
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: situations.length,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: columns,
+        mainAxisExtent: 174,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+      ),
+      itemBuilder: (context, index) {
+        final item = situations[index];
+        return _SituationCard(
+          title: item.title,
+          subtitle: item.subtitle,
+          icon: item.icon,
+          onTap: item.onTap,
+          accent: item.urgentColor,
+          compact: false,
+        );
+      },
+    );
+  }
 }
 
 class _SectionHeader extends StatelessWidget {
@@ -613,8 +646,12 @@ class _SectionHeader extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CircleAvatar(
-            backgroundColor: const Color(0xffe5f3f1),
-            child: Icon(icon, color: const Color(0xff087f83)),
+            backgroundColor:
+                Theme.of(context).colorScheme.secondaryContainer,
+            child: Icon(
+              icon,
+              color: Theme.of(context).colorScheme.onSecondaryContainer,
+            ),
           ),
           const SizedBox(width: 9),
           Expanded(
@@ -622,7 +659,12 @@ class _SectionHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
-                Text(subtitle, style: const TextStyle(color: Color(0xff65747a))),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
               ],
             ),
           ),
@@ -665,9 +707,10 @@ class _SituationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = accent ?? const Color(0xff087f83);
+    final scheme = Theme.of(context).colorScheme;
+    final color = accent ?? scheme.primary;
     return Material(
-      color: Colors.white,
+      color: scheme.surface,
       borderRadius: BorderRadius.circular(20),
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
@@ -698,8 +741,6 @@ class _SituationCard extends StatelessWidget {
                         children: [
                           Text(
                             title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               fontSize: 14.8,
                               fontWeight: FontWeight.w900,
@@ -708,20 +749,18 @@ class _SituationCard extends StatelessWidget {
                           const SizedBox(height: 3),
                           Text(
                             subtitle,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 11.2,
-                              color: Color(0xff65747a),
-                              height: 1.18,
+                            style: TextStyle(
+                              fontSize: 11.5,
+                              color: scheme.onSurfaceVariant,
+                              height: 1.25,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const Icon(
+                    Icon(
                       Icons.chevron_right_rounded,
-                      color: Color(0xff87969a),
+                      color: scheme.onSurfaceVariant,
                     ),
                   ],
                 )
@@ -740,8 +779,7 @@ class _SituationCard extends StatelessWidget {
                     const Spacer(),
                     Text(
                       title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                      maxLines: 3,
                       style: const TextStyle(
                         fontSize: 14.8,
                         fontWeight: FontWeight.w900,
@@ -751,12 +789,11 @@ class _SituationCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       subtitle,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      maxLines: 3,
+                      style: TextStyle(
                         fontSize: 11.2,
-                        color: Color(0xff65747a),
-                        height: 1.18,
+                        color: scheme.onSurfaceVariant,
+                        height: 1.22,
                       ),
                     ),
                   ],
