@@ -770,7 +770,6 @@ class _PosterMiniStep extends StatelessWidget {
           ],
         ),
       );
-  }
 }
 
 class _PosterBranding extends StatelessWidget {
