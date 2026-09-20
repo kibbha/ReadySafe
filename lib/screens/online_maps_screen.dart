@@ -11,6 +11,8 @@ import '../services/local_storage_service.dart';
 import '../services/device_location_service.dart';
 import '../services/map_poi_service.dart';
 
+enum _MapMenuAction { refresh, sources, markers, recenter }
+
 enum _PlaceKind {
   shelter,
   health,
@@ -1077,41 +1079,69 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
             onPressed: _locating ? null : _locateUser,
             icon: const Icon(Icons.my_location_rounded),
           ),
-          IconButton(
-            tooltip: en ? 'Load useful places around map centre' : 'Charger les points utiles autour du centre',
-            onPressed: _poiLoading ? null : () => _loadUsefulPlaces(force: true),
-            icon: _poiLoading
-                ? const SizedBox.square(
-                    dimension: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.place_rounded),
-          ),
-          IconButton(
-            tooltip: en ? 'Map data sources' : 'Sources des données',
-            onPressed: _showMapSources,
-            icon: const Icon(Icons.info_outline_rounded),
-          ),
-          IconButton(
-            tooltip: en ? 'My landmarks' : 'Mes repères',
-            onPressed: _manageMarkers,
-            icon: const Icon(Icons.bookmarks_outlined),
-          ),
-          IconButton(
-            tooltip: en
-                ? 'Recenter on active country'
-                : 'Recentrer sur le pays actif',
-            onPressed: () async {
-              final code =
-                  AppScope.of(context).activeCountry?.isoCode ?? '';
-              _camera = _initialCamera(code);
-
-              await _map?.animateCamera(
-                CameraUpdate.newCameraPosition(_camera),
-              );
-              await _syncMarkers();
+          PopupMenuButton<_MapMenuAction>(
+            tooltip: en ? 'More map actions' : 'Plus d’actions carte',
+            onSelected: (action) async {
+              switch (action) {
+                case _MapMenuAction.refresh:
+                  await _loadUsefulPlaces(force: true);
+                  break;
+                case _MapMenuAction.sources:
+                  await _showMapSources();
+                  break;
+                case _MapMenuAction.markers:
+                  await _manageMarkers();
+                  break;
+                case _MapMenuAction.recenter:
+                  final code =
+                      AppScope.of(context).activeCountry?.isoCode ?? '';
+                  _camera = _initialCamera(code);
+                  await _map?.animateCamera(
+                    CameraUpdate.newCameraPosition(_camera),
+                  );
+                  await _syncMarkers();
+                  break;
+              }
             },
-            icon: const Icon(Icons.center_focus_strong_rounded),
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: _MapMenuAction.refresh,
+                enabled: !_poiLoading,
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.refresh_rounded),
+                  title: Text(
+                    en ? 'Refresh useful places' : 'Actualiser les points utiles',
+                  ),
+                ),
+              ),
+              PopupMenuItem(
+                value: _MapMenuAction.sources,
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.info_outline_rounded),
+                  title: Text(en ? 'Data sources' : 'Sources des données'),
+                ),
+              ),
+              PopupMenuItem(
+                value: _MapMenuAction.markers,
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.bookmarks_outlined),
+                  title: Text(en ? 'My landmarks' : 'Mes repères'),
+                ),
+              ),
+              PopupMenuItem(
+                value: _MapMenuAction.recenter,
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.center_focus_strong_rounded),
+                  title: Text(
+                    en ? 'Active country' : 'Pays actif',
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
