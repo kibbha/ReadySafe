@@ -91,6 +91,11 @@ final firstAidGuides = [
       ['aid_wounds_abdomen_detail'],
       ['aid_wounds_embedded_detail'],
     ],
+    illustrations: [
+      'assets/illustrations/wounds_chest.svg',
+      'assets/illustrations/wounds_abdomen.svg',
+      'assets/illustrations/wounds_embedded.svg',
+    ],
     warnings: ['aid_wounds_warning'],
   ),
   _guide(
@@ -109,6 +114,12 @@ final firstAidGuides = [
       'aid_waiting_positions_abdomen_heading',
       'aid_waiting_positions_unconscious_heading',
       'aid_waiting_positions_trauma_heading',
+    ],
+    illustrations: [
+      'assets/illustrations/waiting_chest.svg',
+      'assets/illustrations/waiting_abdomen.svg',
+      'assets/illustrations/waiting_recovery.svg',
+      'assets/illustrations/waiting_trauma.svg',
     ],
     warnings: ['aid_waiting_positions_warning'],
   ),
