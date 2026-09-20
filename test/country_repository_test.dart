@@ -47,6 +47,19 @@ void main() {
       );
     }
   });
+  test('Swiss emergency services use dedicated verified labels', () {
+    final switzerland = CountryRepository.byCode('CH')!;
+    final byId = {for (final service in switzerland.services) service.id: service};
+
+    expect(byId['medical']?.number, '144');
+    expect(byId['police']?.number, '117');
+    expect(byId['fire']?.number, '118');
+    expect(byId['poison']?.number, '145');
+    expect(byId['police']?.descriptionKey, 'service_ch_police_desc');
+    expect(byId['fire']?.descriptionKey, 'service_ch_fire_desc');
+    expect(switzerland.preferredEmergencyNumber, '144');
+  });
+
   test(
     'unknown countries are not silently substituted',
     () => expect(CountryRepository.byCode('XX'), isNull),
