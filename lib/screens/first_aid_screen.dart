@@ -174,7 +174,7 @@ class _FirstAidScreenState extends State<FirstAidScreen> {
     final extras = firstAidGuides.where((guide) => !_essentialIds.contains(guide.id)).toList();
 
     return Scaffold(
-      backgroundColor: const Color(0xfff6faf9),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(t.get('firstAid')),
         actions: [
@@ -210,6 +210,10 @@ class _FirstAidScreenState extends State<FirstAidScreen> {
                       : columns == 2
                           ? 480.0
                           : 505.0;
+          final effectiveTextScale =
+              MediaQuery.textScalerOf(context).scale(16) / 16;
+          final useAccessibleList =
+              width < 520 || effectiveTextScale > 1.30;
 
           return ListView(
             padding: EdgeInsets.fromLTRB(horizontal, 4, horizontal, 28),
@@ -251,70 +255,30 @@ class _FirstAidScreenState extends State<FirstAidScreen> {
                   child: Center(child: Text(_aidText(context, 'first_aid_empty'))),
                 )
               else
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: guides.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: columns,
-                    mainAxisExtent: posterHeight,
-                    crossAxisSpacing: 9,
-                    mainAxisSpacing: 9,
-                  ),
-                  itemBuilder: (context, index) {
-                    final guide = guides[index];
-                    final essentialIndex = _essentialIds.indexOf(guide.id);
-                    return _PosterGuideCard(
-                      guide: guide,
-                      number: essentialIndex >= 0 ? essentialIndex + 1 : null,
-                      title: t.get(guide.titleKey),
-                      subtitle: _posterTag(guide.id, en),
-                      emergencyNumber: _emergencyNumber(context),
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => FirstAidDetailScreen(guide: guide)),
-                      ),
-                    );
-                  },
+                _GuideCollection(
+                  guides: guides,
+                  columns: columns,
+                  posterHeight: posterHeight,
+                  accessibleList: useAccessibleList,
                 ),
               if (!browsingAll && extras.isNotEmpty) ...[
                 const SizedBox(height: 18),
                 Text(
                   en ? 'MORE FIRST-AID POSTERS' : 'AUTRES FICHES PREMIERS SECOURS',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     letterSpacing: .5,
-                    color: Color(0xff087f83),
+                    color: Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
                 const SizedBox(height: 8),
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: extras.length,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: columns,
-                    mainAxisExtent: posterHeight,
-                    crossAxisSpacing: 9,
-                    mainAxisSpacing: 9,
-                  ),
-                  itemBuilder: (context, index) {
-                    final guide = extras[index];
-                    return _PosterGuideCard(
-                      guide: guide,
-                      number: null,
-                      title: t.get(guide.titleKey),
-                      subtitle: _posterTag(guide.id, en),
-                      emergencyNumber: _emergencyNumber(context),
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => FirstAidDetailScreen(guide: guide),
-                        ),
-                      ),
-                    );
-                  },
+                _GuideCollection(
+                  guides: extras,
+                  columns: columns,
+                  posterHeight: posterHeight,
+                  accessibleList: useAccessibleList,
+                  numberGuides: false,
                 ),
               ],
               const SizedBox(height: 14),
@@ -335,6 +299,234 @@ class _FirstAidScreenState extends State<FirstAidScreen> {
           onSelected: (_) => setState(() => _filter = value),
         ),
       );
+}
+
+class _GuideCollection extends StatelessWidget {
+  const _GuideCollection({
+    required this.guides,
+    required this.columns,
+    required this.posterHeight,
+    required this.accessibleList,
+    this.numberGuides = true,
+  });
+
+  final List<FirstAidGuide> guides;
+  final int columns;
+  final double posterHeight;
+  final bool accessibleList;
+  final bool numberGuides;
+
+  void _open(BuildContext context, FirstAidGuide guide) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => FirstAidDetailScreen(guide: guide),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+    final en = Localizations.localeOf(context).languageCode == 'en';
+
+    if (accessibleList) {
+      return Column(
+        children: [
+          for (var i = 0; i < guides.length; i++) ...[
+            _AccessibleGuideCard(
+              guide: guides[i],
+              number: numberGuides
+                  ? (() {
+                      final value = _essentialIds.indexOf(guides[i].id);
+                      return value < 0 ? null : value + 1;
+                    })()
+                  : null,
+              title: t.get(guides[i].titleKey),
+              summary: t.get(guides[i].summaryKey),
+              onTap: () => _open(context, guides[i]),
+            ),
+            if (i != guides.length - 1) const SizedBox(height: 8),
+          ],
+        ],
+      );
+    }
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: guides.length,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: columns,
+        mainAxisExtent: posterHeight,
+        crossAxisSpacing: 9,
+        mainAxisSpacing: 9,
+      ),
+      itemBuilder: (context, index) {
+        final guide = guides[index];
+        final essentialIndex = _essentialIds.indexOf(guide.id);
+        return _PosterGuideCard(
+          guide: guide,
+          number: numberGuides && essentialIndex >= 0
+              ? essentialIndex + 1
+              : null,
+          title: t.get(guide.titleKey),
+          subtitle: _posterTag(guide.id, en),
+          emergencyNumber: _emergencyNumber(context),
+          onTap: () => _open(context, guide),
+        );
+      },
+    );
+  }
+}
+
+class _AccessibleGuideCard extends StatelessWidget {
+  const _AccessibleGuideCard({
+    required this.guide,
+    required this.number,
+    required this.title,
+    required this.summary,
+    required this.onTap,
+  });
+
+  final FirstAidGuide guide;
+  final int? number;
+  final String title;
+  final String summary;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final critical = _posterCritical(guide.id);
+
+    return Card(
+      child: InkWell(
+        borderRadius: BorderRadius.circular(18),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(13, 13, 10, 13),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: critical
+                      ? scheme.errorContainer
+                      : scheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: number == null
+                    ? Icon(
+                        Icons.health_and_safety_rounded,
+                        color: critical
+                            ? scheme.onErrorContainer
+                            : scheme.onPrimaryContainer,
+                      )
+                    : Text(
+                        '$number',
+                        style: TextStyle(
+                          color: critical
+                              ? scheme.onErrorContainer
+                              : scheme.onPrimaryContainer,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 17,
+                        height: 1.15,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      summary,
+                      style: TextStyle(
+                        color: scheme.onSurfaceVariant,
+                        height: 1.35,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    if (guide.supportsCprMetronome) ...[
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 6,
+                        children: [
+                          _SmallFeatureChip(
+                            icon: Icons.graphic_eq_rounded,
+                            label: '100–120/min',
+                          ),
+                          const _SmallFeatureChip(
+                            icon: Icons.offline_bolt_rounded,
+                            label: 'Offline',
+                          ),
+                        ],
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(width: 6),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: scheme.primary,
+                size: 28,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SmallFeatureChip extends StatelessWidget {
+  const _SmallFeatureChip({
+    required this.icon,
+    required this.label,
+  });
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: scheme.primary),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _PosterGuideCard extends StatelessWidget {
