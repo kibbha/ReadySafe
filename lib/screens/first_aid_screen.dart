@@ -10,6 +10,7 @@ import '../app/localizations.dart';
 import '../core/search_text.dart';
 import '../data/first_aid_repository.dart';
 import '../models/first_aid_guide.dart';
+import '../services/first_aid_pdf_service.dart';
 import 'emergency_screen.dart';
 
 const _essentialIds = <String>[
@@ -661,7 +662,63 @@ class FirstAidDetailScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xfff7faf9),
-      appBar: AppBar(title: Text(t.get(guide.titleKey))),
+      appBar: AppBar(
+        title: Text(t.get(guide.titleKey)),
+        actions: [
+          IconButton(
+            tooltip: en ? 'Export PDF' : 'Exporter en PDF',
+            onPressed: () async {
+              try {
+                await FirstAidPdfService.share(
+                  guide: guide,
+                  text: (key) => t.get(key),
+                  english: en,
+                  emergencyNumber: emergencyNumber,
+                );
+              } catch (_) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        en
+                            ? 'Unable to export this PDF.'
+                            : 'Impossible d’exporter ce PDF.',
+                      ),
+                    ),
+                  );
+                }
+              }
+            },
+            icon: const Icon(Icons.picture_as_pdf_rounded),
+          ),
+          IconButton(
+            tooltip: en ? 'Print guide' : 'Imprimer la fiche',
+            onPressed: () async {
+              try {
+                await FirstAidPdfService.printGuide(
+                  guide: guide,
+                  text: (key) => t.get(key),
+                  english: en,
+                  emergencyNumber: emergencyNumber,
+                );
+              } catch (_) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        en
+                            ? 'Unable to open printing.'
+                            : 'Impossible d’ouvrir l’impression.',
+                      ),
+                    ),
+                  );
+                }
+              }
+            },
+            icon: const Icon(Icons.print_rounded),
+          ),
+        ],
+      ),
       bottomNavigationBar: SafeArea(
         minimum: const EdgeInsets.fromLTRB(12, 8, 12, 12),
         child: Row(
