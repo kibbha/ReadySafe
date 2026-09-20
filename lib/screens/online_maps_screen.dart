@@ -1251,7 +1251,7 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                     ),
                     child: _searchResults.isEmpty
                         ? ListTile(
-                            leading: const Icon(
+                            leading: Icon(
                               Icons.open_in_new_rounded,
                               color: Theme.of(context).colorScheme.primary,
                             ),
