@@ -1,0 +1,6 @@
+# Copy this file to android/key.properties and fill in your own values.
+# Never commit key.properties or the keystore itself.
+storePassword=CHANGE_ME
+keyPassword=CHANGE_ME
+keyAlias=upload
+storeFile=/absolute/path/to/readysafe-upload-keystore.jks
