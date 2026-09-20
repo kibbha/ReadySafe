@@ -22,8 +22,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final en = Localizations.localeOf(context).languageCode == 'en';
     final selectedCountry = CountryRepository.byCode(selected);
 
+    final scheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      backgroundColor: const Color(0xfff7faf9),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -57,9 +59,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   Container(
                     padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xffe2f3ef), Color(0xfffff4e8)],
-                      ),
+                      color: scheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(26),
                     ),
                     child: Row(
@@ -69,7 +69,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           width: 62,
                           height: 62,
                           decoration: BoxDecoration(
-                            color: const Color(0xff087f83),
+                            color: scheme.primary,
                             borderRadius: BorderRadius.circular(19),
                           ),
                           child: const Icon(
@@ -95,8 +95,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 en
                                     ? 'Emergency, first aid and preparedness in one place.'
                                     : 'Urgence, premiers secours et préparation au même endroit.',
-                                style: const TextStyle(
-                                  color: Color(0xff52666b),
+                                style: TextStyle(
+                                  color: scheme.onSurfaceVariant,
                                   height: 1.3,
                                 ),
                               ),
@@ -107,29 +107,44 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                   ),
                   const SizedBox(height: 14),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _Benefit(
-                          icon: Icons.offline_bolt_rounded,
-                          title: en ? 'Offline core' : 'Essentiel hors ligne',
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final textScale =
+                          MediaQuery.textScalerOf(context).scale(16) / 16;
+                      final stacked =
+                          constraints.maxWidth < 560 || textScale > 1.25;
+                      final itemWidth = stacked
+                          ? constraints.maxWidth
+                          : (constraints.maxWidth - 16) / 3;
+                      final benefits = [
+                        (
+                          Icons.offline_bolt_rounded,
+                          en ? 'Offline core' : 'Essentiel hors ligne',
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: _Benefit(
-                          icon: Icons.no_accounts_rounded,
-                          title: en ? 'No account required' : 'Sans compte obligatoire',
+                        (
+                          Icons.no_accounts_rounded,
+                          en ? 'No account required' : 'Sans compte obligatoire',
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: _Benefit(
-                          icon: Icons.public_rounded,
-                          title: en ? 'Country-aware' : 'Adapté au pays',
+                        (
+                          Icons.public_rounded,
+                          en ? 'Country-aware' : 'Adapté au pays',
                         ),
-                      ),
-                    ],
+                      ];
+                      return Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          for (final benefit in benefits)
+                            SizedBox(
+                              width: itemWidth,
+                              child: _Benefit(
+                                icon: benefit.$1,
+                                title: benefit.$2,
+                              ),
+                            ),
+                        ],
+                      );
+                    },
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -142,8 +157,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   const SizedBox(height: 4),
                   Text(
                     strings.get('country_explanation'),
-                    style: const TextStyle(
-                      color: Color(0xff65747a),
+                    style: TextStyle(
+                      color: scheme.onSurfaceVariant,
                       height: 1.35,
                     ),
                   ),
@@ -151,9 +166,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: scheme.surface,
                         borderRadius: BorderRadius.circular(22),
-                        border: Border.all(color: const Color(0xffdde7e5)),
+                        border: Border.all(color: scheme.outline),
                       ),
                       clipBehavior: Clip.antiAlias,
                       child: CountrySearchList(
@@ -170,7 +185,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         vertical: 11,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xffeaf6f4),
+                        color: scheme.secondaryContainer,
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Row(
@@ -188,9 +203,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               ),
                             ),
                           ),
-                          const Icon(
+                          Icon(
                             Icons.check_circle_rounded,
-                            color: Color(0xff087f83),
+                            color: scheme.onSecondaryContainer,
                           ),
                         ],
                       ),
@@ -212,9 +227,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         ? 'You can change the residence country or enable travel mode later in Settings.'
                         : 'Vous pourrez modifier le pays de résidence ou activer le mode voyage plus tard dans Paramètres.',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11.5,
-                      color: Color(0xff65747a),
+                      color: scheme.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -237,22 +252,22 @@ class _Benefit extends StatelessWidget {
   final String title;
 
   @override
-  Widget build(BuildContext context) => Container(
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: scheme.surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xffdde7e5)),
+          border: Border.all(color: scheme.outline),
         ),
         child: Column(
           children: [
-            Icon(icon, color: const Color(0xff087f83), size: 22),
+            Icon(icon, color: scheme.primary, size: 22),
             const SizedBox(height: 5),
             Text(
               title,
               textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 fontSize: 10.5,
                 fontWeight: FontWeight.w800,
@@ -262,4 +277,5 @@ class _Benefit extends StatelessWidget {
           ],
         ),
       );
+  }
 }
