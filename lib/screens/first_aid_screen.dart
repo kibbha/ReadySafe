@@ -504,6 +504,7 @@ class _PosterGuideCard extends StatelessWidget {
               const _PosterBranding(),
             ],
           ),
+        ),
       ),
     );
   }
