@@ -11,6 +11,7 @@ import '../core/search_text.dart';
 import '../data/first_aid_repository.dart';
 import '../models/first_aid_guide.dart';
 import '../services/first_aid_pdf_service.dart';
+import '../services/emergency_speech_service.dart';
 import 'emergency_screen.dart';
 
 const _essentialIds = <String>[
@@ -1429,13 +1430,89 @@ class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScree
 
   int index = 0;
   late final PageController controller;
+  final EmergencySpeechService _speech = EmergencySpeechService();
   Timer? _metronome;
   bool _metronomeOn = false;
+  bool _autoRead = false;
+  bool _preparingSpeech = false;
+  EmergencySpeechAvailability? _speechAvailability;
+  String? _speechLanguage;
 
   @override
   void initState() {
     super.initState();
     controller = PageController();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final language = Localizations.localeOf(context).languageCode;
+    if (_speechLanguage != language) {
+      _speechLanguage = language;
+      unawaited(_prepareSpeech(language));
+    }
+  }
+
+  Future<void> _prepareSpeech(String language) async {
+    if (_preparingSpeech) return;
+    _preparingSpeech = true;
+    final availability = await _speech.prepare(language);
+    if (!mounted) return;
+    setState(() {
+      _speechAvailability = availability;
+      _preparingSpeech = false;
+      if (availability != EmergencySpeechAvailability.ready) {
+        _autoRead = false;
+      }
+    });
+  }
+
+  String _spokenStep(int pageIndex) {
+    final step = widget.guide.steps[pageIndex];
+    final parts = <String>[
+      if (step.headingKey != null) _aidText(context, step.headingKey!),
+      _aidText(context, step.textKey),
+      for (final key in step.detailKeys) _aidText(context, key),
+    ];
+    return parts.join('. ');
+  }
+
+  Future<void> _readStep(int pageIndex) async {
+    final en = Localizations.localeOf(context).languageCode == 'en';
+    var availability = _speechAvailability;
+    if (availability != EmergencySpeechAvailability.ready) {
+      await _prepareSpeech(en ? 'en' : 'fr');
+      availability = _speechAvailability;
+    }
+
+    if (availability != EmergencySpeechAvailability.ready) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              en
+                  ? 'Offline voice unavailable. Install an offline English voice in your phone settings.'
+                  : 'Voix hors ligne indisponible. Installez une voix française hors ligne dans les réglages du téléphone.',
+            ),
+          ),
+        );
+      }
+      return;
+    }
+
+    final ok = await _speech.speak(_spokenStep(pageIndex));
+    if (!ok && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            en
+                ? 'Unable to read this step aloud.'
+                : 'Impossible de lire cette étape à voix haute.',
+          ),
+        ),
+      );
+    }
   }
 
   void _pulse() {
@@ -1469,6 +1546,7 @@ class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScree
   @override
   void dispose() {
     _stopMetronome();
+    unawaited(_speech.dispose());
     controller.dispose();
     super.dispose();
   }
@@ -1526,6 +1604,10 @@ class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScree
                     _stopMetronome();
                   }
                   setState(() => index = value);
+                  if (_autoRead &&
+                      _speechAvailability == EmergencySpeechAvailability.ready) {
+                    unawaited(_readStep(value));
+                  }
                 },
                 itemBuilder: (context, pageIndex) {
                   final step = widget.guide.steps[pageIndex];
@@ -1657,6 +1739,28 @@ class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScree
                           ),
                         ),
                         const SizedBox(height: 8),
+                        _SpeechControls(
+                          ready: _speechAvailability ==
+                              EmergencySpeechAvailability.ready,
+                          preparing: _preparingSpeech,
+                          autoRead: _autoRead,
+                          en: en,
+                          onRead: () => _readStep(pageIndex),
+                          onAutoReadChanged: (enabled) {
+                            if (_speechAvailability !=
+                                EmergencySpeechAvailability.ready) {
+                              unawaited(_readStep(pageIndex));
+                              return;
+                            }
+                            setState(() => _autoRead = enabled);
+                            if (enabled) {
+                              unawaited(_readStep(pageIndex));
+                            } else {
+                              unawaited(_speech.stop());
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 8),
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
@@ -1723,6 +1827,79 @@ class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScree
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _SpeechControls extends StatelessWidget {
+  const _SpeechControls({
+    required this.ready,
+    required this.preparing,
+    required this.autoRead,
+    required this.en,
+    required this.onRead,
+    required this.onAutoReadChanged,
+  });
+
+  final bool ready;
+  final bool preparing;
+  final bool autoRead;
+  final bool en;
+  final VoidCallback onRead;
+  final ValueChanged<bool> onAutoReadChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(10, 8, 8, 8),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: OutlinedButton.icon(
+              onPressed: preparing ? null : onRead,
+              icon: preparing
+                  ? const SizedBox.square(
+                      dimension: 17,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Icon(
+                      ready
+                          ? Icons.volume_up_rounded
+                          : Icons.download_for_offline_outlined,
+                    ),
+              label: Text(
+                ready
+                    ? (en ? 'Read this step' : 'Lire cette étape')
+                    : (en ? 'Offline voice' : 'Voix hors ligne'),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Switch(
+                value: autoRead,
+                onChanged: preparing ? null : onAutoReadChanged,
+              ),
+              Text(
+                en ? 'Auto' : 'Auto',
+                style: const TextStyle(
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
