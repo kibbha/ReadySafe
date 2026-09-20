@@ -770,6 +770,7 @@ class _PosterMiniStep extends StatelessWidget {
           ],
         ),
       );
+  }
 }
 
 class _PosterBranding extends StatelessWidget {
@@ -821,7 +822,7 @@ class FirstAidDetailScreen extends StatelessWidget {
     final index = _essentialIds.indexOf(guide.id);
     final number = index < 0 ? null : index + 1;
     return Scaffold(
-      backgroundColor: const Color(0xfff7faf9),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(t.get(guide.titleKey)),
         actions: [
@@ -1325,21 +1326,23 @@ class _DefinitionBox extends StatelessWidget {
   final String body;
 
   @override
-  Widget build(BuildContext context) => Container(
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
         width: double.infinity,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: const Color(0xffeaf3ff),
+          color: scheme.primaryContainer,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xffaacbf6)),
+          border: Border.all(color: scheme.primary.withValues(alpha: .35)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               title,
-              style: const TextStyle(
-                color: Color(0xff1268d8),
+              style: TextStyle(
+                color: scheme.onPrimaryContainer,
                 fontWeight: FontWeight.w900,
                 fontSize: 13,
               ),
@@ -1355,6 +1358,7 @@ class _DefinitionBox extends StatelessWidget {
           ],
         ),
       );
+  }
 }
 
 class _GuideWarning extends StatelessWidget {
@@ -1363,20 +1367,22 @@ class _GuideWarning extends StatelessWidget {
   final String text;
 
   @override
-  Widget build(BuildContext context) => Container(
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
         width: double.infinity,
         padding: const EdgeInsets.all(11),
         decoration: BoxDecoration(
-          color: const Color(0xffffeeee),
+          color: scheme.errorContainer,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xffffb8bd)),
+          border: Border.all(color: scheme.error.withValues(alpha: .35)),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(
+            Icon(
               Icons.warning_amber_rounded,
-              color: Color(0xffc8212c),
+              color: scheme.onErrorContainer,
               size: 22,
             ),
             const SizedBox(width: 8),
@@ -1392,6 +1398,7 @@ class _GuideWarning extends StatelessWidget {
           ],
         ),
       );
+  }
 }
 
 class _MetricBadge extends StatelessWidget {
@@ -1567,8 +1574,10 @@ class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScree
     final emergencyNumber = _emergencyNumber(context);
     final compact = MediaQuery.sizeOf(context).width < 380;
 
+    final scheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      backgroundColor: const Color(0xfff4f9f8),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(t.get(widget.guide.titleKey)),
         actions: [
@@ -1576,12 +1585,15 @@ class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScree
             margin: const EdgeInsets.only(right: 12),
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
-              color: const Color(0xffffe7e8),
+              color: scheme.errorContainer,
               borderRadius: BorderRadius.circular(14),
             ),
             child: Text(
               '${index + 1}/${widget.guide.steps.length}',
-              style: const TextStyle(color: Color(0xffc8212c), fontWeight: FontWeight.w900),
+              style: TextStyle(
+                color: scheme.onErrorContainer,
+                fontWeight: FontWeight.w900,
+              ),
             ),
           ),
         ],
@@ -1653,9 +1665,9 @@ class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScree
                           width: double.infinity,
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: const Color(0xffeaf6f4),
+                            color: scheme.surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(18),
-                            border: Border.all(color: const Color(0xffcce4e1)),
+                            border: Border.all(color: scheme.outline),
                           ),
                           child: SvgPicture.asset(step.illustrationAsset, fit: BoxFit.contain),
                         ),
@@ -1664,9 +1676,9 @@ class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScree
                           width: double.infinity,
                           padding: const EdgeInsets.all(15),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: scheme.surface,
                             borderRadius: BorderRadius.circular(18),
-                            border: Border.all(color: const Color(0xffd3e6e3)),
+                            border: Border.all(color: scheme.outline),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1765,12 +1777,15 @@ class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScree
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
                           decoration: BoxDecoration(
-                            color: const Color(0xfffff2c5),
+                            color: scheme.tertiaryContainer,
                             borderRadius: BorderRadius.circular(14),
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.lightbulb_outline_rounded, color: Color(0xff9a6a00)),
+                              Icon(
+                                Icons.lightbulb_outline_rounded,
+                                color: scheme.onTertiaryContainer,
+                              ),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
@@ -1910,16 +1925,18 @@ class _MedicalNotice extends StatelessWidget {
   final String text;
 
   @override
-  Widget build(BuildContext context) => Container(
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
         padding: const EdgeInsets.all(11),
         decoration: BoxDecoration(
-          color: const Color(0xffffeeee),
+          color: scheme.errorContainer,
           borderRadius: BorderRadius.circular(14),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Icons.emergency_outlined, color: Color(0xffd92d36)),
+            Icon(Icons.emergency_outlined, color: scheme.onErrorContainer),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
