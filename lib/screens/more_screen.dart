@@ -334,16 +334,17 @@ class MoreScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xffe5f4f1), Color(0xfffff4e8)],
-              ),
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(22),
             ),
             child: Row(
               children: [
-                const CircleAvatar(
-                  backgroundColor: Color(0xff087f83),
-                  child: Icon(Icons.shield_rounded, color: Colors.white),
+                CircleAvatar(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  child: Icon(
+                    Icons.shield_rounded,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -359,7 +360,10 @@ class MoreScreen extends StatelessWidget {
                         en
                             ? 'Open a category only when you need it.'
                             : 'Ouvrez seulement la catégorie dont vous avez besoin.',
-                        style: const TextStyle(color: Color(0xff65747a), height: 1.3),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          height: 1.3,
+                        ),
                       ),
                     ],
                   ),
@@ -374,10 +378,13 @@ class MoreScreen extends StatelessWidget {
               clipBehavior: Clip.antiAlias,
               child: ExpansionTile(
                 leading: CircleAvatar(
-                  backgroundColor: const Color(0xffe6f3f1),
+                  backgroundColor:
+                      Theme.of(context).colorScheme.secondaryContainer,
                   child: Icon(
                     section.icon,
-                    color: const Color(0xff087f83),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSecondaryContainer,
                     size: 20,
                   ),
                 ),
@@ -388,11 +395,7 @@ class MoreScreen extends StatelessWidget {
                     fontWeight: FontWeight.w900,
                   ),
                 ),
-                subtitle: Text(
-                  section.subtitle,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                subtitle: Text(section.subtitle),
                 children: [
                   const Divider(height: 1),
                   for (var i = 0; i < section.items.length; i++) ...[
@@ -420,8 +423,12 @@ class _MoreTile extends StatelessWidget {
   Widget build(BuildContext context) => ListTile(
         minTileHeight: 70,
         leading: CircleAvatar(
-          backgroundColor: const Color(0xffe7f3f1),
-          child: Icon(item.icon, color: const Color(0xff087f83)),
+          backgroundColor:
+              Theme.of(context).colorScheme.secondaryContainer,
+          child: Icon(
+            item.icon,
+            color: Theme.of(context).colorScheme.onSecondaryContainer,
+          ),
         ),
         title: Text(
           item.title,
