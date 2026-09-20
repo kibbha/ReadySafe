@@ -151,6 +151,8 @@ void main() {
       'chest_pain',
       'asthma',
       'hypoglycemia',
+      'wounds',
+      'waiting_positions',
     };
     expect(firstAidGuides.map((guide) => guide.id), containsAll(expectedIds));
     expect(firstAidGuides.every((guide) => guide.steps.length >= 3), isTrue);
