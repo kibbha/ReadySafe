@@ -1145,7 +1145,9 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
           ),
         ],
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'readysafe-map-landmark',
         onPressed: _addMarkerAtCenter,
         icon: const Icon(Icons.add_location_alt_rounded),
         label: Text(en ? 'Landmark' : 'Repère'),
@@ -1216,7 +1218,10 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                     padding: const EdgeInsets.only(top: 6),
                     child: DecoratedBox(
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: .95),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .surface
+                            .withValues(alpha: .95),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Padding(
@@ -1235,7 +1240,7 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                     margin: const EdgeInsets.only(top: 6),
                     constraints: const BoxConstraints(maxHeight: 240),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: const [
                         BoxShadow(
@@ -1248,7 +1253,7 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                         ? ListTile(
                             leading: const Icon(
                               Icons.open_in_new_rounded,
-                              color: Color(0xff087f83),
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                             title: Text(
                               en
@@ -1512,7 +1517,10 @@ class _NearbySheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Material(
-        color: Colors.white.withValues(alpha: .97),
+        color: Theme.of(context)
+            .colorScheme
+            .surface
+            .withValues(alpha: .97),
         elevation: 4,
         borderRadius: BorderRadius.circular(20),
         clipBehavior: Clip.antiAlias,
@@ -1544,9 +1552,9 @@ class _NearbySheet extends StatelessWidget {
                       padding: const EdgeInsets.all(16),
                       child: Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.location_searching_rounded,
-                            color: Color(0xff087f83),
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                           const SizedBox(width: 10),
                           Expanded(
@@ -1589,8 +1597,8 @@ class _NearbySheet extends StatelessWidget {
                                     style: TextStyle(
                                       fontSize: 10,
                                       color: stale
-                                          ? const Color(0xff9a6a00)
-                                          : const Color(0xff65747a),
+                                          ? Theme.of(context).colorScheme.tertiary
+                                          : Theme.of(context).colorScheme.onSurfaceVariant,
                                       fontWeight: FontWeight.w800,
                                     ),
                                   ),
@@ -1613,9 +1621,9 @@ class _NearbySheet extends StatelessWidget {
                                 en
                                     ? 'Network refresh failed; cached data is shown.'
                                     : 'Échec de l’actualisation réseau ; les données en cache sont affichées.',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 10.5,
-                                  color: Color(0xff9a6a00),
+                                  color: Theme.of(context).colorScheme.tertiary,
                                   fontWeight: FontWeight.w800,
                                 ),
                               ),
@@ -1683,7 +1691,7 @@ class _MapButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Material(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         elevation: 3,
         borderRadius: BorderRadius.circular(14),
         child: IconButton(
