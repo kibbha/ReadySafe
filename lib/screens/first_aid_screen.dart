@@ -1946,4 +1946,5 @@ class _MedicalNotice extends StatelessWidget {
           ],
         ),
       );
+  }
 }
