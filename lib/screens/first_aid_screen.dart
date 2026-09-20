@@ -33,18 +33,6 @@ const _essentialIds = <String>[
   'heatstroke',
 ];
 
-const _referencePosterAssets = <String, String>{
-  'cpr_adult': 'assets/illustrations/posters/cpr_adult.png',
-  'choking_adult': 'assets/illustrations/posters/choking_adult.png',
-  'unconscious': 'assets/illustrations/posters/unconscious.png',
-  'bleeding': 'assets/illustrations/posters/bleeding.png',
-  'aed': 'assets/illustrations/posters/aed.png',
-  'cpr_child': 'assets/illustrations/posters/cpr_child.png',
-  'cpr_infant': 'assets/illustrations/posters/cpr_infant.png',
-  'choking_infant': 'assets/illustrations/posters/choking_infant.png',
-  'drowning': 'assets/illustrations/posters/drowning.png',
-  'anaphylaxis': 'assets/illustrations/posters/anaphylaxis.png',
-};
 
 String _aidText(BuildContext context, String key) {
   final t = AppLocalizations.of(context);
@@ -371,10 +359,6 @@ class _PosterGuideCard extends StatelessWidget {
     final en = Localizations.localeOf(context).languageCode == 'en';
     final steps = guide.steps.take(4).toList();
     final critical = _posterCritical(guide.id);
-    final referencePoster = !en && emergencyNumber == '144'
-        ? _referencePosterAssets[guide.id]
-        : null;
-
     return Material(
       color: const Color(0xfffffdf7),
       elevation: 1,
@@ -383,20 +367,7 @@ class _PosterGuideCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        child: referencePoster != null
-            ? Semantics(
-                button: true,
-                label: '$title. ${en ? 'Open guide' : 'Ouvrir la fiche'}',
-                child: ColoredBox(
-                  color: Colors.white,
-                  child: Image.asset(
-                    referencePoster,
-                    fit: BoxFit.contain,
-                    filterQuality: FilterQuality.high,
-                  ),
-                ),
-              )
-            : Container(
+        child: Container(
           decoration: BoxDecoration(
             color: const Color(0xfffffdf7),
             borderRadius: BorderRadius.circular(9),
@@ -533,7 +504,6 @@ class _PosterGuideCard extends StatelessWidget {
               const _PosterBranding(),
             ],
           ),
-              ),
       ),
     );
   }
@@ -656,10 +626,6 @@ class FirstAidDetailScreen extends StatelessWidget {
     final emergencyNumber = _emergencyNumber(context);
     final index = _essentialIds.indexOf(guide.id);
     final number = index < 0 ? null : index + 1;
-    final referencePoster = !en && emergencyNumber == '144'
-        ? _referencePosterAssets[guide.id]
-        : null;
-
     return Scaffold(
       backgroundColor: const Color(0xfff7faf9),
       appBar: AppBar(
@@ -763,28 +729,19 @@ class FirstAidDetailScreen extends StatelessWidget {
                     minScale: 1,
                     maxScale: 3.2,
                     boundaryMargin: const EdgeInsets.all(40),
-                    child: referencePoster != null
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.asset(
-                              referencePoster,
-                              fit: BoxFit.fitWidth,
-                              filterQuality: FilterQuality.high,
-                            ),
-                          )
-                        : _PosterDetailPanel(
-                            number: number,
-                            title: t.get(guide.titleKey),
-                            subtitle: _posterTag(guide.id, en),
-                            guide: guide,
-                            emergencyNumber: emergencyNumber,
-                            onEmergency: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const EmergencyScreen(),
-                              ),
-                            ),
-                          ),
+                    child: _PosterDetailPanel(
+                      number: number,
+                      title: t.get(guide.titleKey),
+                      subtitle: _posterTag(guide.id, en),
+                      guide: guide,
+                      emergencyNumber: emergencyNumber,
+                      onEmergency: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const EmergencyScreen(),
+                        ),
+                      ),
+                    ),
                   ),
                   if (guide.definitionTitleKey != null &&
                       guide.definitionBodyKey != null) ...[
