@@ -29,6 +29,10 @@ class AppController extends ChangeNotifier {
       localeCode: const {'fr', 'en'}.contains(loaded.localeCode)
           ? loaded.localeCode
           : 'fr',
+      themeModeCode: const {'system', 'light', 'dark'}.contains(
+              loaded.themeModeCode)
+          ? loaded.themeModeCode
+          : 'system',
       largeText: loaded.largeText,
       highContrast: loaded.highContrast,
     );
@@ -60,6 +64,13 @@ class AppController extends ChangeNotifier {
     if (!const {'fr', 'en'}.contains(code)) return;
     await _service.saveLocale(code);
     _settings = _settings.copyWith(localeCode: code);
+    notifyListeners();
+  }
+
+  Future<void> setThemeMode(String code) async {
+    if (!const {'system', 'light', 'dark'}.contains(code)) return;
+    await _service.saveThemeMode(code);
+    _settings = _settings.copyWith(themeModeCode: code);
     notifyListeners();
   }
 
