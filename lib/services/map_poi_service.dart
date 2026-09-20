@@ -548,7 +548,7 @@ out center tags;
       );
       request.headers.set(
         HttpHeaders.userAgentHeader,
-        'ReadySafe/3.2 (+$_osmCopyright)',
+        'ReadySafe/3.4 (+$_osmCopyright)',
       );
       request.write('data=${Uri.encodeQueryComponent(query)}');
 
@@ -578,7 +578,7 @@ out center tags;
       final request = await client.getUrl(uri);
       request.headers.set(
         HttpHeaders.userAgentHeader,
-        'ReadySafe/3.2',
+        'ReadySafe/3.4',
       );
       final response =
           await request.close().timeout(const Duration(seconds: 18));
