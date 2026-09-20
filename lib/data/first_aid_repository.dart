@@ -37,6 +37,7 @@ FirstAidGuide _guide(
   String? definitionBody,
   List<String> warnings = const [],
   bool supportsCprMetronome = false,
+  Set<int> cprPacingSteps = const {},
 }) => FirstAidGuide(
   id: id,
   titleKey: title,
@@ -47,6 +48,7 @@ FirstAidGuide _guide(
         textKey: steps[i],
         headingKey: headings != null && i < headings.length ? headings[i] : null,
         detailKeys: details != null && i < details.length ? details[i] : const [],
+        cprPacing: cprPacingSteps.contains(i),
         illustrationAsset: illustrations != null && i < illustrations.length
             ? illustrations[i]
             : switch (i % 3) {
@@ -64,10 +66,10 @@ FirstAidGuide _guide(
 );
 
 final firstAidGuides = [
-  _guide('cpr_adult','aid_cpr_adult','aid_cpr_summary',['aid_cpr_1','aid_cpr_2','aid_cpr_3','aid_cpr_4'],sources:[_erc2025,_ercAdultBls2025],illustrations:['assets/illustrations/cpr_adult_1.svg','assets/illustrations/cpr_adult_2.svg','assets/illustrations/cpr_adult_3.svg','assets/illustrations/cpr_adult_4.svg'],supportsCprMetronome:true),
+  _guide('cpr_adult','aid_cpr_adult','aid_cpr_summary',['aid_cpr_1','aid_cpr_2','aid_cpr_3','aid_cpr_4'],sources:[_erc2025,_ercAdultBls2025],illustrations:['assets/illustrations/cpr_adult_1.svg','assets/illustrations/cpr_adult_2.svg','assets/illustrations/cpr_adult_3.svg','assets/illustrations/cpr_adult_4.svg'],supportsCprMetronome:true,cprPacingSteps:{1}),
   _guide('aed','aid_aed','aid_aed_summary',['aid_aed_1','aid_aed_2','aid_aed_3'],sources:[_erc2025,_ercAdultBls2025],illustrations:['assets/illustrations/aed_open.svg','assets/illustrations/aed_pads.svg','assets/illustrations/aed_shock.svg']),
-  _guide('cpr_child','aid_cpr_child','aid_cpr_child_summary',['aid_child_cpr_1','aid_child_cpr_2','aid_child_cpr_3','aid_child_cpr_4'],sources:[_erc2025,_ercPaediatric2025],illustrations:['assets/illustrations/cpr_child_assess.svg','assets/illustrations/cpr_child_breaths.svg','assets/illustrations/cpr_child_compressions.svg','assets/illustrations/cpr_child_aed.svg'],supportsCprMetronome:true),
-  _guide('cpr_infant','aid_cpr_infant','aid_cpr_infant_summary',['aid_infant_cpr_1','aid_infant_cpr_2','aid_infant_cpr_3','aid_infant_cpr_4'],sources:[_erc2025,_ercPaediatric2025],illustrations:['assets/illustrations/cpr_infant_assess.svg','assets/illustrations/cpr_infant_breaths.svg','assets/illustrations/cpr_infant_compressions.svg','assets/illustrations/cpr_infant_aed.svg'],supportsCprMetronome:true),
+  _guide('cpr_child','aid_cpr_child','aid_cpr_child_summary',['aid_child_cpr_1','aid_child_cpr_2','aid_child_cpr_3','aid_child_cpr_4'],sources:[_erc2025,_ercPaediatric2025],illustrations:['assets/illustrations/cpr_child_assess.svg','assets/illustrations/cpr_child_breaths.svg','assets/illustrations/cpr_child_compressions.svg','assets/illustrations/cpr_child_aed.svg'],supportsCprMetronome:true,cprPacingSteps:{2}),
+  _guide('cpr_infant','aid_cpr_infant','aid_cpr_infant_summary',['aid_infant_cpr_1','aid_infant_cpr_2','aid_infant_cpr_3','aid_infant_cpr_4'],sources:[_erc2025,_ercPaediatric2025],illustrations:['assets/illustrations/cpr_infant_assess.svg','assets/illustrations/cpr_infant_breaths.svg','assets/illustrations/cpr_infant_compressions.svg','assets/illustrations/cpr_infant_aed.svg'],supportsCprMetronome:true,cprPacingSteps:{2}),
   _guide('choking_adult','aid_choking_adult','aid_choking_summary',['aid_choking_1','aid_choking_2','aid_choking_3'],illustrations:['assets/illustrations/choking_adult_1.svg','assets/illustrations/choking_adult_2.svg','assets/illustrations/choking_adult_3.svg']),
   _guide('choking_child','aid_choking_child','aid_choking_summary',['aid_choking_1','aid_choking_2','aid_choking_3'],sources:[_erc2025,_ercPaediatric2025],illustrations:['assets/illustrations/choking_child_assess.svg','assets/illustrations/choking_child_back.svg','assets/illustrations/choking_child_abdominal.svg']),
   _guide('choking_infant','aid_choking_infant','aid_choking_infant_summary',['aid_infant_1','aid_infant_2','aid_infant_3'],sources:[_erc2025,_ercPaediatric2025],illustrations:['assets/illustrations/choking_infant_assess.svg','assets/illustrations/choking_infant_back.svg','assets/illustrations/choking_infant_chest.svg']),
