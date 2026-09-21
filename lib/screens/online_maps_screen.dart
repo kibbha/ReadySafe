@@ -26,7 +26,12 @@ enum _PlaceKind {
 }
 
 class OnlineMapsScreen extends StatefulWidget {
-  const OnlineMapsScreen({super.key});
+  const OnlineMapsScreen({
+    super.key,
+    this.autoFindNearestAed = false,
+  });
+
+  final bool autoFindNearestAed;
 
   @override
   State<OnlineMapsScreen> createState() => _OnlineMapsScreenState();
@@ -107,6 +112,7 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
   bool _poiFromCache = false;
   bool _poiStale = false;
   bool _locating = false;
+  bool _autoFindNearestAedStarted = false;
   LatLng? _poiCenter;
   LatLng? _userLocation;
 
@@ -396,6 +402,14 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
       openingHours: poi.openingHours,
       distanceMeters: poi.distanceMeters,
     );
+  }
+
+  Future<void> _onStyleLoaded() async {
+    await _syncMarkers();
+    if (!widget.autoFindNearestAed || _autoFindNearestAedStarted) return;
+
+    _autoFindNearestAedStarted = true;
+    await _locateUser(findNearestAed: true);
   }
 
   Future<void> _locateUser({bool findNearestAed = false}) async {
@@ -1159,7 +1173,7 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
             initialCameraPosition: _camera,
             trackCameraPosition: true,
             onMapCreated: (controller) => _map = controller,
-            onStyleLoadedCallback: _syncMarkers,
+            onStyleLoadedCallback: _onStyleLoaded,
             onCameraMove: (position) {
               _camera = position;
             },

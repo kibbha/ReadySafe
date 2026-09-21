@@ -13,6 +13,7 @@ import '../models/first_aid_guide.dart';
 import '../services/first_aid_pdf_service.dart';
 import '../services/emergency_speech_service.dart';
 import 'emergency_screen.dart';
+import 'online_maps_screen.dart';
 
 const _essentialIds = <String>[
   'unconscious',
@@ -1572,6 +1573,8 @@ class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScree
     final en = Localizations.localeOf(context).languageCode == 'en';
     final emergencyNumber = _emergencyNumber(context);
     final compact = MediaQuery.sizeOf(context).width < 380;
+    final supportsAedLocator =
+        widget.guide.supportsCprMetronome || widget.guide.id == 'aed';
 
     final scheme = Theme.of(context).colorScheme;
 
@@ -1803,6 +1806,33 @@ class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScree
                 },
               ),
             ),
+            if (supportsAedLocator)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(10, 6, 10, 2),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: const Color(0xffd9822b),
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size.fromHeight(50),
+                    ),
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const OnlineMapsScreen(
+                          autoFindNearestAed: true,
+                        ),
+                      ),
+                    ),
+                    icon: const Icon(Icons.near_me_rounded),
+                    label: Text(
+                      en ? 'Find nearest AED' : 'Trouver le DAE le plus proche',
+                      style: const TextStyle(fontWeight: FontWeight.w900),
+                    ),
+                  ),
+                ),
+              ),
             Padding(
               padding: const EdgeInsets.fromLTRB(10, 6, 10, 10),
               child: Row(
