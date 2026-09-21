@@ -89,7 +89,10 @@ class GuidedEmergencyScreen extends StatelessWidget {
                 en
                     ? 'Choose the situation you can identify. If you are unsure, open emergency numbers and follow the operator’s instructions.'
                     : 'Choisissez la situation que vous identifiez. En cas de doute, ouvrez les numéros d’urgence et suivez les instructions de l’opérateur.',
-                style: const TextStyle(color: Color(0xff607075), height: 1.35),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  height: 1.35,
+                ),
               ),
               const SizedBox(height: 14),
               _ChoiceButton(

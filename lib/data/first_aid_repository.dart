@@ -73,7 +73,26 @@ final firstAidGuides = [
   _guide('choking_adult','aid_choking_adult','aid_choking_summary',['aid_choking_1','aid_choking_2','aid_choking_3'],illustrations:['assets/illustrations/choking_adult_1.svg','assets/illustrations/choking_adult_2.svg','assets/illustrations/choking_adult_3.svg']),
   _guide('choking_child','aid_choking_child','aid_choking_summary',['aid_choking_1','aid_choking_2','aid_choking_3'],sources:[_erc2025,_ercPaediatric2025],illustrations:['assets/illustrations/choking_child_assess.svg','assets/illustrations/choking_child_back.svg','assets/illustrations/choking_child_abdominal.svg']),
   _guide('choking_infant','aid_choking_infant','aid_choking_infant_summary',['aid_infant_1','aid_infant_2','aid_infant_3'],sources:[_erc2025,_ercPaediatric2025],illustrations:['assets/illustrations/choking_infant_assess.svg','assets/illustrations/choking_infant_back.svg','assets/illustrations/choking_infant_chest.svg']),
-  _guide('unconscious','aid_unconscious','aid_unconscious_summary',['aid_unconscious_1','aid_unconscious_2','aid_unconscious_3'],sources:[_erc2025,_ercAdultBls2025,_ercFirstAid2025],illustrations:['assets/illustrations/unconscious_assess.svg','assets/illustrations/unconscious_call.svg','assets/illustrations/unconscious_recovery.svg'],definitionTitle:'aid_pls_definition_title',definitionBody:'aid_pls_definition_body',warnings:['aid_pls_warning']),
+  _guide(
+    'unconscious',
+    'aid_unconscious',
+    'aid_unconscious_summary',
+    ['aid_unconscious_1', 'aid_unconscious_2', 'aid_unconscious_3'],
+    sources: [_erc2025, _ercAdultBls2025, _ercFirstAid2025],
+    illustrations: [
+      'assets/illustrations/unconscious_assess_v2.svg',
+      'assets/illustrations/unconscious_pls_v2.svg',
+      'assets/illustrations/unconscious_monitor_v2.svg',
+    ],
+    headings: [
+      'aid_unconscious_heading_1',
+      'aid_unconscious_heading_2',
+      'aid_unconscious_heading_3',
+    ],
+    definitionTitle: 'aid_pls_definition_title',
+    definitionBody: 'aid_pls_definition_body',
+    warnings: ['aid_pls_warning'],
+  ),
   _guide('bleeding','aid_bleeding','aid_bleeding_summary',['aid_bleeding_1','aid_bleeding_2','aid_bleeding_3'],sources:[_erc2025,_ercFirstAid2025],illustrations:['assets/illustrations/bleeding_pressure.svg','assets/illustrations/bleeding_dressing.svg','assets/illustrations/bleeding_tourniquet.svg']),
   _guide(
     'wounds',

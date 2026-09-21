@@ -5,7 +5,7 @@ class AppSettings {
     this.residenceCountryCode,
     this.travelCountryCode,
     this.localeCode = 'fr',
-    this.themeModeCode = 'system',
+    this.themeModeCode = 'light',
     this.largeText = false,
     this.highContrast = false,
   });
@@ -55,7 +55,7 @@ class AppSettingsService {
       residenceCountryCode: prefs.getString(_residence),
       travelCountryCode: prefs.getString(_travel),
       localeCode: prefs.getString(_locale) ?? 'fr',
-      themeModeCode: prefs.getString(_themeMode) ?? 'system',
+      themeModeCode: prefs.getString(_themeMode) ?? 'light',
       largeText: prefs.getBool(_largeText) ?? false,
       highContrast: prefs.getBool(_highContrast) ?? false,
     );

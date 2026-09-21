@@ -3,6 +3,15 @@ import 'package:readysafe/services/app_settings_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  test('ReadySafe defaults to a light appearance', () async {
+    SharedPreferences.setMockInitialValues({});
+    final service = AppSettingsService();
+
+    final settings = await service.load();
+
+    expect(settings.themeModeCode, 'light');
+  });
+
   test('accessibility display preferences persist', () async {
     SharedPreferences.setMockInitialValues({});
     final service = AppSettingsService();

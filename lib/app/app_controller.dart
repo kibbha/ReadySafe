@@ -32,7 +32,7 @@ class AppController extends ChangeNotifier {
       themeModeCode: const {'system', 'light', 'dark'}.contains(
               loaded.themeModeCode)
           ? loaded.themeModeCode
-          : 'system',
+          : 'light',
       largeText: loaded.largeText,
       highContrast: loaded.highContrast,
     );

@@ -11,18 +11,18 @@ class ReadySafeColors {
   static const aed = Color(0xffe98a15);
   static const warning = Color(0xff9a6a00);
 
-  static const lightCanvas = Color(0xfff7fafb);
+  static const lightCanvas = Color(0xfffbfcfd);
   static const lightSurface = Colors.white;
   static const lightInk = Color(0xff172126);
-  static const lightMuted = Color(0xff59686d);
-  static const lightOutline = Color(0xffdbe5e7);
+  static const lightMuted = Color(0xff4f6168);
+  static const lightOutline = Color(0xffd7e2e6);
 
-  static const darkCanvas = Color(0xff0f171a);
-  static const darkSurface = Color(0xff172226);
-  static const darkSurfaceMuted = Color(0xff1e2c31);
+  static const darkCanvas = Color(0xff1a2428);
+  static const darkSurface = Color(0xff243136);
+  static const darkSurfaceMuted = Color(0xff2d3b40);
   static const darkInk = Color(0xfff3f7f8);
   static const darkMuted = Color(0xffb8c6ca);
-  static const darkOutline = Color(0xff43545a);
+  static const darkOutline = Color(0xff566970);
 }
 
 class ReadySafeTheme {
@@ -51,7 +51,7 @@ class ReadySafeTheme {
   static ThemeMode modeFor(String code) => switch (code) {
         'light' => ThemeMode.light,
         'dark' => ThemeMode.dark,
-        _ => ThemeMode.system,
+        _ => ThemeMode.light,
       };
 
   static ThemeData _theme({

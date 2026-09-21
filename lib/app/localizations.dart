@@ -411,6 +411,9 @@ class AppLocalizations {
     'aid_unconscious': 'Inconscience et PLS',
     'aid_unconscious_summary':
         'La personne ne répond pas mais respire normalement.',
+    'aid_unconscious_heading_1': 'VÉRIFIER CONSCIENCE ET RESPIRATION',
+    'aid_unconscious_heading_2': 'PLACER EN POSITION LATÉRALE DE SÉCURITÉ',
+    'aid_unconscious_heading_3': 'SURVEILLER SANS INTERRUPTION',
     'aid_unconscious_1':
         'Vérifiez la réponse et la respiration, puis appelez les secours.',
     'aid_unconscious_2':

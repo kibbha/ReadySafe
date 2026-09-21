@@ -881,7 +881,7 @@ class FirstAidDetailScreen extends StatelessWidget {
         ],
       ),
       bottomNavigationBar: SafeArea(
-        minimum: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+        minimum: const EdgeInsets.fromLTRB(6, 5, 6, 7),
         child: Row(
           children: [
             Expanded(
@@ -912,18 +912,19 @@ class FirstAidDetailScreen extends StatelessWidget {
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
-          final wide = constraints.maxWidth >= 780;
+          final wide = constraints.maxWidth >= 900;
+          final horizontal = wide ? 18.0 : 4.0;
           return Align(
             alignment: Alignment.topCenter,
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 400),
+              constraints: const BoxConstraints(maxWidth: 920),
               child: ListView(
-                padding: EdgeInsets.fromLTRB(wide ? 24 : 12, 4, wide ? 24 : 12, 26),
+                padding: EdgeInsets.fromLTRB(horizontal, 2, horizontal, 20),
                 children: [
                   InteractiveViewer(
                     minScale: 1,
                     maxScale: 3.2,
-                    boundaryMargin: const EdgeInsets.all(40),
+                    boundaryMargin: const EdgeInsets.all(56),
                     child: _PosterDetailPanel(
                       number: number,
                       title: t.get(guide.titleKey),
@@ -940,7 +941,7 @@ class FirstAidDetailScreen extends StatelessWidget {
                   ),
                   if (guide.definitionTitleKey != null &&
                       guide.definitionBodyKey != null) ...[
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 8),
                     _DefinitionBox(
                       title: t.get(guide.definitionTitleKey!),
                       body: t.get(guide.definitionBodyKey!),
@@ -950,7 +951,7 @@ class FirstAidDetailScreen extends StatelessWidget {
                     const SizedBox(height: 8),
                     _GuideWarning(text: t.get(warningKey)),
                   ],
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8),
                   _MedicalNotice(text: t.get('medicalNotice')),
                   const SizedBox(height: 8),
                   _ReferenceSources(
@@ -1056,23 +1057,25 @@ class _PosterDetailPanel extends StatelessWidget {
     final critical = _posterCritical(guide.id);
 
     return Container(
+      width: double.infinity,
       decoration: BoxDecoration(
-        color: const Color(0xfffffff9),
-        border: Border.all(color: const Color(0xff58afa5), width: 1.5),
-        borderRadius: BorderRadius.circular(6),
+        color: Colors.white,
+        border: Border.all(color: const Color(0xffbfd5dc)),
+        borderRadius: BorderRadius.circular(14),
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(
         children: [
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(12, 10, 12, 9),
-            color: const Color(0xff087f83),
+            padding: const EdgeInsets.fromLTRB(16, 15, 16, 14),
+            color: const Color(0xff1268d8),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
-                  width: 48,
-                  height: 48,
+                  width: 58,
+                  height: 58,
                   alignment: Alignment.center,
                   decoration: const BoxDecoration(
                     color: Colors.white,
@@ -1081,20 +1084,21 @@ class _PosterDetailPanel extends StatelessWidget {
                   child: number == null
                       ? const Icon(
                           Icons.health_and_safety_rounded,
-                          color: Color(0xff087f83),
+                          color: Color(0xff1268d8),
+                          size: 30,
                         )
                       : Text(
                           number.toString(),
                           style: TextStyle(
                             color: critical
                                 ? const Color(0xffd92d36)
-                                : const Color(0xff087f83),
-                            fontSize: 25,
+                                : const Color(0xff1268d8),
+                            fontSize: 30,
                             fontWeight: FontWeight.w900,
                           ),
                         ),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 13),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -1103,17 +1107,18 @@ class _PosterDetailPanel extends StatelessWidget {
                         title.toUpperCase(),
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 21,
-                          height: 1.0,
+                          fontSize: 25,
+                          height: 1.02,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
-                      const SizedBox(height: 3),
+                      const SizedBox(height: 5),
                       Text(
                         subtitle,
                         style: const TextStyle(
-                          color: Color(0xffd8f3ef),
-                          fontSize: 8.2,
+                          color: Color(0xffdcecff),
+                          fontSize: 11.5,
+                          height: 1.15,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
@@ -1132,21 +1137,23 @@ class _PosterDetailPanel extends StatelessWidget {
             ),
           Material(
             color: critical
-                ? const Color(0xffe52b34)
+                ? const Color(0xffd92d36)
                 : const Color(0xffffdf35),
             child: InkWell(
               onTap: onEmergency,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 child: Row(
                   children: [
                     Icon(
                       critical
                           ? Icons.warning_amber_rounded
                           : Icons.phone_in_talk_rounded,
-                      color: critical ? Colors.white : const Color(0xff6f4e00),
+                      color: critical ? Colors.white : const Color(0xff654900),
+                      size: 28,
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: Text(
                         emergencyNumber == null
@@ -1158,15 +1165,16 @@ class _PosterDetailPanel extends StatelessWidget {
                                 : 'DANGER IMMÉDIAT — APPELER LE $emergencyNumber'),
                         style: TextStyle(
                           color:
-                              critical ? Colors.white : const Color(0xff6f4e00),
+                              critical ? Colors.white : const Color(0xff654900),
                           fontWeight: FontWeight.w900,
-                          fontSize: 12,
+                          fontSize: 14,
                         ),
                       ),
                     ),
                     Icon(
                       Icons.arrow_forward_rounded,
-                      color: critical ? Colors.white : const Color(0xff6f4e00),
+                      color: critical ? Colors.white : const Color(0xff654900),
+                      size: 28,
                     ),
                   ],
                 ),
@@ -1194,93 +1202,112 @@ class _PosterFullStep extends StatelessWidget {
   final bool last;
 
   @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.fromLTRB(9, 7, 8, 7),
-        decoration: BoxDecoration(
-          color: number.isOdd
-              ? const Color(0xfffffff9)
-              : const Color(0xfff7f2e8),
-          border: Border(
-            bottom: last
-                ? BorderSide.none
-                : const BorderSide(color: Color(0xffd7e6e2)),
-          ),
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final imageHeight = (screenWidth * .58).clamp(220.0, 380.0).toDouble();
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 16),
+      decoration: BoxDecoration(
+        color: number.isOdd ? Colors.white : const Color(0xfff6fafc),
+        border: Border(
+          bottom: last
+              ? BorderSide.none
+              : const BorderSide(color: Color(0xffd9e6eb)),
         ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              width: 28,
-              height: 23,
-              alignment: Alignment.center,
-              decoration: const BoxDecoration(
-                color: Color(0xff087f83),
-                shape: BoxShape.circle,
-              ),
-              child: Text(
-                number.toString(),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w900,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: double.infinity,
+            height: imageHeight,
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: const Color(0xffeef6f8),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xffd3e4e9)),
+            ),
+            child: SvgPicture.asset(
+              step.illustrationAsset,
+              fit: BoxFit.contain,
+            ),
+          ),
+          const SizedBox(height: 13),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                alignment: Alignment.center,
+                decoration: const BoxDecoration(
+                  color: Color(0xff1268d8),
+                  shape: BoxShape.circle,
+                ),
+                child: Text(
+                  number.toString(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 7),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (step.headingKey != null) ...[
+              const SizedBox(width: 11),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (step.headingKey != null) ...[
+                      Text(
+                        _aidText(context, step.headingKey!).toUpperCase(),
+                        style: const TextStyle(
+                          color: Color(0xff1268d8),
+                          fontSize: 14.5,
+                          height: 1.18,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                    ],
                     Text(
-                      _aidText(context, step.headingKey!).toUpperCase(),
+                      _aidText(context, step.textKey),
                       style: const TextStyle(
-                        color: Color(0xff1268d8),
-                        fontSize: 11.5,
-                        height: 1.15,
-                        fontWeight: FontWeight.w900,
+                        color: Color(0xff172126),
+                        fontSize: 17,
+                        height: 1.32,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    for (final detailKey in step.detailKeys) ...[
+                      const SizedBox(height: 7),
+                      _SquareBullet(
+                        text: _aidText(context, detailKey),
+                        fontSize: 14,
+                      ),
+                    ],
+                    if (emphasizeCpr || step.cprPacing) ...[
+                      const SizedBox(height: 10),
+                      const Wrap(
+                        spacing: 7,
+                        runSpacing: 7,
+                        children: [
+                          _MetricBadge(label: '100–120/min'),
+                          _MetricBadge(label: '5–6 cm', alert: true),
+                        ],
+                      ),
+                    ],
                   ],
-                  Text(
-                    _aidText(context, step.textKey),
-                    style: const TextStyle(
-                      fontSize: 12.5,
-                      height: 1.25,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  for (final detailKey in step.detailKeys) ...[
-                    const SizedBox(height: 5),
-                    _SquareBullet(text: _aidText(context, detailKey)),
-                  ],
-                  if (emphasizeCpr || step.cprPacing) ...[
-                    const SizedBox(height: 7),
-                    const Wrap(
-                      spacing: 6,
-                      runSpacing: 6,
-                      children: [
-                        _MetricBadge(label: '100–120/min'),
-                        _MetricBadge(label: '5–6 cm', alert: true),
-                      ],
-                    ),
-                  ],
-                ],
+                ),
               ),
-            ),
-            const SizedBox(width: 6),
-            SizedBox(
-              width: 112,
-              height: 88,
-              child: SvgPicture.asset(
-                step.illustrationAsset,
-                fit: BoxFit.contain,
-              ),
-            ),
-          ],
-        ),
-      );
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _SquareBullet extends StatelessWidget {
@@ -1306,6 +1333,7 @@ class _SquareBullet extends StatelessWidget {
             child: Text(
               text,
               style: TextStyle(
+                color: const Color(0xff172126),
                 fontSize: fontSize,
                 height: 1.3,
                 fontWeight: FontWeight.w700,
@@ -1661,17 +1689,22 @@ class _FirstAidEmergencyModeScreenState extends State<FirstAidEmergencyModeScree
                         ),
                         const SizedBox(height: 8),
                         Container(
-                          height: (MediaQuery.sizeOf(context).height * .28)
-                              .clamp(140.0, 240.0)
+                          height: (MediaQuery.sizeOf(context).height * .38)
+                              .clamp(220.0, 360.0)
                               .toDouble(),
                           width: double.infinity,
-                          padding: const EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: scheme.surfaceContainerHighest,
-                            borderRadius: BorderRadius.circular(18),
-                            border: Border.all(color: scheme.outline),
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: const Color(0xffd3e4e9),
+                            ),
                           ),
-                          child: SvgPicture.asset(step.illustrationAsset, fit: BoxFit.contain),
+                          child: SvgPicture.asset(
+                            step.illustrationAsset,
+                            fit: BoxFit.contain,
+                          ),
                         ),
                         const SizedBox(height: 8),
                         Container(
