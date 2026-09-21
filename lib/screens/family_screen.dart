@@ -124,7 +124,7 @@ class _FamilyScreenState extends State<FamilyScreen> {
     ];
 
     return Scaffold(
-      backgroundColor: const Color(0xfff7faf9),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(t.get('family')),
       ),
@@ -140,12 +140,9 @@ class _FamilyScreenState extends State<FamilyScreen> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [
-                            Color(0xffe4f3f0),
-                            Color(0xfffff4e8),
-                          ],
-                        ),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(22),
                       ),
                       child: Row(
@@ -154,12 +151,12 @@ class _FamilyScreenState extends State<FamilyScreen> {
                             width: 54,
                             height: 54,
                             decoration: BoxDecoration(
-                              color: const Color(0xff087f83),
+                              color: Theme.of(context).colorScheme.secondary,
                               borderRadius: BorderRadius.circular(17),
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.family_restroom_rounded,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.onSecondary,
                               size: 29,
                             ),
                           ),
@@ -181,8 +178,10 @@ class _FamilyScreenState extends State<FamilyScreen> {
                                   en
                                       ? '$_people people · ${_values['pets'] ?? 0} pet(s)'
                                       : '$_people personne(s) · ${_values['pets'] ?? 0} animal(aux)',
-                                  style: const TextStyle(
-                                    color: Color(0xff65747a),
+                                  style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
@@ -196,15 +195,17 @@ class _FamilyScreenState extends State<FamilyScreen> {
                     Container(
                       padding: const EdgeInsets.all(13),
                       decoration: BoxDecoration(
-                        color: const Color(0xffeaf6f4),
+                        color: Theme.of(context).colorScheme.secondaryContainer,
                         borderRadius: BorderRadius.circular(17),
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.lock_outline_rounded,
-                            color: Color(0xff087f83),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSecondaryContainer,
                           ),
                           const SizedBox(width: 9),
                           Expanded(
@@ -233,15 +234,17 @@ class _FamilyScreenState extends State<FamilyScreen> {
                     Container(
                       padding: const EdgeInsets.all(13),
                       decoration: BoxDecoration(
-                        color: const Color(0xfffff4c7),
+                        color: Theme.of(context).colorScheme.tertiaryContainer,
                         borderRadius: BorderRadius.circular(17),
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.calculate_outlined,
-                            color: Color(0xff9a6a00),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onTertiaryContainer,
                           ),
                           const SizedBox(width: 9),
                           Expanded(
@@ -324,9 +327,9 @@ class _FamilyCounterCard extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       entry.subtitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11.5,
-                        color: Color(0xff65747a),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                         height: 1.25,
                       ),
                     ),

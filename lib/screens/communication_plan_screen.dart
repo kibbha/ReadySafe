@@ -105,7 +105,7 @@ class _CommunicationPlanScreenState extends State<CommunicationPlanScreen> {
     final en = Localizations.localeOf(context).languageCode == 'en';
 
     return Scaffold(
-      backgroundColor: const Color(0xfff7faf9),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(en ? 'Communication plan' : 'Plan de communication'),
         actions: [
@@ -128,19 +128,18 @@ class _CommunicationPlanScreenState extends State<CommunicationPlanScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xffe2f3ef), Color(0xfffff4e7)],
-                    ),
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(22),
                   ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const CircleAvatar(
-                        backgroundColor: Color(0xff087f83),
+                      CircleAvatar(
+                        backgroundColor:
+                            Theme.of(context).colorScheme.secondary,
                         child: Icon(
                           Icons.connect_without_contact_rounded,
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.onSecondary,
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -162,8 +161,10 @@ class _CommunicationPlanScreenState extends State<CommunicationPlanScreen> {
                               en
                                   ? 'Prepare an out-of-area contact, school/work information and a short message that can be sent quickly.'
                                   : 'Préparez un contact extérieur, les informations école/travail et un message court à envoyer rapidement.',
-                              style: const TextStyle(
-                                color: Color(0xff65747a),
+                              style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
                                 height: 1.35,
                               ),
                             ),

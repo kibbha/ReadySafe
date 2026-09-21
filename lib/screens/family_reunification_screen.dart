@@ -168,7 +168,7 @@ Consignes : ${_childInstructions.text.trim().isEmpty ? 'Suivre les consignes de 
         _checkItems.isEmpty ? 0.0 : readyCount / _checkItems.length;
 
     return Scaffold(
-      backgroundColor: const Color(0xfff7faf9),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(en ? 'Family reunification' : 'Réunification familiale'),
         actions: [
@@ -191,9 +191,7 @@ Consignes : ${_childInstructions.text.trim().isEmpty ? 'Suivre les consignes de 
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xffe4f3f0), Color(0xfffff4e8)],
-                    ),
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(22),
                   ),
                   child: Column(
@@ -201,9 +199,13 @@ Consignes : ${_childInstructions.text.trim().isEmpty ? 'Suivre les consignes de 
                     children: [
                       Row(
                         children: [
-                          const CircleAvatar(
-                            backgroundColor: Color(0xff087f83),
-                            child: Icon(Icons.family_restroom_rounded, color: Colors.white),
+                          CircleAvatar(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.secondary,
+                            child: Icon(
+                              Icons.family_restroom_rounded,
+                              color: Theme.of(context).colorScheme.onSecondary,
+                            ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -225,8 +227,9 @@ Consignes : ${_childInstructions.text.trim().isEmpty ? 'Suivre les consignes de 
                         child: LinearProgressIndicator(
                           value: progress,
                           minHeight: 8,
-                          backgroundColor: Colors.white,
-                          color: const Color(0xff087f83),
+                          backgroundColor:
+                              Theme.of(context).colorScheme.surface,
+                          color: Theme.of(context).colorScheme.secondary,
                         ),
                       ),
                       const SizedBox(height: 5),

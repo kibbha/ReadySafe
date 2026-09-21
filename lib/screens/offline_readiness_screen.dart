@@ -84,7 +84,7 @@ class _OfflineReadinessScreenState extends State<OfflineReadinessScreen> {
         _manualChecks.isEmpty ? 0.0 : readyCount / _manualChecks.length;
 
     return Scaffold(
-      backgroundColor: const Color(0xfff7faf9),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(title: Text(en ? 'Offline readiness' : 'Préparation hors ligne')),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -94,9 +94,7 @@ class _OfflineReadinessScreenState extends State<OfflineReadinessScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xffe4f3f0), Color(0xfffff4e8)],
-                    ),
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(22),
                   ),
                   child: Column(
@@ -104,9 +102,13 @@ class _OfflineReadinessScreenState extends State<OfflineReadinessScreen> {
                     children: [
                       Row(
                         children: [
-                          const CircleAvatar(
-                            backgroundColor: Color(0xff087f83),
-                            child: Icon(Icons.offline_bolt_rounded, color: Colors.white),
+                          CircleAvatar(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.secondary,
+                            child: Icon(
+                              Icons.offline_bolt_rounded,
+                              color: Theme.of(context).colorScheme.onSecondary,
+                            ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -125,8 +127,9 @@ class _OfflineReadinessScreenState extends State<OfflineReadinessScreen> {
                         child: LinearProgressIndicator(
                           value: progress,
                           minHeight: 8,
-                          backgroundColor: Colors.white,
-                          color: const Color(0xff087f83),
+                          backgroundColor:
+                              Theme.of(context).colorScheme.surface,
+                          color: Theme.of(context).colorScheme.secondary,
                         ),
                       ),
                       const SizedBox(height: 5),
