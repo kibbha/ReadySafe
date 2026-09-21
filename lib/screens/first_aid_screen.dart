@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -34,6 +36,44 @@ const _essentialIds = <String>[
   'hypothermia',
   'heatstroke',
 ];
+
+const _approvedUnconsciousSheetChunks = <String>[
+  'assets/first_aid_sheets/unconscious_pls_hd_00.b64',
+  'assets/first_aid_sheets/unconscious_pls_hd_01.b64',
+  'assets/first_aid_sheets/unconscious_pls_hd_02.b64',
+  'assets/first_aid_sheets/unconscious_pls_hd_03.b64',
+  'assets/first_aid_sheets/unconscious_pls_hd_04.b64',
+  'assets/first_aid_sheets/unconscious_pls_hd_05_0.b64',
+  'assets/first_aid_sheets/unconscious_pls_hd_05_1.b64',
+  'assets/first_aid_sheets/unconscious_pls_hd_05_2.b64',
+  'assets/first_aid_sheets/unconscious_pls_hd_06_0.b64',
+  'assets/first_aid_sheets/unconscious_pls_hd_06_1.b64',
+  'assets/first_aid_sheets/unconscious_pls_hd_06_2.b64',
+  'assets/first_aid_sheets/unconscious_pls_hd_07_0.b64',
+  'assets/first_aid_sheets/unconscious_pls_hd_07_1.b64',
+  'assets/first_aid_sheets/unconscious_pls_hd_07_2.b64',
+  'assets/first_aid_sheets/unconscious_pls_hd_08_0.b64',
+  'assets/first_aid_sheets/unconscious_pls_hd_08_1.b64',
+  'assets/first_aid_sheets/unconscious_pls_hd_08_2.b64',
+  'assets/first_aid_sheets/unconscious_pls_hd_09_0.b64',
+  'assets/first_aid_sheets/unconscious_pls_hd_09_1.b64',
+  'assets/first_aid_sheets/unconscious_pls_hd_09_2.b64',
+  'assets/first_aid_sheets/unconscious_pls_hd_10_0.b64',
+  'assets/first_aid_sheets/unconscious_pls_hd_10_1.b64',
+];
+
+Future<Uint8List>? _approvedUnconsciousSheetBytes;
+
+Future<Uint8List> _loadApprovedUnconsciousSheetBytes() =>
+    _approvedUnconsciousSheetBytes ??= _decodeApprovedUnconsciousSheetBytes();
+
+Future<Uint8List> _decodeApprovedUnconsciousSheetBytes() async {
+  final encoded = StringBuffer();
+  for (final path in _approvedUnconsciousSheetChunks) {
+    encoded.write(await rootBundle.loadString(path));
+  }
+  return base64Decode(encoded.toString());
+}
 
 
 String _aidText(BuildContext context, String key) {
@@ -531,6 +571,50 @@ class _SmallFeatureChip extends StatelessWidget {
   }
 }
 
+class _ApprovedUnconsciousImage extends StatelessWidget {
+  const _ApprovedUnconsciousImage({
+    required this.fit,
+    this.alignment = Alignment.center,
+  });
+
+  final BoxFit fit;
+  final Alignment alignment;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Uint8List>(
+      future: _loadApprovedUnconsciousSheetBytes(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Center(
+            child: SizedBox.square(
+              dimension: 24,
+              child: CircularProgressIndicator(strokeWidth: 2.5),
+            ),
+          );
+        }
+        if (snapshot.hasError || !snapshot.hasData) {
+          return Image.asset(
+            'assets/first_aid_sheets/unconscious_pls_approved.webp',
+            width: double.infinity,
+            fit: fit,
+            alignment: alignment,
+            filterQuality: FilterQuality.high,
+          );
+        }
+        return Image.memory(
+          snapshot.data!,
+          width: double.infinity,
+          fit: fit,
+          alignment: alignment,
+          filterQuality: FilterQuality.high,
+          gaplessPlayback: true,
+        );
+      },
+    );
+  }
+}
+
 class _PosterGuideCard extends StatelessWidget {
   const _PosterGuideCard({
     required this.guide,
@@ -553,6 +637,7 @@ class _PosterGuideCard extends StatelessWidget {
     final en = Localizations.localeOf(context).languageCode == 'en';
     final steps = guide.steps.take(4).toList();
     final critical = _posterCritical(guide.id);
+    final useApprovedPreview = guide.id == 'unconscious' && !en;
     return Material(
       color: const Color(0xfffffdf7),
       elevation: 1,
@@ -636,23 +721,33 @@ class _PosterGuideCard extends StatelessWidget {
                 ),
               ),
               Expanded(
-                child: Container(
-                  color: const Color(0xfffffff9),
-                  padding: const EdgeInsets.symmetric(horizontal: 7),
-                  child: Column(
-                    children: [
-                      for (var i = 0; i < steps.length; i++)
-                        Expanded(
-                          child: _PosterMiniStep(
-                            number: i + 1,
-                            text: _aidText(context, steps[i].textKey),
-                            illustrationAsset: steps[i].illustrationAsset,
-                            last: i == steps.length - 1,
+                child: useApprovedPreview
+                    ? const ColoredBox(
+                        color: Color(0xfffffff9),
+                        child: ClipRect(
+                          child: _ApprovedUnconsciousImage(
+                            fit: BoxFit.cover,
+                            alignment: Alignment(0, -0.32),
                           ),
                         ),
-                    ],
-                  ),
-                ),
+                      )
+                    : Container(
+                        color: const Color(0xfffffff9),
+                        padding: const EdgeInsets.symmetric(horizontal: 7),
+                        child: Column(
+                          children: [
+                            for (var i = 0; i < steps.length; i++)
+                              Expanded(
+                                child: _PosterMiniStep(
+                                  number: i + 1,
+                                  text: _aidText(context, steps[i].textKey),
+                                  illustrationAsset: steps[i].illustrationAsset,
+                                  last: i == steps.length - 1,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
               ),
               Container(
                 width: double.infinity,
@@ -923,10 +1018,7 @@ class FirstAidDetailScreen extends StatelessWidget {
                 padding: EdgeInsets.fromLTRB(horizontal, 2, horizontal, 20),
                 children: [
                   if (useApprovedImageSheet)
-                    const _ApprovedFirstAidSheetImage(
-                      assetPath:
-                          'assets/first_aid_sheets/unconscious_pls_approved.webp',
-                    )
+                    const _ApprovedFirstAidSheetImage()
                   else
                     InteractiveViewer(
                       minScale: 1,
@@ -976,30 +1068,22 @@ class FirstAidDetailScreen extends StatelessWidget {
 }
 
 class _ApprovedFirstAidSheetImage extends StatelessWidget {
-  const _ApprovedFirstAidSheetImage({
-    required this.assetPath,
-  });
-
-  final String assetPath;
+  const _ApprovedFirstAidSheetImage();
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
+    return const Semantics(
       image: true,
       label:
           'Fiche visuelle premiers secours : vérifier la conscience et la respiration',
       child: InteractiveViewer(
         minScale: 1,
         maxScale: 3.2,
-        boundaryMargin: const EdgeInsets.all(48),
+        boundaryMargin: EdgeInsets.all(48),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(18),
-          child: Image.asset(
-            assetPath,
-            width: double.infinity,
+          borderRadius: BorderRadius.all(Radius.circular(18)),
+          child: _ApprovedUnconsciousImage(
             fit: BoxFit.fitWidth,
-            filterQuality: FilterQuality.high,
-            gaplessPlayback: true,
           ),
         ),
       ),
