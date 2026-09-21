@@ -1286,6 +1286,7 @@ class _PosterFullStep extends StatelessWidget {
                       _SquareBullet(
                         text: _aidText(context, detailKey),
                         fontSize: 14,
+                        color: const Color(0xff172126),
                       ),
                     ],
                     if (emphasizeCpr || step.cprPacing) ...[
@@ -1314,26 +1315,30 @@ class _SquareBullet extends StatelessWidget {
   const _SquareBullet({
     required this.text,
     this.fontSize = 11.5,
+    this.color,
   });
 
   final String text;
   final double fontSize;
+  final Color? color;
 
   @override
-  Widget build(BuildContext context) => Row(
+  Widget build(BuildContext context) {
+    final foreground = color ?? Theme.of(context).colorScheme.onSurface;
+    return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             width: 7,
             height: 7,
             margin: EdgeInsets.only(top: fontSize * .45, right: 7),
-            color: Colors.black87,
+            color: foreground,
           ),
           Expanded(
             child: Text(
               text,
               style: TextStyle(
-                color: const Color(0xff172126),
+                color: foreground,
                 fontSize: fontSize,
                 height: 1.3,
                 fontWeight: FontWeight.w700,
@@ -1342,6 +1347,7 @@ class _SquareBullet extends StatelessWidget {
           ),
         ],
       );
+  }
 }
 
 class _DefinitionBox extends StatelessWidget {
