@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -96,15 +97,27 @@ void main() {
     }
   });
 
-  test('approved unconscious full-sheet image is bundled', () {
+  test('approved unconscious full-sheet image is bundled and decodable',
+      () async {
     const path =
         'assets/first_aid_sheets/unconscious_pls_approved.webp';
+    final file = File(path);
 
     expect(
-      File(path).existsSync(),
+      file.existsSync(),
       isTrue,
       reason: 'Missing approved image sheet: $path',
     );
+
+    final bytes = await file.readAsBytes();
+    final codec = await ui.instantiateImageCodec(bytes);
+    final frame = await codec.getNextFrame();
+
+    expect(frame.image.width, greaterThanOrEqualTo(260));
+    expect(frame.image.height, greaterThan(frame.image.width));
+
+    frame.image.dispose();
+    codec.dispose();
   });
 
   test('every first-aid illustration referenced by the repository exists', () {

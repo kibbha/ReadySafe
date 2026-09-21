@@ -21,20 +21,28 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final app = AppScope.of(context);
     final en = Localizations.localeOf(context).languageCode == 'en';
     final selectedCountry = CountryRepository.byCode(selected);
+    final keyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0;
 
     final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 820),
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(18, 18, 18, 14),
+              padding: EdgeInsets.fromLTRB(
+                18,
+                keyboardVisible ? 4 : 18,
+                18,
+                keyboardVisible ? 4 : 14,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  if (!keyboardVisible) ...[
                   Align(
                     alignment: Alignment.centerRight,
                     child: Wrap(
@@ -147,6 +155,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
+                  ],
                   Text(
                     strings.get('choose_residence'),
                     style: const TextStyle(
@@ -154,15 +163,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       fontWeight: FontWeight.w900,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    strings.get('country_explanation'),
-                    style: TextStyle(
-                      color: scheme.onSurfaceVariant,
-                      height: 1.35,
+                  if (!keyboardVisible) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      strings.get('country_explanation'),
+                      style: TextStyle(
+                        color: scheme.onSurfaceVariant,
+                        height: 1.35,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
+                    const SizedBox(height: 10),
+                  ] else
+                    const SizedBox(height: 4),
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
@@ -177,8 +189,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  if (selectedCountry != null)
+                  SizedBox(height: keyboardVisible ? 4 : 10),
+                  if (selectedCountry != null && !keyboardVisible)
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 14,
@@ -210,10 +222,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         ],
                       ),
                     ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: keyboardVisible ? 4 : 10),
                   FilledButton.icon(
                     style: FilledButton.styleFrom(
-                      minimumSize: const Size.fromHeight(54),
+                      minimumSize: Size.fromHeight(keyboardVisible ? 46 : 54),
                     ),
                     onPressed: selected == null
                         ? null
@@ -221,17 +233,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     icon: const Icon(Icons.arrow_forward_rounded),
                     label: Text(strings.get('continue')),
                   ),
-                  const SizedBox(height: 6),
-                  Text(
-                    en
-                        ? 'You can change the residence country or enable travel mode later in Settings.'
-                        : 'Vous pourrez modifier le pays de résidence ou activer le mode voyage plus tard dans Paramètres.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 11.5,
-                      color: scheme.onSurfaceVariant,
+                  if (!keyboardVisible) ...[
+                    const SizedBox(height: 6),
+                    Text(
+                      en
+                          ? 'You can change the residence country or enable travel mode later in Settings.'
+                          : 'Vous pourrez modifier le pays de résidence ou activer le mode voyage plus tard dans Paramètres.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 11.5,
+                        color: scheme.onSurfaceVariant,
+                      ),
                     ),
-                  ),
+                  ],
                 ],
               ),
             ),
