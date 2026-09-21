@@ -126,20 +126,21 @@ class SpecialKitsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final en = Localizations.localeOf(context).languageCode == 'en';
     return Scaffold(
-      backgroundColor: const Color(0xfff7faf9),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(title: Text(en ? 'Specialized kits' : 'Kits spécialisés')),
       body: LayoutBuilder(
         builder: (context, constraints) {
           final wide = constraints.maxWidth >= 760;
+          final textScale =
+              MediaQuery.textScalerOf(context).scale(16) / 16;
+          final columns = textScale > 1.30 ? 1 : (wide ? 3 : 2);
           return ListView(
             padding: EdgeInsets.fromLTRB(wide ? 22 : 12, 4, wide ? 22 : 12, 28),
             children: [
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xffe3f3f0), Color(0xfffff4e8)],
-                  ),
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(22),
                 ),
                 child: Row(
@@ -165,7 +166,12 @@ class SpecialKitsScreen extends StatelessWidget {
                             en
                                 ? 'The home kit remains the foundation. These lists add evacuation, vehicle, travel, child, pet and outdoor needs.'
                                 : 'Le kit domicile reste la base. Ces listes complètent la préparation pour évacuation, voiture, voyage, enfants, animaux et extérieur.',
-                            style: const TextStyle(color: Color(0xff65747a), height: 1.35),
+                            style: TextStyle(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
+                              height: 1.35,
+                            ),
                           ),
                         ],
                       ),
@@ -179,8 +185,8 @@ class SpecialKitsScreen extends StatelessWidget {
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: _kits.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: wide ? 3 : 2,
-                  mainAxisExtent: wide ? 172 : 165,
+                  crossAxisCount: columns,
+                  mainAxisExtent: columns == 1 ? 190 : (wide ? 178 : 172),
                   crossAxisSpacing: 9,
                   mainAxisSpacing: 9,
                 ),
@@ -200,13 +206,18 @@ class SpecialKitsScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(13),
                 decoration: BoxDecoration(
-                  color: const Color(0xfffff4c7),
+                  color: Theme.of(context).colorScheme.tertiaryContainer,
                   borderRadius: BorderRadius.circular(17),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.tune_rounded, color: Color(0xff9a6a00)),
+                    Icon(
+                      Icons.tune_rounded,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onTertiaryContainer,
+                    ),
                     const SizedBox(width: 9),
                     Expanded(
                       child: Text(
@@ -272,7 +283,7 @@ class _SpecialKitDetailScreenState extends State<_SpecialKitDetailScreen> {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xfff7faf9),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(title: Text(_kitTitle(widget.kit, en))),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(12, 4, 12, 28),
@@ -300,14 +311,22 @@ class _SpecialKitDetailScreenState extends State<_SpecialKitDetailScreen> {
                         style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w900),
                       ),
                       const SizedBox(height: 3),
-                      Text(_kitSubtitle(widget.kit, en), style: const TextStyle(color: Color(0xff65747a))),
+                      Text(
+                        _kitSubtitle(widget.kit, en),
+                        style: TextStyle(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurfaceVariant,
+                        ),
+                      ),
                       const SizedBox(height: 8),
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: LinearProgressIndicator(
                           value: progress,
                           minHeight: 8,
-                          backgroundColor: Colors.white,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.surface,
                           color: widget.kit.color,
                         ),
                       ),
@@ -339,13 +358,21 @@ class _SpecialKitDetailScreenState extends State<_SpecialKitDetailScreen> {
                   onChanged: (value) => _toggle(item.id, value ?? false),
                   secondary: CircleAvatar(
                     backgroundColor: checked
-                        ? const Color(0xffdff2ed)
-                        : const Color(0xfffff2df),
+                        ? Theme.of(context)
+                            .colorScheme
+                            .secondaryContainer
+                        : Theme.of(context)
+                            .colorScheme
+                            .tertiaryContainer,
                     child: Icon(
                       _categoryIcon(item.category),
                       color: checked
-                          ? const Color(0xff087f83)
-                          : const Color(0xffb7833f),
+                          ? Theme.of(context)
+                              .colorScheme
+                              .onSecondaryContainer
+                          : Theme.of(context)
+                              .colorScheme
+                              .onTertiaryContainer,
                     ),
                   ),
                   title: Text(_itemLabel(widget.kit.id, item, en), style: const TextStyle(fontWeight: FontWeight.w800)),
@@ -386,8 +413,10 @@ class _KitCard extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) => Material(
-        color: Colors.white,
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Material(
+        color: scheme.surface,
         borderRadius: BorderRadius.circular(19),
         child: InkWell(
           borderRadius: BorderRadius.circular(19),
@@ -396,7 +425,7 @@ class _KitCard extends StatelessWidget {
             padding: const EdgeInsets.all(13),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(19),
-              border: Border.all(color: const Color(0xffdbe6e7)),
+              border: Border.all(color: scheme.outline),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -418,15 +447,19 @@ class _KitCard extends StatelessWidget {
                 const SizedBox(height: 3),
                 Text(
                   _kitSubtitle(kit, en),
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 11.5, color: Color(0xff65747a), height: 1.2),
+                  maxLines: 4,
+                  style: TextStyle(
+                    fontSize: 11.5,
+                    color: scheme.onSurfaceVariant,
+                    height: 1.2,
+                  ),
                 ),
               ],
             ),
           ),
         ),
       );
+  }
 }
 
 String _kitTitle(_KitDefinition kit, bool en) {

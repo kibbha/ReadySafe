@@ -20,20 +20,24 @@ class GuideListScreen extends StatelessWidget {
     final guides = rawGuides.map((guide) => localizedGuide(guide, en)).toList();
 
     return Scaffold(
-      backgroundColor: const Color(0xfff7faf9),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(isDisaster ? t.get('disasters') : t.get('emergencies')),
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
           final width = constraints.maxWidth;
-          final columns = width >= 1050
-              ? 4
-              : width >= 760
-                  ? 3
-                  : width >= 520
-                      ? 2
-                      : 1;
+          final textScale =
+              MediaQuery.textScalerOf(context).scale(16) / 16;
+          final columns = textScale > 1.30
+              ? 1
+              : width >= 1050
+                  ? 4
+                  : width >= 760
+                      ? 3
+                      : width >= 520
+                          ? 2
+                          : 1;
           final horizontal = width >= 760 ? 22.0 : 12.0;
 
           return ListView(
@@ -42,11 +46,7 @@ class GuideListScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: isDisaster
-                        ? const [Color(0xffffeee5), Color(0xfffff7e7)]
-                        : const [Color(0xffe5f4f1), Color(0xfffff5e8)],
-                  ),
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(22),
                 ),
                 child: Row(
@@ -87,8 +87,10 @@ class GuideListScreen extends StatelessWidget {
                                 : (en
                                     ? 'Simple actions designed to remain useful when time and attention are limited.'
                                     : 'Des actions simples pour réagir sans chercher l’information au mauvais moment.'),
-                            style: const TextStyle(
-                              color: Color(0xff65747a),
+                            style: TextStyle(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
                               height: 1.32,
                             ),
                           ),
@@ -124,15 +126,17 @@ class GuideListScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(13),
                 decoration: BoxDecoration(
-                  color: const Color(0xffeaf6f4),
+                  color: Theme.of(context).colorScheme.secondaryContainer,
                   borderRadius: BorderRadius.circular(17),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.campaign_outlined,
-                      color: Color(0xff087f83),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSecondaryContainer,
                     ),
                     const SizedBox(width: 9),
                     Expanded(
@@ -169,8 +173,10 @@ class _GuideCard extends StatelessWidget {
   final bool compact;
 
   @override
-  Widget build(BuildContext context) => Material(
-        color: Colors.white,
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Material(
+        color: scheme.surface,
         borderRadius: BorderRadius.circular(19),
         child: InkWell(
           borderRadius: BorderRadius.circular(19),
@@ -182,7 +188,7 @@ class _GuideCard extends StatelessWidget {
             padding: const EdgeInsets.all(13),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(19),
-              border: Border.all(color: const Color(0xffdce7e7)),
+              border: Border.all(color: scheme.outline),
             ),
             child: compact
                 ? Row(
@@ -190,9 +196,9 @@ class _GuideCard extends StatelessWidget {
                       _iconBox(),
                       const SizedBox(width: 11),
                       Expanded(child: _text()),
-                      const Icon(
+                      Icon(
                         Icons.chevron_right_rounded,
-                        color: Color(0xff87969a),
+                        color: scheme.onSurfaceVariant,
                       ),
                     ],
                   )
@@ -224,8 +230,7 @@ class _GuideCard extends StatelessWidget {
         children: [
           Text(
             guide.title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
+            maxLines: compact ? null : 3,
             style: const TextStyle(
               fontSize: 15.5,
               fontWeight: FontWeight.w900,
@@ -235,12 +240,11 @@ class _GuideCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             guide.immediate,
-            maxLines: compact ? 2 : 3,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
+            maxLines: compact ? null : 4,
+            style: TextStyle(
               fontSize: 11.5,
               height: 1.2,
-              color: Color(0xff65747a),
+              color: scheme.onSurfaceVariant,
             ),
           ),
         ],
@@ -290,7 +294,7 @@ class GuideDetail extends StatelessWidget {
     final t = AppLocalizations.of(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xfff7faf9),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(title: Text(guide.title)),
       body: Align(
         alignment: Alignment.topCenter,
@@ -302,9 +306,7 @@ class GuideDetail extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xffe4f3f0), Color(0xfffff4e8)],
-                  ),
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(22),
                 ),
                 child: Row(
@@ -371,9 +373,11 @@ class GuideDetail extends StatelessWidget {
                   margin: const EdgeInsets.only(bottom: 7),
                   padding: const EdgeInsets.all(11),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: const Color(0xffdbe6e7)),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
                   ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -440,9 +444,9 @@ class _Block extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.all(13),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xffdbe6e7)),
+          border: Border.all(color: Theme.of(context).colorScheme.outline),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,

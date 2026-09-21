@@ -19,7 +19,7 @@ class OfficialSourcesScreen extends StatelessWidget {
         : _fallbackSources(country?.sources ?? const <Uri>[]);
 
     return Scaffold(
-      backgroundColor: const Color(0xfff7faf9),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           en
@@ -37,12 +37,7 @@ class OfficialSourcesScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [
-                      Color(0xffffeee8),
-                      Color(0xfffff7df),
-                    ],
-                  ),
+                  color: Theme.of(context).colorScheme.errorContainer,
                   borderRadius: BorderRadius.circular(22),
                 ),
                 child: Row(
@@ -75,8 +70,10 @@ class OfficialSourcesScreen extends StatelessWidget {
                             en
                                 ? 'ReadySafe provides quick access, but a real warning should always be read from its official source. Local instructions take priority over general guidance.'
                                 : 'ReadySafe regroupe des accès rapides, mais une alerte réelle doit toujours être lue depuis sa source officielle. Les instructions locales priment sur les conseils généraux.',
-                            style: const TextStyle(
-                              color: Color(0xff65747a),
+                            style: TextStyle(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onErrorContainer,
                               height: 1.35,
                             ),
                           ),
@@ -101,18 +98,20 @@ class OfficialSourcesScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: const Color(0xfffff4c7),
+                    color: Theme.of(context).colorScheme.tertiaryContainer,
                     borderRadius: BorderRadius.circular(18),
                     border: Border.all(
-                      color: const Color(0xffffdf75),
+                      color: Theme.of(context).colorScheme.tertiary,
                     ),
                   ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.info_outline_rounded,
-                        color: Color(0xff9a6a00),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onTertiaryContainer,
                       ),
                       const SizedBox(width: 9),
                       Expanded(
@@ -140,7 +139,7 @@ class OfficialSourcesScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(13),
                 decoration: BoxDecoration(
-                  color: const Color(0xffeaf6f4),
+                  color: Theme.of(context).colorScheme.secondaryContainer,
                   borderRadius: BorderRadius.circular(17),
                 ),
                 child: Column(
@@ -148,9 +147,11 @@ class OfficialSourcesScreen extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.notifications_active_outlined,
-                          color: Color(0xff087f83),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSecondaryContainer,
                         ),
                         const SizedBox(width: 8),
                         Expanded(
@@ -179,15 +180,17 @@ class OfficialSourcesScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(13),
                 decoration: BoxDecoration(
-                  color: const Color(0xfffff4c7),
+                  color: Theme.of(context).colorScheme.tertiaryContainer,
                   borderRadius: BorderRadius.circular(17),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.security_rounded,
-                      color: Color(0xff9a6a00),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onTertiaryContainer,
                     ),
                     const SizedBox(width: 8),
                     Expanded(

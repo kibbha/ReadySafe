@@ -137,9 +137,7 @@ class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xffe3f3f0), Color(0xfffff4e8)],
-              ),
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(22),
             ),
             child: Row(
@@ -165,7 +163,12 @@ class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
                         en
                             ? 'Signal, communication, emergency numbers and landmarks without cluttering the screen.'
                             : 'Signal, communication, numéros d’urgence et repères : sans transformer l’écran en cockpit d’avion.',
-                        style: const TextStyle(color: Color(0xff65747a), height: 1.35),
+                        style: TextStyle(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurfaceVariant,
+                          height: 1.35,
+                        ),
                       ),
                     ],
                   ),
@@ -176,18 +179,22 @@ class _SafetyToolsScreenState extends State<SafetyToolsScreen> {
           const SizedBox(height: 14),
           LayoutBuilder(
             builder: (context, constraints) {
-              final columns = constraints.maxWidth >= 820
-                  ? 4
-                  : constraints.maxWidth >= 560
-                      ? 2
-                      : 1;
+              final textScale =
+                  MediaQuery.textScalerOf(context).scale(16) / 16;
+              final columns = textScale > 1.30
+                  ? 1
+                  : constraints.maxWidth >= 820
+                      ? 4
+                      : constraints.maxWidth >= 560
+                          ? 2
+                          : 1;
               return GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: tools.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: columns,
-                  mainAxisExtent: columns == 1 ? 108 : 150,
+                  mainAxisExtent: columns == 1 ? 132 : 160,
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
                 ),
@@ -427,8 +434,10 @@ class _ToolCard extends StatelessWidget {
   final bool compact;
 
   @override
-  Widget build(BuildContext context) => Material(
-        color: Colors.white,
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Material(
+        color: scheme.surface,
         borderRadius: BorderRadius.circular(19),
         child: InkWell(
           borderRadius: BorderRadius.circular(19),
@@ -437,7 +446,7 @@ class _ToolCard extends StatelessWidget {
             padding: const EdgeInsets.all(13),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(19),
-              border: Border.all(color: const Color(0xffdbe6e7)),
+              border: Border.all(color: scheme.outline),
             ),
             child: compact
                 ? Row(
@@ -459,8 +468,6 @@ class _ToolCard extends StatelessWidget {
                           children: [
                             Text(
                               tool.title,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
                                 fontWeight: FontWeight.w900,
                               ),
@@ -468,20 +475,18 @@ class _ToolCard extends StatelessWidget {
                             const SizedBox(height: 3),
                             Text(
                               tool.subtitle,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 11.5,
-                                color: Color(0xff65747a),
+                                color: scheme.onSurfaceVariant,
                                 height: 1.2,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const Icon(
+                      Icon(
                         Icons.chevron_right_rounded,
-                        color: Color(0xff87969a),
+                        color: scheme.onSurfaceVariant,
                       ),
                     ],
                   )
@@ -500,8 +505,7 @@ class _ToolCard extends StatelessWidget {
                       const Spacer(),
                       Text(
                         tool.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                        maxLines: 3,
                         style: const TextStyle(
                           fontWeight: FontWeight.w900,
                         ),
@@ -509,11 +513,10 @@ class _ToolCard extends StatelessWidget {
                       const SizedBox(height: 3),
                       Text(
                         tool.subtitle,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        maxLines: 3,
+                        style: TextStyle(
                           fontSize: 11.5,
-                          color: Color(0xff65747a),
+                          color: scheme.onSurfaceVariant,
                           height: 1.2,
                         ),
                       ),
@@ -522,4 +525,5 @@ class _ToolCard extends StatelessWidget {
           ),
         ),
       );
+  }
 }
