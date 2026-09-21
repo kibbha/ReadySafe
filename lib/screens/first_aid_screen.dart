@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -35,45 +33,6 @@ const _essentialIds = <String>[
   'hypothermia',
   'heatstroke',
 ];
-
-const _approvedUnconsciousSheetChunks = <String>[
-  'assets/first_aid_sheets/unconscious_pls_hd_00.b64',
-  'assets/first_aid_sheets/unconscious_pls_hd_01.b64',
-  'assets/first_aid_sheets/unconscious_pls_hd_02.b64',
-  'assets/first_aid_sheets/unconscious_pls_hd_03.b64',
-  'assets/first_aid_sheets/unconscious_pls_hd_04.b64',
-  'assets/first_aid_sheets/unconscious_pls_hd_05_0.b64',
-  'assets/first_aid_sheets/unconscious_pls_hd_05_1.b64',
-  'assets/first_aid_sheets/unconscious_pls_hd_05_2.b64',
-  'assets/first_aid_sheets/unconscious_pls_hd_06_0.b64',
-  'assets/first_aid_sheets/unconscious_pls_hd_06_1.b64',
-  'assets/first_aid_sheets/unconscious_pls_hd_06_2.b64',
-  'assets/first_aid_sheets/unconscious_pls_hd_07_0.b64',
-  'assets/first_aid_sheets/unconscious_pls_hd_07_1.b64',
-  'assets/first_aid_sheets/unconscious_pls_hd_07_2.b64',
-  'assets/first_aid_sheets/unconscious_pls_hd_08_0.b64',
-  'assets/first_aid_sheets/unconscious_pls_hd_08_1.b64',
-  'assets/first_aid_sheets/unconscious_pls_hd_08_2.b64',
-  'assets/first_aid_sheets/unconscious_pls_hd_09_0.b64',
-  'assets/first_aid_sheets/unconscious_pls_hd_09_1.b64',
-  'assets/first_aid_sheets/unconscious_pls_hd_09_2.b64',
-  'assets/first_aid_sheets/unconscious_pls_hd_10_0.b64',
-  'assets/first_aid_sheets/unconscious_pls_hd_10_1.b64',
-];
-
-Future<Uint8List>? _approvedUnconsciousSheetBytes;
-
-Future<Uint8List> _loadApprovedUnconsciousSheetBytes() =>
-    _approvedUnconsciousSheetBytes ??= _decodeApprovedUnconsciousSheetBytes();
-
-Future<Uint8List> _decodeApprovedUnconsciousSheetBytes() async {
-  final encoded = StringBuffer();
-  for (final path in _approvedUnconsciousSheetChunks) {
-    encoded.write(await rootBundle.loadString(path));
-  }
-  return base64Decode(encoded.toString());
-}
-
 
 String _aidText(BuildContext context, String key) {
   final t = AppLocalizations.of(context);
@@ -581,35 +540,13 @@ class _ApprovedUnconsciousImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Uint8List>(
-      future: _loadApprovedUnconsciousSheetBytes(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return const Center(
-            child: SizedBox.square(
-              dimension: 24,
-              child: CircularProgressIndicator(strokeWidth: 2.5),
-            ),
-          );
-        }
-        if (snapshot.hasError || !snapshot.hasData) {
-          return Image.asset(
-            'assets/first_aid_sheets/unconscious_pls_approved.webp',
-            width: double.infinity,
-            fit: fit,
-            alignment: alignment,
-            filterQuality: FilterQuality.high,
-          );
-        }
-        return Image.memory(
-          snapshot.data!,
-          width: double.infinity,
-          fit: fit,
-          alignment: alignment,
-          filterQuality: FilterQuality.high,
-          gaplessPlayback: true,
-        );
-      },
+    return Image.asset(
+      'assets/first_aid_sheets/unconscious_pls_approved.webp',
+      width: double.infinity,
+      fit: fit,
+      alignment: alignment,
+      filterQuality: FilterQuality.high,
+      gaplessPlayback: true,
     );
   }
 }

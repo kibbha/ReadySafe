@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
 
@@ -98,56 +97,24 @@ void main() {
     }
   });
 
-  test('approved unconscious HD sheet is bundled and decodable',
-      () async {
-    const paths = <String>[
-      'assets/first_aid_sheets/unconscious_pls_hd_00.b64',
-      'assets/first_aid_sheets/unconscious_pls_hd_01.b64',
-      'assets/first_aid_sheets/unconscious_pls_hd_02.b64',
-      'assets/first_aid_sheets/unconscious_pls_hd_03.b64',
-      'assets/first_aid_sheets/unconscious_pls_hd_04.b64',
-      'assets/first_aid_sheets/unconscious_pls_hd_05_0.b64',
-      'assets/first_aid_sheets/unconscious_pls_hd_05_1.b64',
-      'assets/first_aid_sheets/unconscious_pls_hd_05_2.b64',
-      'assets/first_aid_sheets/unconscious_pls_hd_06_0.b64',
-      'assets/first_aid_sheets/unconscious_pls_hd_06_1.b64',
-      'assets/first_aid_sheets/unconscious_pls_hd_06_2.b64',
-      'assets/first_aid_sheets/unconscious_pls_hd_07_0.b64',
-      'assets/first_aid_sheets/unconscious_pls_hd_07_1.b64',
-      'assets/first_aid_sheets/unconscious_pls_hd_07_2.b64',
-      'assets/first_aid_sheets/unconscious_pls_hd_08_0.b64',
-      'assets/first_aid_sheets/unconscious_pls_hd_08_1.b64',
-      'assets/first_aid_sheets/unconscious_pls_hd_08_2.b64',
-      'assets/first_aid_sheets/unconscious_pls_hd_09_0.b64',
-      'assets/first_aid_sheets/unconscious_pls_hd_09_1.b64',
-      'assets/first_aid_sheets/unconscious_pls_hd_09_2.b64',
-      'assets/first_aid_sheets/unconscious_pls_hd_10_0.b64',
-      'assets/first_aid_sheets/unconscious_pls_hd_10_1.b64',
-    ];
+  test('approved unconscious sheet is bundled and decodable', () async {
+    const path = 'assets/first_aid_sheets/unconscious_pls_approved.webp';
+    final file = File(path);
 
-    final encoded = StringBuffer();
-    for (final path in paths) {
-      final file = File(path);
-      expect(
-        file.existsSync(),
-        isTrue,
-        reason: 'Missing approved HD sheet fragment: $path',
-      );
-      encoded.write(file.readAsStringSync());
-    }
-
-    final bytes = base64Decode(encoded.toString());
     expect(
-      bytes.length,
-      greaterThan(70000),
-      reason: 'Approved sheet was unexpectedly over-compressed.',
+      file.existsSync(),
+      isTrue,
+      reason: 'Missing approved image sheet: $path',
     );
+
+    final bytes = await file.readAsBytes();
+    expect(bytes.length, greaterThan(5000));
 
     final codec = await ui.instantiateImageCodec(bytes);
     final frame = await codec.getNextFrame();
 
-    expect(frame.image.width, greaterThanOrEqualTo(900));
-    expect(frame.image.height, greaterThanOrEqualTo(1600));
+    expect(frame.image.width, greaterThanOrEqualTo(250));
+    expect(frame.image.height, greaterThan(frame.image.width));
 
     frame.image.dispose();
     codec.dispose();
