@@ -195,7 +195,7 @@ class _GuideCard extends StatelessWidget {
                     children: [
                       _iconBox(),
                       const SizedBox(width: 11),
-                      Expanded(child: _text()),
+                      Expanded(child: _text(context)),
                       Icon(
                         Icons.chevron_right_rounded,
                         color: scheme.onSurfaceVariant,
@@ -207,12 +207,13 @@ class _GuideCard extends StatelessWidget {
                     children: [
                       _iconBox(),
                       const Spacer(),
-                      _text(),
+                      _text(context),
                     ],
                   ),
           ),
         ),
       );
+  }
 
   Widget _iconBox() => Container(
         width: 45,
@@ -224,7 +225,9 @@ class _GuideCard extends StatelessWidget {
         child: Icon(_iconFor(guide.icon), color: color),
       );
 
-  Widget _text() => Column(
+  Widget _text(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -249,6 +252,7 @@ class _GuideCard extends StatelessWidget {
           ),
         ],
       );
+  }
 
   static IconData _iconFor(String name) {
     switch (name) {
