@@ -96,6 +96,17 @@ void main() {
     }
   });
 
+  test('approved unconscious full-sheet image is bundled', () {
+    const path =
+        'assets/first_aid_sheets/unconscious_pls_approved.webp';
+
+    expect(
+      File(path).existsSync(),
+      isTrue,
+      reason: 'Missing approved image sheet: $path',
+    );
+  });
+
   test('every first-aid illustration referenced by the repository exists', () {
     for (final guide in firstAidGuides) {
       for (final step in guide.steps) {

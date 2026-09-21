@@ -821,6 +821,7 @@ class FirstAidDetailScreen extends StatelessWidget {
     final emergencyNumber = _emergencyNumber(context);
     final index = _essentialIds.indexOf(guide.id);
     final number = index < 0 ? null : index + 1;
+    final useApprovedImageSheet = guide.id == 'unconscious' && !en;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
@@ -921,24 +922,30 @@ class FirstAidDetailScreen extends StatelessWidget {
               child: ListView(
                 padding: EdgeInsets.fromLTRB(horizontal, 2, horizontal, 20),
                 children: [
-                  InteractiveViewer(
-                    minScale: 1,
-                    maxScale: 3.2,
-                    boundaryMargin: const EdgeInsets.all(56),
-                    child: _PosterDetailPanel(
-                      number: number,
-                      title: t.get(guide.titleKey),
-                      subtitle: _posterTag(guide.id, en),
-                      guide: guide,
-                      emergencyNumber: emergencyNumber,
-                      onEmergency: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const EmergencyScreen(),
+                  if (useApprovedImageSheet)
+                    const _ApprovedFirstAidSheetImage(
+                      assetPath:
+                          'assets/first_aid_sheets/unconscious_pls_approved.webp',
+                    )
+                  else
+                    InteractiveViewer(
+                      minScale: 1,
+                      maxScale: 3.2,
+                      boundaryMargin: const EdgeInsets.all(56),
+                      child: _PosterDetailPanel(
+                        number: number,
+                        title: t.get(guide.titleKey),
+                        subtitle: _posterTag(guide.id, en),
+                        guide: guide,
+                        emergencyNumber: emergencyNumber,
+                        onEmergency: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const EmergencyScreen(),
+                          ),
                         ),
                       ),
                     ),
-                  ),
                   if (guide.definitionTitleKey != null &&
                       guide.definitionBodyKey != null) ...[
                     const SizedBox(height: 8),
@@ -963,6 +970,38 @@ class FirstAidDetailScreen extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _ApprovedFirstAidSheetImage extends StatelessWidget {
+  const _ApprovedFirstAidSheetImage({
+    required this.assetPath,
+  });
+
+  final String assetPath;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      image: true,
+      label:
+          'Fiche visuelle premiers secours : vérifier la conscience et la respiration',
+      child: InteractiveViewer(
+        minScale: 1,
+        maxScale: 3.2,
+        boundaryMargin: const EdgeInsets.all(48),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(18),
+          child: Image.asset(
+            assetPath,
+            width: double.infinity,
+            fit: BoxFit.fitWidth,
+            filterQuality: FilterQuality.high,
+            gaplessPlayback: true,
+          ),
+        ),
       ),
     );
   }
