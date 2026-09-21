@@ -202,7 +202,7 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
       final complete = done.intersection(all.map((item) => item.id).toSet()).length;
 
       return Scaffold(
-        backgroundColor: const Color(0xfff7faf9),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(title: Text(strings.get('checklists'))),
         body: Column(
           children: [
@@ -222,8 +222,8 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
                       ),
                       Text(
                         '${all.isEmpty ? 0 : ((complete / all.length) * 100).round()}%',
-                        style: const TextStyle(
-                          color: Color(0xff087f83),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
@@ -252,13 +252,21 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
                       value: checked,
                       secondary: CircleAvatar(
                         backgroundColor: checked
-                            ? const Color(0xffdff2ed)
-                            : const Color(0xfffff2df),
+                            ? Theme.of(context)
+                                .colorScheme
+                                .secondaryContainer
+                            : Theme.of(context)
+                                .colorScheme
+                                .tertiaryContainer,
                         child: Icon(
                           _categoryIcon(item.category),
                           color: checked
-                              ? const Color(0xff087f83)
-                              : const Color(0xffb7833f),
+                              ? Theme.of(context)
+                                  .colorScheme
+                                  .onSecondaryContainer
+                              : Theme.of(context)
+                                  .colorScheme
+                                  .onTertiaryContainer,
                         ),
                       ),
                       title: Text(
@@ -298,7 +306,7 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xfff7faf9),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(en ? 'Emergency kit' : 'Kit d’urgence'),
       ),
@@ -308,24 +316,24 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
             padding: const EdgeInsets.fromLTRB(14, 6, 14, 10),
             child: Column(
               children: [
-                Row(
-                  children: List.generate(3, (index) {
-                    final labels = en
-                        ? const ['All', 'Missing', 'With expiry']
-                        : const ['Tous', 'Manquants', 'Avec DLC'];
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: List.generate(3, (index) {
+                      final labels = en
+                          ? const ['All', 'Missing', 'With expiry']
+                          : const ['Tous', 'Manquants', 'Avec DLC'];
 
-                    return Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.only(right: index < 2 ? 6 : 0),
-                        child: ChoiceChip(
-                          showCheckmark: false,
-                          label: Center(child: Text(labels[index])),
-                          selected: filter == index,
-                          onSelected: (_) => setState(() => filter = index),
-                        ),
-                      ),
-                    );
-                  }),
+                      return ChoiceChip(
+                        showCheckmark: false,
+                        label: Text(labels[index]),
+                        selected: filter == index,
+                        onSelected: (_) => setState(() => filter = index),
+                      );
+                    }),
+                  ),
                 ),
                 const SizedBox(height: 14),
                 LinearProgressIndicator(
@@ -348,8 +356,8 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
                       en
                           ? '$people people · $pets pets'
                           : '$people pers. · $pets animal(aux)',
-                      style: const TextStyle(
-                        color: Color(0xff65747a),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                         fontSize: 12,
                       ),
                     ),
@@ -370,15 +378,15 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
                         Icon(
                           _categoryIcon(group.key),
                           size: 19,
-                          color: const Color(0xff087f83),
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                         const SizedBox(width: 7),
                         Text(
                           _categoryLabel(group.key, en),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w900,
-                            color: Color(0xff33454b),
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                       ],
@@ -411,15 +419,23 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
                                 height: 44,
                                 decoration: BoxDecoration(
                                   color: expired || soon
-                                      ? const Color(0xffffeeee)
-                                      : const Color(0xffe8f5f5),
+                                      ? Theme.of(context)
+                                          .colorScheme
+                                          .errorContainer
+                                      : Theme.of(context)
+                                          .colorScheme
+                                          .secondaryContainer,
                                   borderRadius: BorderRadius.circular(13),
                                 ),
                                 child: Icon(
                                   _icon(item),
                                   color: expired || soon
-                                      ? Theme.of(context).colorScheme.error
-                                      : const Color(0xff087f83),
+                                      ? Theme.of(context)
+                                          .colorScheme
+                                          .onErrorContainer
+                                      : Theme.of(context)
+                                          .colorScheme
+                                          .onSecondaryContainer,
                                 ),
                               ),
                               const SizedBox(width: 11),
@@ -438,9 +454,11 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
                                       target == null
                                           ? '$quantity $unit'
                                           : '$quantity $unit / $target $unit',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 12,
-                                        color: Color(0xff65747a),
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant,
                                       ),
                                     ),
                                     if (entry?.expiryDate != null)
@@ -453,7 +471,9 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
                                               ? Theme.of(context)
                                                   .colorScheme
                                                   .error
-                                              : const Color(0xff65747a),
+                                              : Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurfaceVariant,
                                         ),
                                       ),
                                   ],
@@ -464,28 +484,34 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
                                 height: 28,
                                 decoration: BoxDecoration(
                                   color: ready
-                                      ? const Color(0xff087f83)
+                                      ? Theme.of(context).colorScheme.primary
                                       : Colors.transparent,
                                   shape: BoxShape.circle,
                                   border: Border.all(
                                     color: ready
-                                        ? const Color(0xff087f83)
-                                        : const Color(0xffb8c6c9),
+                                        ? Theme.of(context).colorScheme.primary
+                                        : Theme.of(context)
+                                            .colorScheme
+                                            .outline,
                                     width: 2,
                                   ),
                                 ),
                                 child: ready
-                                    ? const Icon(
+                                    ? Icon(
                                         Icons.check,
-                                        color: Colors.white,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary,
                                         size: 18,
                                       )
                                     : null,
                               ),
                               const SizedBox(width: 3),
-                              const Icon(
+                              Icon(
                                 Icons.chevron_right,
-                                color: Color(0xff87969a),
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
                               ),
                             ],
                           ),
