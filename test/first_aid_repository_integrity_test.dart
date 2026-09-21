@@ -77,6 +77,25 @@ void main() {
     }
   });
 
+  test('production first-aid guides never fall back to generic pictograms', () {
+    const genericAssets = <String>{
+      'assets/illustrations/assess.svg',
+      'assets/illustrations/call.svg',
+      'assets/illustrations/care.svg',
+    };
+
+    for (final guide in firstAidGuides) {
+      for (final step in guide.steps) {
+        expect(
+          genericAssets.contains(step.illustrationAsset),
+          isFalse,
+          reason:
+              '${guide.id} still uses generic artwork: ${step.illustrationAsset}',
+        );
+      }
+    }
+  });
+
   test('every first-aid illustration referenced by the repository exists', () {
     for (final guide in firstAidGuides) {
       for (final step in guide.steps) {
