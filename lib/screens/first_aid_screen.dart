@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -1072,7 +1071,7 @@ class _ApprovedFirstAidSheetImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Semantics(
+    return Semantics(
       image: true,
       label:
           'Fiche visuelle premiers secours : vérifier la conscience et la respiration',
