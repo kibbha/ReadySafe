@@ -12,6 +12,7 @@ void main() {
     expect(query, contains('hospital'));
     expect(query, contains('pharmacy'));
     expect(query, contains('police'));
+    expect(query, contains('fire_station'));
     expect(query, contains('drinking_water'));
     expect(query, contains('defibrillator'));
     expect(query, isNot(contains('"shelter"')));
@@ -44,6 +45,13 @@ void main() {
           'lon': 6.143,
           'tags': {'emergency': 'defibrillator'},
         },
+        {
+          'type': 'node',
+          'id': 4,
+          'lat': 46.204,
+          'lon': 6.144,
+          'tags': {'amenity': 'fire_station', 'name': 'Fire station Test'},
+        },
       ],
     };
 
@@ -53,12 +61,16 @@ void main() {
       originLongitude: 6.14,
     );
 
-    expect(result, hasLength(3));
+    expect(result, hasLength(4));
     expect(result.first.kind, MapPoiKind.hospital);
     expect(result[1].kind, MapPoiKind.pharmacy);
     expect(result[1].openingHours, '24/7');
     expect(result[2].kind, MapPoiKind.aed);
-    expect(result.every((item) => item.trust == MapPoiTrust.community), isTrue);
+    expect(result[3].kind, MapPoiKind.fireStation);
+    expect(
+      result.every((item) => item.trust == MapPoiTrust.community),
+      isTrue,
+    );
   });
 
   test('SITG parser creates institutional hospital and AED points', () {

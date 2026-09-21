@@ -295,6 +295,7 @@ class MapPoiService {
       MapPoiKind.hospital => 'Hôpital / clinique',
       MapPoiKind.pharmacy => 'Pharmacie',
       MapPoiKind.police => 'Police',
+      MapPoiKind.fireStation => 'Caserne de pompiers',
       MapPoiKind.aed => 'DAE',
       MapPoiKind.drinkingWater => 'Eau potable',
     };
@@ -318,6 +319,7 @@ class MapPoiService {
   nwr($around)["amenity"="clinic"];
   nwr($around)["amenity"="pharmacy"];
   nwr($around)["amenity"="police"];
+  nwr($around)["amenity"="fire_station"];
   nwr($around)["amenity"="drinking_water"];
   nwr($around)["healthcare"="hospital"];
   nwr($around)["healthcare"="clinic"];
@@ -438,6 +440,7 @@ out center tags;
       return MapPoiKind.pharmacy;
     }
     if (amenity == 'police') return MapPoiKind.police;
+    if (amenity == 'fire_station') return MapPoiKind.fireStation;
     if (amenity == 'drinking_water') return MapPoiKind.drinkingWater;
     if (amenity == 'hospital' ||
         amenity == 'clinic' ||
@@ -461,6 +464,7 @@ out center tags;
       MapPoiKind.hospital => 'Hospital / clinic',
       MapPoiKind.pharmacy => 'Pharmacy',
       MapPoiKind.police => 'Police',
+      MapPoiKind.fireStation => 'Fire station',
       MapPoiKind.aed => 'AED',
       MapPoiKind.drinkingWater => 'Drinking water',
     };

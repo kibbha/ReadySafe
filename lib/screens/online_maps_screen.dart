@@ -21,6 +21,7 @@ enum _PlaceKind {
   meeting,
   aid,
   police,
+  fireStation,
   personal,
   city,
 }
@@ -384,6 +385,7 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
       MapPoiKind.hospital => _PlaceKind.health,
       MapPoiKind.pharmacy => _PlaceKind.pharmacy,
       MapPoiKind.police => _PlaceKind.police,
+      MapPoiKind.fireStation => _PlaceKind.fireStation,
       MapPoiKind.aed => _PlaceKind.aid,
       MapPoiKind.drinkingWater => _PlaceKind.water,
     };
@@ -1059,6 +1061,8 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
         _PlaceKind.health => en ? 'Hospital / clinic' : 'Hôpital / clinique',
         _PlaceKind.pharmacy => en ? 'Pharmacy' : 'Pharmacie',
         _PlaceKind.police => 'Police',
+        _PlaceKind.fireStation =>
+          en ? 'Fire station' : 'Caserne de pompiers',
         _PlaceKind.aid => en ? 'AED' : 'DAE',
         _PlaceKind.water => en ? 'Drinking water' : 'Eau potable',
         _PlaceKind.shelter => en ? 'Potential shelter' : 'Abri envisagé',
@@ -1342,6 +1346,10 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                         'Police',
                       ),
                       _filterChip(
+                        _PlaceKind.fireStation,
+                        en ? 'Fire stations' : 'Pompiers',
+                      ),
+                      _filterChip(
                         _PlaceKind.water,
                         en ? 'Drinking water' : 'Eau potable',
                       ),
@@ -1429,6 +1437,8 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
         return '#d9822b';
       case _PlaceKind.police:
         return '#315f8c';
+      case _PlaceKind.fireStation:
+        return '#c54f2c';
       case _PlaceKind.personal:
         return '#6a51a3';
       case _PlaceKind.city:
@@ -1452,6 +1462,8 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
         return const Color(0xffd9822b);
       case _PlaceKind.police:
         return const Color(0xff315f8c);
+      case _PlaceKind.fireStation:
+        return const Color(0xffc54f2c);
       case _PlaceKind.personal:
         return const Color(0xff6a51a3);
       case _PlaceKind.city:
@@ -1475,6 +1487,8 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
         return Icons.emergency_rounded;
       case _PlaceKind.police:
         return Icons.local_police_rounded;
+      case _PlaceKind.fireStation:
+        return Icons.local_fire_department_rounded;
       case _PlaceKind.personal:
         return Icons.bookmark_rounded;
       case _PlaceKind.city:

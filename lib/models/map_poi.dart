@@ -2,6 +2,7 @@ enum MapPoiKind {
   hospital,
   pharmacy,
   police,
+  fireStation,
   aed,
   drinkingWater,
 }
