@@ -233,7 +233,7 @@ class _RegionalMapPacksScreenState extends State<RegionalMapPacksScreen> {
                               if (_activeId == item.pack.id) ...[
                                 const SizedBox(height: 10),
                                 LinearProgressIndicator(
-                                  value: _total <= 0 ? null : (_received / _total).clamp(0.0, 1.0),
+                                  value: _total <= 0 ? null : (_received / _total).clamp(0.0, 1.0).toDouble(),
                                 ),
                                 const SizedBox(height: 6),
                                 Text(en
