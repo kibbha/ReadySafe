@@ -49,3 +49,5 @@ Initial build trigger: ReadySafe V4 Android debug test, Flutter analyze and full
 Second CI build: file_picker migrated to the v12 single-file API to resolve win32 constraint conflicts.
 
 Third CI build: remove share_plus win32 conflict and export through native file_picker Save As.
+
+Fourth CI build: fix all six analyzer findings from prior run.
