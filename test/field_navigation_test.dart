@@ -84,7 +84,7 @@ void main() {
     });
 
     await tester.pumpWidget(
-      const MaterialApp(home: FieldNavigationScreen()),
+      const MaterialApp(locale: Locale('fr'), home: FieldNavigationScreen()),
     );
     await tester.pumpAndSettle();
 
