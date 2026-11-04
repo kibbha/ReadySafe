@@ -67,3 +67,5 @@ ReadySafe 4.0.0-dev.2 retry: strict Dart interpolation warnings corrected in loc
 ReadySafe 4.0.0-dev.3+21: manually imported Protomaps region zoom fallback verified against Geneva pilot PMTiles header (center zoom 0), with regression test.
 
 Build corrected ReadySafe 4.0.0-dev.3+21 with Geneva map zoom fallback, full tests and Android APK.
+
+Corrected dev.3 CI: satisfy final analyzer lint for new regional map zoom fixture; rerun full validation.
