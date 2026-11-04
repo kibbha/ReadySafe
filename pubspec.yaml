@@ -1,7 +1,7 @@
 name: readysafe
 description: ReadySafe V4 is an offline-first survival field guide, waypoint navigator and regional atlas in development.
 publish_to: none
-version: 4.0.0-dev.2+20
+version: 4.0.0-dev.3+21
 
 environment:
   sdk: ^3.11.3
