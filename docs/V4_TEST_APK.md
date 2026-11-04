@@ -51,3 +51,5 @@ Second CI build: file_picker migrated to the v12 single-file API to resolve win3
 Third CI build: remove share_plus win32 conflict and export through native file_picker Save As.
 
 Fourth CI build: fix all six analyzer findings from prior run.
+
+Fifth CI build: upgrade image to 4.12.0 and repair two isolated widget test fixtures.
