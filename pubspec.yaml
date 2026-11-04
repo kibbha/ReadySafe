@@ -1,7 +1,7 @@
 name: readysafe
-description: ReadySafe is an emergency preparedness companion with online maps and offline-ready emergency guidance.
+description: ReadySafe V4 is an offline-first survival field guide, waypoint navigator and regional atlas in development.
 publish_to: none
-version: 3.4.6+18
+version: 4.0.0-dev.1+19
 
 environment:
   sdk: ^3.11.3
