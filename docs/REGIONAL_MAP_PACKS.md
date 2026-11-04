@@ -130,3 +130,19 @@ have **not** been run. A static code review alone is not a functional guarantee.
 - Protomaps: https://docs.protomaps.com/pmtiles/maplibre
 - OpenFreeMap limitations: https://openfreemap.org/tos/
 - OpenStreetMap attribution and licence: https://www.openstreetmap.org/copyright
+
+## Hiking style and contour archives — V4 development
+
+The local MapLibre preview now uses the **Protomaps basemap v4** source layers
+(`landuse`, `landcover`, `roads`, `water`, `buildings`, `pois`) to
+render distinct forest, water, main roads, footpaths/tracks and unverified
+shelter/water point symbols. There are no remote fonts or sprites and **no
+location labels yet**. See [TERRAIN_CONTOURS_V4.md](TERRAIN_CONTOURS_V4.md).
+
+The catalog also contains three **separately versioned, inactive contour
+archive placeholders**, one per base region. `RegionalMapPackService`
+verifies the separate SHA-256, size and parent-region binding before adding
+`source-layer: contours` to the entirely local style. The optional relief
+archive is produced from properly licensed elevation data using
+`tools/prepare_swiss_contours.sh`. No contour archive is currently hosted,
+so elevation lines cannot yet be displayed on a user's device.
