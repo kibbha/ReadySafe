@@ -226,10 +226,8 @@ class _GpxLibraryScreenState extends State<GpxLibraryScreen> {
               ),
               const SizedBox(height: 8),
               Text(en
-                  ? 'Files are limited to 2 MiB, 12,000 trace points, and 500 waypoints. '
-                    'No account or background location tracking is used.'
-                  : 'Limites : 2 Mio, 12 000 points de trace et 500 repères. '
-                    'Aucun compte ni suivi GPS en arrière-plan.',
+                  ? 'Files: 2 MiB, 12,000 points and 500 waypoints. Up to eight visible tracks are rendered at once. No background tracking.'
+                  : 'Fichiers : 2 Mio, 12 000 points et 500 repères. Huit traces visibles maximum sont dessinées simultanément. Aucun suivi GPS automatique.',
                 style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant)),
               if (_error != null) ...[
                 const SizedBox(height: 12),
@@ -271,7 +269,19 @@ class _GpxLibraryScreenState extends State<GpxLibraryScreen> {
                             runSpacing: 6,
                             children: [
                               OutlinedButton.icon(
-                                onPressed: route.firstPoint == null ? null : () {
+                                onPressed: route.firstPoint == null ? null : () async {
+                                  if (!route.visible) {
+                                    try {
+                                      await _library.setVisibility(route, true);
+                                    } catch (_) {
+                                      if (!mounted) return;
+                                      setState(() => _error = en
+                                          ? 'Unable to show this trace on the map.'
+                                          : 'Impossible d’afficher cette trace sur la carte.');
+                                      return;
+                                    }
+                                  }
+                                  if (!mounted) return;
                                   final point = route.firstPoint!;
                                   Navigator.pop(
                                     context,
