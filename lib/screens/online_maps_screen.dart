@@ -17,7 +17,7 @@ import 'regional_map_packs_screen.dart';
 import 'field_navigation_screen.dart';
 import 'gpx_library_screen.dart';
 
-enum _MapMenuAction { refresh, sources, markers, offlineAreas, regionalPacks, fieldNavigation, gpxLibrary, recenter }
+enum _MapMenuAction { refresh, sources, markers, offlineAreas, regionalPacks, fieldNavigation, gpxLibrary, offlineCanvas, recenter }
 
 enum _PlaceKind {
   shelter,
@@ -46,6 +46,11 @@ class OnlineMapsScreen extends StatefulWidget {
 
 class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
   static const _style = 'https://tiles.openfreemap.org/styles/liberty';
+  // Local fallback for GPS/GPX layers without an installed basemap.
+  // It deliberately displays NO trails, terrain, buildings or water.
+  static const _gpxBlankStyle = '{"version":8,"name":"ReadySafe offline GPX canvas",'
+      '"sources":{},"layers":[{"id":"paper","type":"background",'
+      '"paint":{"background-color":"#edf2e9"}}]}';
   static const _europe = LatLng(50.0, 10.0);
 
   static const _countryViews = <String, CameraPosition>{
@@ -108,6 +113,7 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
   final List<Circle> _gpxCircles = [];
   List<GpxRoute> _gpxRoutes = [];
   bool _gpxStyleReady = false;
+  bool _offlineCanvas = false;
   final _search = TextEditingController();
 
   MapLibreMapController? _map;
@@ -1231,6 +1237,12 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                     );
                   }
                   break;
+                case _MapMenuAction.offlineCanvas:
+                  setState(() {
+                    _gpxStyleReady = false;
+                    _offlineCanvas = !_offlineCanvas;
+                  });
+                  break;
                 case _MapMenuAction.recenter:
                   final code =
                       AppScope.of(context).activeCountry?.isoCode ?? '';
@@ -1303,6 +1315,18 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                 ),
               ),
               PopupMenuItem(
+                value: _MapMenuAction.offlineCanvas,
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(_offlineCanvas
+                      ? Icons.layers_rounded
+                      : Icons.layers_clear_rounded),
+                  title: Text(_offlineCanvas
+                      ? (en ? 'Restore online basemap' : 'Restaurer le fond en ligne')
+                      : (en ? 'GPX-only offline canvas' : 'Fond GPX sans Internet')),
+                ),
+              ),
+              PopupMenuItem(
                 value: _MapMenuAction.recenter,
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
@@ -1326,7 +1350,7 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
       body: Stack(
         children: [
           MapLibreMap(
-            styleString: _style,
+            styleString: _offlineCanvas ? _gpxBlankStyle : _style,
             initialCameraPosition: _camera,
             trackCameraPosition: true,
             onMapCreated: (controller) => _map = controller,
@@ -1354,6 +1378,32 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
             rotateGesturesEnabled: true,
             attributionButtonMargins: const Point<double>(8, 8),
           ),
+          if (_offlineCanvas)
+            Positioned(
+              bottom: 104,
+              left: 14,
+              right: 14,
+              child: IgnorePointer(
+                child: Material(
+                  color: Theme.of(context).colorScheme.errorContainer,
+                  borderRadius: BorderRadius.circular(14),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Text(
+                      en
+                          ? 'OFFLINE GPX ONLY: no terrain, paths, elevation or safe route information.'
+                          : 'GPX HORS LIGNE : aucun relief, sentier, dénivelé ou itinéraire sûr.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onErrorContainer,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           Positioned(
             top: 10,
             left: 10,
