@@ -30,7 +30,10 @@ class _RegionalMapPacksScreenState extends State<RegionalMapPacksScreen> {
     final result = <_PackStatus>[];
     for (final pack in catalog.packs) {
       final verified = await _service.verifiedInstalled(pack);
-      result.add(_PackStatus(pack, verified));
+      final contour = catalog.contoursFor(pack.id);
+      final contourVerified = contour != null &&
+          await _service.verifiedInstalled(contour);
+      result.add(_PackStatus(pack, verified, contour, contourVerified));
     }
     return result;
   }
@@ -94,15 +97,24 @@ class _RegionalMapPacksScreenState extends State<RegionalMapPacksScreen> {
     }
   }
 
-  Future<void> _openPack(RegionalMapPack pack) async {
+  Future<void> _openPack(_PackStatus item) async {
     if (kIsWeb) return;
     try {
-      final style = await _service.localPreviewStyle(pack);
+      final style = await _service.localPreviewStyle(
+        item.pack,
+        contours: item.contourInstalled ? item.contour : null,
+      );
       if (!mounted) return;
       await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => _LocalMapPreview(pack: pack, style: style),
+          builder: (_) => _LocalMapPreview(
+            pack: item.pack,
+            style: style,
+            contoursAvailable: item.contourInstalled,
+            contoursAttribution:
+                item.contourInstalled ? item.contour!.attribution : null,
+          ),
         ),
       );
     } catch (_) {
@@ -232,6 +244,18 @@ class _RegionalMapPacksScreenState extends State<RegionalMapPacksScreen> {
                                 style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 12)),
                               Text(item.pack.attribution,
                                 style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 12)),
+                              const SizedBox(height: 8),
+                              Text(
+                                item.contourInstalled
+                                    ? (en ? 'Relief: contour lines verified on device'
+                                          : 'Relief : courbes de niveau vérifiées')
+                                    : (en ? 'Relief: contours not installed'
+                                          : 'Relief : courbes de niveau non installées'),
+                                style: TextStyle(
+                                  color: scheme.onSurfaceVariant,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
                               if (_activeId == item.pack.id) ...[
                                 const SizedBox(height: 10),
                                 LinearProgressIndicator(
@@ -256,10 +280,33 @@ class _RegionalMapPacksScreenState extends State<RegionalMapPacksScreen> {
                                     onPressed: _activeId == null && !kIsWeb &&
                                             (item.installed || item.pack.canDownload)
                                         ? () => item.installed
-                                            ? _openPack(item.pack)
+                                            ? _openPack(item)
                                             : _download(item.pack)
                                         : null,
                                   ),
+                                  if (item.contour != null)
+                                    OutlinedButton.icon(
+                                      icon: Icon(item.contourInstalled
+                                          ? Icons.check_circle_outline_rounded
+                                          : Icons.terrain_rounded),
+                                      label: Text(item.contourInstalled
+                                          ? (en ? 'Contours installed' : 'Courbes installées')
+                                          : (en ? 'Download contours' : 'Télécharger le relief')),
+                                      onPressed: item.contourInstalled ||
+                                          _activeId != null ||
+                                          !item.installed ||
+                                          !item.contour!.canDownload
+                                          ? null
+                                          : () => _download(item.contour!),
+                                    ),
+                                  if (item.contourInstalled)
+                                    TextButton.icon(
+                                      icon: const Icon(Icons.delete_outline_rounded),
+                                      label: Text(en ? 'Remove contours' : 'Supprimer le relief'),
+                                      onPressed: _activeId != null
+                                          ? null
+                                          : () => _delete(item.contour!),
+                                    ),
                                   if (item.installed)
                                     OutlinedButton.icon(
                                       icon: const Icon(Icons.delete_outline_rounded),
@@ -292,16 +339,30 @@ class _RegionalMapPacksScreenState extends State<RegionalMapPacksScreen> {
 }
 
 class _PackStatus {
-  const _PackStatus(this.pack, this.installed);
+  const _PackStatus(
+    this.pack,
+    this.installed,
+    this.contour,
+    this.contourInstalled,
+  );
   final RegionalMapPack pack;
   final bool installed;
+  final RegionalMapPack? contour;
+  final bool contourInstalled;
 }
 
 class _LocalMapPreview extends StatefulWidget {
-  const _LocalMapPreview({required this.pack, required this.style});
+  const _LocalMapPreview({
+    required this.pack,
+    required this.style,
+    required this.contoursAvailable,
+    this.contoursAttribution,
+  });
 
   final RegionalMapPack pack;
   final String style;
+  final bool contoursAvailable;
+  final String? contoursAttribution;
 
   @override
   State<_LocalMapPreview> createState() => _LocalMapPreviewState();
@@ -375,8 +436,12 @@ class _LocalMapPreviewState extends State<_LocalMapPreview> {
               child: Padding(
                 padding: const EdgeInsets.all(10),
                 child: Text(en
-                    ? 'OFFLINE PREVIEW · GPX overlays are reference tracks, not verified hiking routes'
-                    : 'APERÇU HORS LIGNE · Les traces GPX ne sont pas des itinéraires de randonnée vérifiés',
+                    ? (widget.contoursAvailable
+                        ? 'OFFLINE · Contours shown · Paths and GPX are unverified'
+                        : 'OFFLINE · No contour coverage · Paths and GPX are unverified')
+                    : (widget.contoursAvailable
+                        ? 'HORS LIGNE · Relief affiché · Sentiers et GPX non vérifiés'
+                        : 'HORS LIGNE · Pas de relief · Sentiers et GPX non vérifiés'),
                   textAlign: TextAlign.center,
                   style: const TextStyle(fontWeight: FontWeight.w800),
                 ),
@@ -390,7 +455,21 @@ class _LocalMapPreviewState extends State<_LocalMapPreview> {
             child: Card(
               child: Padding(
                 padding: const EdgeInsets.all(8),
-                child: Text(widget.pack.attribution, textAlign: TextAlign.center),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(widget.pack.attribution, textAlign: TextAlign.center),
+                    if (widget.contoursAttribution != null)
+                      Text(widget.contoursAttribution!,
+                        textAlign: TextAlign.center),
+                    const SizedBox(height: 3),
+                    Text(en
+                        ? 'Paths are unverified. No offline navigation or local labels.'
+                        : 'Sentiers non vérifiés. Sans guidage ni noms locaux.',
+                      style: const TextStyle(fontSize: 11),
+                      textAlign: TextAlign.center),
+                  ],
+                ),
               ),
             ),
           ),
