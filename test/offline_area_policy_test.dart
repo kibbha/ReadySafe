@@ -11,7 +11,7 @@ void main() {
       expect(OfflineAreaPolicy.minZoom, 11);
       expect(OfflineAreaPolicy.maxZoom, 15);
       expect(OfflineAreaPolicy.maxConcurrentRequests, 4);
-      expect(OfflineAreaPolicy.maxBytes, 50 * 1024 * 1024);
+      expect(OfflineAreaPolicy.maxBytes, 50 * 1000 * 1000);
     });
 
     test('tile estimate counts each zoom level and scales with area', () {
