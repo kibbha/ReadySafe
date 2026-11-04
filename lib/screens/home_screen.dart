@@ -7,6 +7,7 @@ import '../services/local_storage_service.dart';
 import 'emergency_screen.dart';
 import 'family_documents_screen.dart';
 import 'first_aid_screen.dart';
+import 'field_guide_screen.dart';
 import 'global_search_screen.dart';
 import 'guided_emergency_screen.dart';
 import 'online_maps_screen.dart';
@@ -94,6 +95,15 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
 
     final shortcuts = <_HomeAction>[
+      _HomeAction(
+        title: en ? 'Survival encyclopedia' : 'Encyclopédie de survie',
+        subtitle: en
+            ? 'Offline plants, mushrooms and wilderness skills.'
+            : 'Plantes, champignons et techniques de survie hors ligne.',
+        icon: Icons.auto_stories_rounded,
+        color: const Color(0xff147343),
+        page: const FieldGuideScreen(),
+      ),
       _HomeAction(
         title: en ? 'First-aid guides' : 'Gestes qui sauvent',
         subtitle: en
