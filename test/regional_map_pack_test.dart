@@ -44,6 +44,9 @@ void main() {
     expect(catalog.packs.length, 3);
     expect(catalog.packs.every((p) => !p.canDownload), isTrue);
     expect(catalog.packs.every((p) => p.downloadUrl == null), isTrue);
+    expect(catalog.contourPacks.length, 3);
+    expect(catalog.contourPacks.every((p) => !p.canDownload), isTrue);
+    expect(catalog.contoursFor('ch-leman')?.id, 'ch-leman-contours');
   });
 
   test('approved packs require a pinned size, HTTPS URL and digest', () {
@@ -71,6 +74,45 @@ void main() {
     );
     final incorrect = _fixture()..['tile_schema'] = 'random-vectors';
     expect(() => RegionalMapPack.fromJson(incorrect), throwsFormatException);
+  });
+
+  test('contour overlays must have one existing parent and the right schema', () {
+    final base = _fixture(approved: false);
+    final contours = _fixture(approved: false)
+      ..['id'] = 'test-region-contours'
+      ..['tile_schema'] = 'readysafe-contours-v1'
+      ..['parent_map_id'] = 'test-region';
+
+    final catalog = RegionalMapCatalog.fromJson(jsonEncode({
+      'schema_version': 1,
+      'packs': [base],
+      'contour_packs': [contours],
+    }));
+    expect(catalog.contoursFor('test-region')?.id, 'test-region-contours');
+
+    final unknownParent = Map<String, dynamic>.from(contours)
+      ..['parent_map_id'] = 'other-region';
+    expect(
+      () => RegionalMapCatalog.fromJson(jsonEncode({
+        'schema_version': 1,
+        'packs': [base],
+        'contour_packs': [unknownParent],
+      })),
+      throwsFormatException,
+    );
+
+    expect(
+      () => RegionalMapCatalog.fromJson(jsonEncode({
+        'schema_version': 1,
+        'packs': [base],
+        'contour_packs': [contours, contours],
+      })),
+      throwsFormatException,
+    );
+
+    final badOverlay = Map<String, dynamic>.from(contours)
+      ..remove('parent_map_id');
+    expect(() => RegionalMapPack.fromJson(badOverlay), throwsFormatException);
   });
 
   test('local file requires exact length and SHA-256', () async {
