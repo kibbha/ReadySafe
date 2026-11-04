@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -61,24 +60,22 @@ class _GpxLibraryScreenState extends State<GpxLibraryScreen> {
       _error = null;
     });
     try {
-      final result = await FilePicker.pickFiles(
+      final item = await FilePicker.pickFile(
         type: FileType.custom,
         allowedExtensions: ['gpx'],
-        allowMultiple: false,
-        withData: false,
       );
-      if (result == null || result.files.isEmpty) return;
-      final item = result.files.single;
-      final path = item.path;
-      if (path == null || !path.toLowerCase().endsWith('.gpx')) {
-        throw const FormatException('Unsupported GPX file location');
+      if (item == null) return;
+      if (!item.name.toLowerCase().endsWith('.gpx')) {
+        throw const FormatException('Unsupported file extension');
       }
-      final file = File(path);
-      final size = await file.length();
+      final size = await item.length();
       if (size <= 0 || size > GpxRoute.maxBytes) {
         throw const FormatException('The GPX file exceeds the 2 MiB limit');
       }
-      final bytes = await file.readAsBytes();
+      final bytes = await item.readAsBytes();
+      if (bytes.length > GpxRoute.maxBytes) {
+        throw const FormatException('The GPX file exceeds the 2 MiB limit');
+      }
       await _library.importBytes(bytes, item.name);
       await _refresh();
     } catch (_) {
