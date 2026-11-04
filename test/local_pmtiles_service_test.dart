@@ -7,7 +7,11 @@ import 'package:readysafe/services/local_pmtiles_service.dart';
 
 /// PMTiles header/metadata fixture. Tile bytes are deliberately not rendered:
 /// this tests format preflight and integrity, NOT native MapLibre rendering.
-Uint8List fixture({bool gzipMetadata = true, bool validLayers = true}) {
+Uint8List fixture({
+  bool gzipMetadata = true,
+  bool validLayers = true,
+  int centreZoom = 12,
+}) {
   final layers = validLayers
       ? ['roads', 'water', 'landuse', 'pois', 'buildings']
       : ['missing-required-layers'];
@@ -25,7 +29,7 @@ Uint8List fixture({bool gzipMetadata = true, bool validLayers = true}) {
   bytes[99] = 1;
   bytes[100] = 0;
   bytes[101] = 15;
-  bytes[118] = 12;
+  bytes[118] = centreZoom;
   final header = ByteData.sublistView(bytes);
   header.setUint64(8, 127, Endian.little);
   header.setUint64(16, 1, Endian.little);
@@ -127,6 +131,22 @@ void main() {
       expect(await service.verified(pack), isFalse);
       expect(await service.list(), isEmpty);
       await expectLater(service.style(pack), throwsStateError);
+    } finally {
+      await temp.delete(recursive: true);
+    }
+  });
+
+  test('regional extract with zoom-zero header opens near actual region',
+      () async {
+    final temp = await Directory.systemTemp.createTemp('rs-header-z0-');
+    try {
+      final file = File(temp.path + '/geneva.pmtiles');
+      await file.writeAsBytes(fixture(centreZoom: 0));
+      final info = await ProtomapsV4Inspector.inspect(file);
+      expect(info.zoom, greaterThan(8.5));
+      expect(info.zoom, lessThan(12));
+      expect(info.latitude, closeTo(46.2, 0.00001));
+      expect(info.longitude, closeTo(6.2, 0.00001));
     } finally {
       await temp.delete(recursive: true);
     }
