@@ -20,13 +20,13 @@ Les données PMTiles peuvent être produites depuis un extrait régional issu de
 Exemple de préparation **depuis un ordinateur disposant de la CLI Protomaps** :
 
 ```sh
-pmtiles extract https://build.protomaps.com/20261012.pmtiles \
+pmtiles extract https://data.source.coop/protomaps/openstreetmap/v4.pmtiles \
   Leman-test.pmtiles --bbox=5.9,46.0,6.5,46.5 --maxzoom=14
 pmtiles verify Leman-test.pmtiles
 ```
 
-La disponibilité de cet ancien build n'est pas garantie. Choisir un build daté
-encore disponible et respecter les conditions de source/d'attribution.
+Ce miroir public peut évoluer : conserver la provenance, la date d'extraction
+et le SHA-256 de chaque fichier produit. Respecter les attributions et la licence.
 Copier le fichier `.pmtiles` sur Android et l'ouvrir via le sélecteur de fichiers
 ReadySafe. En mode avion, le fond de carte est lu depuis le stockage privé.
 
@@ -66,9 +66,9 @@ Le workflow `.github/workflows/readysafe-geneva-map-pilot.yml` prépare sur GitH
 Actions un extrait **vérifiable** du fond Protomaps v4, zone
 `5.95,46.10,6.26,46.31`, zoom maximum 14.
 
-La source de départ est volontairement datée :
-`https://build.protomaps.com/20261012.pmtiles`. Ce serveur peut retirer
-l'archive : l'extraction échoue alors sans publier de carte fictive.
+La source de départ est le miroir public Protomaps sur Source Cooperative :
+`https://data.source.coop/protomaps/openstreetmap/v4.pmtiles`. Ce miroir est susceptible de changer de version : le manifeste enregistre donc
+la source, la taille exacte et l'empreinte SHA-256 des octets extraits.
 
 L'artefact contient le fichier `.pmtiles`, son SHA-256, la provenance et
 un mode d'emploi. Une fois l'APK V4 installée, il suffit de copier cet
