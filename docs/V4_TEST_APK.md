@@ -59,3 +59,5 @@ Sixth CI build: align PDF 3.13.1 with image 4.12 and xml 7.0.1 to resolve Dart 3
 Seventh CI build: update deprecated xml v7 GPX namespace API after resolving dependency graph.
 
 Eighth CI build: lazy initialize MapLibre map tab to avoid platform view creation during home/dashboard widget tests and reduce startup work.
+
+ReadySafe 4.0.0-dev.2+20: local Protomaps PMTiles import with offline MapLibre rendering, file integrity and tests. Run analyze, all tests and ARM64 Android debug APK.
