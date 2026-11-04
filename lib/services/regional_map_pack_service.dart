@@ -45,7 +45,26 @@ class RegionalMapPackService {
 
   static Future<bool> verifyFile(File file, RegionalMapPack pack) async {
     if (!pack.canDownload || !await file.exists()) return false;
-    if (await file.length() != pack.byteLength) return false;
+    if (await file.length() != pack.byteLength || pack.byteLength! < 127) {
+      return false;
+    }
+
+    // PMTiles v3 must begin with the seven-byte "PMTiles" magic and version 3.
+    // This is a format preflight, not a substitute for checking tile schema.
+    final reader = await file.open(mode: FileMode.read);
+    try {
+      final header = await reader.read(8);
+      if (header.length != 8 ||
+          header[0] != 0x50 || header[1] != 0x4d ||
+          header[2] != 0x54 || header[3] != 0x69 ||
+          header[4] != 0x6c || header[5] != 0x65 ||
+          header[6] != 0x73 || header[7] != 3) {
+        return false;
+      }
+    } finally {
+      await reader.close();
+    }
+
     final digest = await sha256.bind(file.openRead()).first;
     return digest.toString() == pack.sha256Hex;
   }
