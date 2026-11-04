@@ -61,3 +61,5 @@ Seventh CI build: update deprecated xml v7 GPX namespace API after resolving dep
 Eighth CI build: lazy initialize MapLibre map tab to avoid platform view creation during home/dashboard widget tests and reduce startup work.
 
 ReadySafe 4.0.0-dev.2+20: local Protomaps PMTiles import with offline MapLibre rendering, file integrity and tests. Run analyze, all tests and ARM64 Android debug APK.
+
+ReadySafe 4.0.0-dev.2 retry: strict Dart interpolation warnings corrected in local PMTiles importer. Full Flutter analyze, tests and Android debug APK.
