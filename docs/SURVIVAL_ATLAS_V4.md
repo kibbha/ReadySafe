@@ -17,6 +17,31 @@ This branch deliberately does not merge into `main` and does not trigger a test 
 mycological or clinical expert sign-off. It must not be represented as certified guidance.
 Third-party reference links are not available in airplane mode; the stored guide text is.
 
+## Current V4 map implementation — small-area cache (Android pilot)
+
+The Map tab now has **More > Zones hors ligne / Offline map areas**.
+
+- It saves the **1.5 km radius around the centre of the open map** using the exact
+  online MapLibre style already used in ReadySafe.
+- Zoom levels **11–15** are included; areas outside the region or zoom range may be blank
+  without an Internet connection.
+- Users explicitly confirm the download, see its progress and received byte count,
+  list saved areas with status, remove them, and tap a complete region to recenter.
+- `OfflineAreaPolicy` estimates slippy tile coverage and rejects large/out-of-bounds
+  areas. The map engine is capped at **3,000 tiles**, **4 simultaneous requests**,
+  and identifies ReadySafe with its own User-Agent. The progress callback removes
+  a download if the received byte count crosses **50 MiB**.
+- This is **not** the promised offline Swiss map pack, does not include guaranteed
+  hiking trails/relief or offline routing, and must not be marketed as Organic Maps
+  functionality yet. It is an intentionally bounded step.
+- Download is intentionally **Android-only in this pilot**. MapLibre 0.26.2 on iOS
+  is affected by a known custom-header/request-concurrency interaction fixed in 0.27.1.
+  Any future iOS enabling must be independently verified against provider terms.
+- **Validation is pending**: neither `flutter analyze` nor device airplane-mode or
+  upstream networking tests have run. HTTP header application, provider download
+  quotas, cache restoration after process restart and on-device storage/cleanup
+  must all be verified. Do not describe this as production-ready.
+
 ## Map experience target (Organic Maps-inspired, not a fork)
 
 1. Full offline regional vector map packs for Switzerland first (cantonal/region granularity).
@@ -43,7 +68,7 @@ connections**, and carry a **unique app User-Agent**. Bigger regions need provid
 MapLibre region caching by itself does not guarantee all these conditions; do not enable it
 against the live service without verified HTTP request handling and the provider's permission.
 
-Before shipping an offline map downloader: select an explicitly licenced regional dataset,
+Before shipping *regional* offline map packs: select an explicitly licensed regional dataset,
 confirm attribution and redistribution rights, build a local raster/vector style referencing
 the installed pack, test airplane mode including zoom/font/sprites, and validate coverage
 and offline routing separately. Organic Maps is a product inspiration for feature quality,
@@ -68,6 +93,7 @@ not a source of unlicensed assets/code.
 flutter pub get
 flutter analyze
 flutter test test/field_guide_test.dart
+flutter test test/offline_area_policy_test.dart
 flutter test
 ```
 
@@ -83,3 +109,5 @@ on-device airplane-mode verification.
 - Swiss food safety — mushroom foraging: https://www.blv.admin.ch/fr/champignons-comestibles
 - Geneva expert mushroom inspection: https://www.ge.ch/faire-controler-champignons
 - CDC safe water: https://www.cdc.gov/water-emergency/about/
+
+- MapLibre 0.27.1 fixes iOS header throttling: https://github.com/maplibre/flutter-maplibre-gl/releases/tag/v0.27.1
