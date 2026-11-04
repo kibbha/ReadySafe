@@ -1,11 +1,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:cross_file/cross_file.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:maplibre_gl/maplibre_gl.dart' show LatLng;
-import 'package:share_plus/share_plus.dart';
 
 import '../models/gpx_route.dart';
 import '../services/gpx_library_service.dart';
@@ -110,28 +108,28 @@ class _GpxLibraryScreenState extends State<GpxLibraryScreen> {
   Future<void> _export(GpxRoute route) async {
     try {
       final xml = GpxCodec.encode(route);
-      final data = utf8.encode(xml);
-      final box = context.findRenderObject() as RenderBox?;
-      await SharePlus.instance.share(
-        ShareParams(
-          files: [
-            XFile.fromData(
-              Uint8List.fromList(data),
-              mimeType: 'application/gpx+xml',
-              name: '${route.id}.gpx',
-            ),
-          ],
-          fileNameOverrides: ['${route.id}.gpx'],
-          sharePositionOrigin: box == null
-              ? null
-              : box.localToGlobal(Offset.zero) & box.size,
+      final bytes = Uint8List.fromList(utf8.encode(xml));
+      final saved = await FilePicker.saveFile(
+        fileName: '${route.id}.gpx',
+        bytes: bytes,
+        mimeType: 'application/gpx+xml',
+        dialogTitle: _english
+            ? 'Save GPX route on your device'
+            : 'Enregistrer le parcours GPX',
+      );
+      if (!mounted || saved == null) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(_english
+              ? 'GPX file saved to the selected location.'
+              : 'Fichier GPX enregistré à l’emplacement choisi.'),
         ),
       );
     } catch (_) {
       if (!mounted) return;
       setState(() => _error = _english
-          ? 'Sharing the GPX file was not possible.'
-          : 'Impossible de partager le fichier GPX.');
+          ? 'Unable to save the GPX file.'
+          : 'Impossible d’enregistrer le fichier GPX.');
     }
   }
 
