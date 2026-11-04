@@ -7,6 +7,7 @@ import 'avalanche_safety_screen.dart';
 import 'calculator_screen.dart';
 import 'communication_plan_screen.dart';
 import 'emergency_food_safety_screen.dart';
+import 'field_guide_screen.dart';
 import 'family_reunification_screen.dart';
 import 'carbon_monoxide_screen.dart';
 import 'checklist_screen.dart';
@@ -120,6 +121,15 @@ class _SurvivalHubScreenState extends State<SurvivalHubScreen> {
     final en = Localizations.localeOf(context).languageCode == 'en';
     final progress = _total == 0 ? 0.0 : _ready / _total;
     final modules = [
+      _Module(
+        en ? 'Wilderness encyclopedia' : 'Encyclopédie de terrain',
+        en ? 'Offline plants, mushrooms, outdoor techniques and precautions'
+           : 'Plantes, champignons, techniques et précautions sans réseau',
+        Icons.auto_stories_rounded,
+        const Color(0xff147343),
+        const FieldGuideScreen(),
+        'learn',
+      ),
       _Module(
         en ? 'Home kit' : 'Kit domicile',
         en ? 'Several days of water, food, radio, light and health supplies' : 'Réserves pour plusieurs jours : eau, nourriture, radio, lumière et santé',
