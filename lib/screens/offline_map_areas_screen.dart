@@ -27,6 +27,11 @@ class _OfflineMapAreasScreenState extends State<OfflineMapAreasScreen> {
 
   bool get _english => Localizations.localeOf(context).languageCode == 'en';
 
+  // In maplibre_gl 0.26.2, iOS custom-header requests do not reliably
+  // respect the provider's offline concurrency cap (fixed upstream in 0.27.1).
+  bool get _downloadsSupported =>
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
+
   @override
   void initState() {
     super.initState();
@@ -59,7 +64,7 @@ class _OfflineMapAreasScreenState extends State<OfflineMapAreasScreen> {
   }
 
   Future<void> _startDownload() async {
-    if (_downloading || _draft == null || kIsWeb) return;
+    if (_downloading || _draft == null || !_downloadsSupported) return;
     final en = _english;
     final agreed = await showDialog<bool>(
       context: context,
@@ -251,7 +256,7 @@ class _OfflineMapAreasScreenState extends State<OfflineMapAreasScreen> {
                       FilledButton.icon(
                         icon: const Icon(Icons.download_rounded),
                         label: Text(en ? 'Save current area' : 'Télécharger la zone actuelle'),
-                        onPressed: _draft == null || _downloading || kIsWeb
+                        onPressed: _draft == null || _downloading || !_downloadsSupported
                             ? null
                             : _startDownload,
                       ),
@@ -259,11 +264,11 @@ class _OfflineMapAreasScreenState extends State<OfflineMapAreasScreen> {
                   ),
                 ),
               ),
-              if (kIsWeb) ...[
+              if (!_downloadsSupported) ...[
                 const SizedBox(height: 8),
                 Text(en
-                  ? 'Offline regions are available on Android and iOS only.'
-                  : 'Les zones hors ligne sont disponibles uniquement sur Android et iOS.'),
+                  ? 'Downloads are temporarily Android-only while upstream iOS request caps are verified.'
+                  : 'Téléchargement temporairement limité à Android, en attendant de valider les limites de requêtes sur iOS.'),
               ],
               if (_downloading) ...[
                 const SizedBox(height: 14),
