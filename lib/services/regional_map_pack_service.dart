@@ -11,7 +11,11 @@ import 'regional_terrain_style.dart';
 /// Stores immutable, publisher-approved PMTiles archives in app-support storage.
 /// No arbitrary URL input is accepted from the user.
 class RegionalMapPackService {
-  const RegionalMapPackService();
+  const RegionalMapPackService({this.rootDirectory});
+
+  /// Injected in tests to verify streaming and atomic replacement without
+  /// requiring a platform-specific storage plugin.
+  final Directory? rootDirectory;
 
   static const catalogAsset = 'assets/data/regional_map_catalog_v1.json';
   static final Set<String> _inProgressIds = <String>{};
@@ -23,7 +27,7 @@ class RegionalMapPackService {
   }
 
   Future<Directory> _directory() async {
-    final root = await getApplicationSupportDirectory();
+    final root = rootDirectory ?? await getApplicationSupportDirectory();
     final directory = Directory('${root.path}/regional-map-packs');
     if (!await directory.exists()) await directory.create(recursive: true);
     return directory;
