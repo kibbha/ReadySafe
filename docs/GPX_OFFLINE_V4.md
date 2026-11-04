@@ -53,7 +53,7 @@ waypoints (`wpt`). The original input file remains untouched.
 ## New dependencies (compatible v11 APIs)
 
 - `file_picker: 11.0.3`: native Android/iOS file selection. Version pinned
-  because v12/v13 introduced incompatible API changes.
+  using its single-file API to avoid a win32 dependency conflict with secure storage.
 - `xml: ^6.6.1`: bounded GPX XML reader/writer.
 - `share_plus: ^11.1.0` and `cross_file`: user-initiated native GPX export.
   Deliberately avoid share_plus 12.x build-system requirements, which exceed
