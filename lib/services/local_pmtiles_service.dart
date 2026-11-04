@@ -53,7 +53,7 @@ class LocalPmtilesPack {
     final date = json['imported_at'];
     if (id is! String || !RegExp(r'^local-[a-f0-9]{24}$').hasMatch(id) ||
         hash is! String || !RegExp(r'^[a-f0-9]{64}$').hasMatch(hash) ||
-        id != 'local-' + hash.substring(0, 24) ||
+        id != 'local-${hash.substring(0, 24)}' ||
         length is! int || length < 131 ||
         length > LocalPmtilesService.maxImportBytes ||
         lat is! num || lon is! num || zoom is! num ||
@@ -200,7 +200,7 @@ class LocalPmtilesService {
 
   Future<Directory> _directory() async {
     final root = rootDirectory ?? await getApplicationSupportDirectory();
-    final dir = Directory(root.path + '/local-atlas-v4');
+    final dir = Directory('${root.path}/local-atlas-v4');
     if (!await dir.exists()) await dir.create(recursive: true);
     return dir;
   }
@@ -209,7 +209,7 @@ class LocalPmtilesService {
     if (!RegExp(r'^local-[a-f0-9]{24}$').hasMatch(pack.id)) {
       throw const FormatException('Unsafe imported map identifier');
     }
-    return File((await _directory()).path + '/' + pack.id + '.pmtiles');
+    return File('${(await _directory()).path}/${pack.id}.pmtiles');
   }
 
   Future<bool> verified(LocalPmtilesPack pack) async {
@@ -242,7 +242,7 @@ class LocalPmtilesService {
         final decoded = jsonDecode(await manifest.readAsString());
         if (decoded is! Map<String, dynamic>) continue;
         final pack = LocalPmtilesPack.fromJson(decoded);
-        if (manifest.uri.pathSegments.last != pack.id + '.json') continue;
+        if (manifest.uri.pathSegments.last != '${pack.id}.json') continue;
         if (await verified(pack)) result.add(pack);
       } catch (_) {
         // Missing or corrupted archives are never shown as available.
@@ -269,8 +269,7 @@ class LocalPmtilesService {
       if ((await list()).length >= maxMaps) {
         throw StateError('Maximum number of imported maps reached');
       }
-      partial = File(dir.path + '/incoming-' +
-          DateTime.now().microsecondsSinceEpoch.toString() + '.partial');
+      partial = File('${dir.path}/incoming-${DateTime.now().microsecondsSinceEpoch}.partial');
       final writer = await partial.open(mode: FileMode.write);
       var received = 0;
       try {
@@ -291,9 +290,9 @@ class LocalPmtilesService {
       }
       final info = await ProtomapsV4Inspector.inspect(partial);
       final digest = (await sha256.bind(partial.openRead()).first).toString();
-      final id = 'local-' + digest.substring(0, 24);
-      final dest = File(dir.path + '/' + id + '.pmtiles');
-      final sidecar = File(dir.path + '/' + id + '.json');
+      final id = 'local-${digest.substring(0, 24)}';
+      final dest = File('${dir.path}/$id.pmtiles');
+      final sidecar = File('${dir.path}/$id.json');
       if (await dest.exists() || await sidecar.exists()) {
         throw StateError('This map is already imported');
       }
@@ -335,7 +334,7 @@ class LocalPmtilesService {
     }
     final file = await fileFor(pack);
     return RegionalTerrainStyle.build(
-      basemapUri: 'pmtiles://' + file.uri.toString(),
+      basemapUri: 'pmtiles://${file.uri}',
       attribution: LocalPmtilesPack.attribution,
     );
   }
@@ -343,7 +342,7 @@ class LocalPmtilesService {
   Future<void> delete(LocalPmtilesPack pack) async {
     if (_importing) throw StateError('Cannot delete during map import');
     final file = await fileFor(pack);
-    final manifest = File((await _directory()).path + '/' + pack.id + '.json');
+    final manifest = File('${(await _directory()).path}/${pack.id}.json');
     if (await manifest.exists()) await manifest.delete();
     if (await file.exists()) await file.delete();
   }
