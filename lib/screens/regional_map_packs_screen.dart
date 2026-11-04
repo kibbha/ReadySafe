@@ -6,6 +6,7 @@ import '../models/regional_map_pack.dart';
 import '../models/gpx_route.dart';
 import '../services/regional_map_pack_service.dart';
 import '../services/gpx_library_service.dart';
+import 'local_pmtiles_screen.dart';
 
 /// Regional PMTiles catalog. Nothing downloads without an approved pinned pack.
 class RegionalMapPacksScreen extends StatefulWidget {
@@ -201,6 +202,29 @@ class _RegionalMapPacksScreenState extends State<RegionalMapPacksScreen> {
                           fontWeight: FontWeight.w700,
                         ),
                       ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  FilledButton.tonalIcon(
+                    icon: const Icon(Icons.folder_open_rounded),
+                    label: Text(en
+                        ? 'Import a PMTiles map from my device'
+                        : 'Importer une carte PMTiles du téléphone'),
+                    onPressed: kIsWeb
+                        ? null
+                        : () => Navigator.of(context).push<void>(
+                            MaterialPageRoute(
+                              builder: (_) => const LocalPmtilesScreen(),
+                            ),
+                          ),
+                  ),
+                  const SizedBox(height: 7),
+                  Text(en
+                      ? 'You may open your own licensed Protomaps v4 extracts offline; the regional download catalog below is not yet published.'
+                      : 'Vos extraits Protomaps v4 autorisés peuvent être consultés hors ligne ; le catalogue régional ci-dessous n’est pas encore publié.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: scheme.onSurfaceVariant,
                     ),
                   ),
                   if (_error != null) ...[
