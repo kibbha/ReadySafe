@@ -32,6 +32,7 @@ void main() {
     expect(route.pointCount, 4);
     expect(route.segments.length, 2);
     expect(route.waypoints.length, 1);
+    expect(route.waypoints.single.label, 'Source');
     expect(route.segments.first.first.elevation, 385.5);
     expect(route.lengthMeters, greaterThan(0));
     expect(route.firstPoint!.latitude, 46.2044);
@@ -54,6 +55,7 @@ void main() {
     expect(second.segments.length, 2);
     expect(second.pointCount, 4);
     expect(second.waypoints.length, 1);
+    expect(second.waypoints.single.label, 'Source');
   });
 
   test('rejects invalid coordinates, oversized XML and XML DTD declarations', () {
