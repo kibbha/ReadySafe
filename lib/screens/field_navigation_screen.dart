@@ -290,14 +290,20 @@ class _FieldNavigationScreenState extends State<FieldNavigationScreen> {
                 for (final item in _waypoints)
                   Card(
                     margin: const EdgeInsets.only(bottom: 8),
-                    child: RadioListTile<String>(
-                      value: item.id,
-                      groupValue: _selectedId,
-                      onChanged: (value) => setState(() => _selectedId = value),
+                    child: ListTile(
+                      onTap: () => setState(() => _selectedId = item.id),
+                      leading: Icon(
+                        _selectedId == item.id
+                            ? Icons.radio_button_checked_rounded
+                            : Icons.radio_button_off_rounded,
+                        color: _selectedId == item.id
+                            ? scheme.primary
+                            : scheme.onSurfaceVariant,
+                      ),
                       title: Text(item.name, style: const TextStyle(fontWeight: FontWeight.w800)),
                       subtitle: Text('${item.latitude.toStringAsFixed(5)}, '
                           '${item.longitude.toStringAsFixed(5)}'),
-                      secondary: IconButton(
+                      trailing: IconButton(
                         tooltip: en ? 'Delete landmark' : 'Supprimer le repère',
                         onPressed: () => _deleteWaypoint(item),
                         icon: const Icon(Icons.delete_outline_rounded),
