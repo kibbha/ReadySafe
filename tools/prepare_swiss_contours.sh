@@ -98,6 +98,12 @@ size = archive.stat().st_size
 if size < 127 or size > 2 * 1024 * 1024 * 1024:
     raise SystemExit("Regional contour archive has invalid size")
 
+centres = {
+    "ch-leman": (46.48, 6.49, 9),
+    "ch-alpes": (46.62, 8.32, 8),
+}
+centre_lat, centre_lon, default_zoom = centres[region]
+
 manifest = {
     "id": f"{region}-contours",
     "parent_map_id": region,
@@ -105,6 +111,9 @@ manifest = {
     "name_fr": f"{region} — Courbes de niveau 20 m",
     "name_en": f"{region} — 20 m contours",
     "country": "CH",
+    "centre_lat": centre_lat,
+    "centre_lon": centre_lon,
+    "zoom": default_zoom,
     "version": "pilot-1",
     "source_label": "swissALTI3D OGD, reprojected and simplified",
     "license": "swisstopo OGD - source attribution mandatory",
