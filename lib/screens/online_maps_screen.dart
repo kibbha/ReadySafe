@@ -7,14 +7,17 @@ import 'package:url_launcher/url_launcher.dart';
 import '../app/app_scope.dart';
 import '../core/search_text.dart';
 import '../models/map_poi.dart';
+import '../models/gpx_route.dart';
 import '../services/local_storage_service.dart';
 import '../services/device_location_service.dart';
 import '../services/map_poi_service.dart';
+import '../services/gpx_library_service.dart';
 import 'offline_map_areas_screen.dart';
 import 'regional_map_packs_screen.dart';
 import 'field_navigation_screen.dart';
+import 'gpx_library_screen.dart';
 
-enum _MapMenuAction { refresh, sources, markers, offlineAreas, regionalPacks, fieldNavigation, recenter }
+enum _MapMenuAction { refresh, sources, markers, offlineAreas, regionalPacks, fieldNavigation, gpxLibrary, recenter }
 
 enum _PlaceKind {
   shelter,
@@ -100,6 +103,11 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
   final _storage = LocalStorageService();
   final _poiService = MapPoiService();
   final _locationService = const DeviceLocationService();
+  final _gpxLibrary = const GpxLibraryService();
+  final List<Line> _gpxLines = [];
+  final List<Circle> _gpxCircles = [];
+  List<GpxRoute> _gpxRoutes = [];
+  bool _gpxStyleReady = false;
   final _search = TextEditingController();
 
   MapLibreMapController? _map;
@@ -143,6 +151,7 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
   void initState() {
     super.initState();
     _loadPersonalMarkers();
+    _loadGpxRoutes();
   }
 
   @override
@@ -269,6 +278,67 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
           'kind': place.kind.name,
         },
     ]);
+  }
+
+  Future<void> _loadGpxRoutes() async {
+    try {
+      final routes = await _gpxLibrary.list();
+      if (!mounted) return;
+      _gpxRoutes = routes;
+      if (_gpxStyleReady) await _syncGpxOverlay();
+    } catch (_) {
+      // A damaged track never blocks the emergency map.
+    }
+  }
+
+  Future<void> _syncGpxOverlay() async {
+    final map = _map;
+    if (!_gpxStyleReady || map == null) return;
+    for (final line in List<Line>.from(_gpxLines)) {
+      try { await map.removeLine(line); } catch (_) {}
+    }
+    _gpxLines.clear();
+    for (final circle in List<Circle>.from(_gpxCircles)) {
+      try { await map.removeCircle(circle); } catch (_) {}
+    }
+    _gpxCircles.clear();
+
+    // Cap visible annotations on older Android devices; route geometry remains
+    // fully saved and can be re-exported without any simplification.
+    for (final route in _gpxRoutes.where((r) => r.visible).take(8)) {
+      try {
+        for (final segment in GpxCodec.renderSegments(
+          route, maximumVertices: 1000,
+        )) {
+          final line = await map.addLine(
+            LineOptions(
+              geometry: [
+                for (final point in segment)
+                  LatLng(point.latitude, point.longitude),
+              ],
+              lineColor: '#f97316',
+              lineWidth: 4,
+              lineOpacity: 0.9,
+            ),
+          );
+          _gpxLines.add(line);
+        }
+        for (final waypoint in route.waypoints.take(80)) {
+          final marker = await map.addCircle(
+            CircleOptions(
+              geometry: LatLng(waypoint.latitude, waypoint.longitude),
+              circleRadius: 7,
+              circleColor: '#f97316',
+              circleStrokeWidth: 2,
+              circleStrokeColor: '#ffffff',
+            ),
+          );
+          _gpxCircles.add(marker);
+        }
+      } catch (_) {
+        // Never crash the safety map because a saved GPX layer fails to render.
+      }
+    }
   }
 
   Future<void> _syncMarkers() async {
@@ -410,7 +480,9 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
   }
 
   Future<void> _onStyleLoaded() async {
+    _gpxStyleReady = true;
     await _syncMarkers();
+    await _syncGpxOverlay();
     if (!widget.autoFindNearestAed || _autoFindNearestAedStarted) return;
 
     _autoFindNearestAedStarted = true;
@@ -1143,6 +1215,22 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                   );
                   if (mounted) await _loadPersonalMarkers();
                   break;
+                case _MapMenuAction.gpxLibrary:
+                  final centre = await Navigator.push<LatLng>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const GpxLibraryScreen(),
+                    ),
+                  );
+                  if (!mounted) break;
+                  await _loadGpxRoutes();
+                  if (centre != null) {
+                    _camera = CameraPosition(target: centre, zoom: 13.5);
+                    await _map?.animateCamera(
+                      CameraUpdate.newCameraPosition(_camera),
+                    );
+                  }
+                  break;
                 case _MapMenuAction.recenter:
                   final code =
                       AppScope.of(context).activeCountry?.isoCode ?? '';
@@ -1204,6 +1292,14 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                   contentPadding: EdgeInsets.zero,
                   leading: const Icon(Icons.explore_rounded),
                   title: Text(en ? 'Navigate to landmark' : 'Retrouver un repère'),
+                ),
+              ),
+              PopupMenuItem(
+                value: _MapMenuAction.gpxLibrary,
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.route_rounded),
+                  title: Text(en ? 'GPX tracks & waypoints' : 'Traces et repères GPX'),
                 ),
               ),
               PopupMenuItem(
