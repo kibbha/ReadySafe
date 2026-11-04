@@ -32,7 +32,7 @@ class GpxPoint {
     }
     final rawLabel = json['name'];
     final label = rawLabel is String
-        ? rawLabel.replaceAll(RegExp(r'[\\x00-\\x1f\\x7f]'), ' ').trim()
+        ? rawLabel.replaceAll(RegExp(r'[\x00-\x1f\x7f]'), ' ').trim()
         : '';
     return GpxPoint(lat, lon, elevation: ele,
         label: label.length > 80 ? label.substring(0, 80) : label);
