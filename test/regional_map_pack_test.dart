@@ -1,15 +1,19 @@
 import 'dart:io';
 import 'dart:convert';
 
+import 'package:crypto/crypto.dart';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:readysafe/models/regional_map_pack.dart';
 import 'package:readysafe/services/regional_map_pack_service.dart';
 
+List<int> _archive() => [...utf8.encode('PMTiles'), 3, ...List<int>.filled(119, 0)];
+
 Map<String, dynamic> _fixture({
   bool approved = true,
-  String hash = '2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824',
-  int size = 5,
+  String? hash,
+  int? size,
 }) => {
   'id': 'test-region',
   'name_fr': 'Zone test',
@@ -25,8 +29,8 @@ Map<String, dynamic> _fixture({
   'license': 'test-only',
   'approved': approved,
   'download_url': 'https://example.org/test.pmtiles',
-  'byte_length': size,
-  'sha256': hash,
+  'byte_length': size ?? _archive().length,
+  'sha256': hash ?? sha256.convert(_archive()).toString(),
 };
 
 void main() {
@@ -74,13 +78,14 @@ void main() {
     final folder = await Directory.systemTemp.createTemp('readysafe-pack-test-');
     try {
       final file = File('${folder.path}/test.pmtiles');
-      await file.writeAsString('hello', flush: true);
+      await file.writeAsBytes(_archive(), flush: true);
       expect(await RegionalMapPackService.verifyFile(file, pack), isTrue);
 
-      await file.writeAsString('HELLO', flush: true);
+      final corrupted = _archive()..[25] = 42;
+      await file.writeAsBytes(corrupted, flush: true);
       expect(await RegionalMapPackService.verifyFile(file, pack), isFalse);
 
-      await file.writeAsString('hello!', flush: true);
+      await file.writeAsBytes([..._archive(), 7], flush: true);
       expect(await RegionalMapPackService.verifyFile(file, pack), isFalse);
     } finally {
       await folder.delete(recursive: true);
@@ -92,7 +97,7 @@ void main() {
     final folder = await Directory.systemTemp.createTemp('readysafe-block-test-');
     try {
       final file = File('${folder.path}/test.pmtiles');
-      await file.writeAsString('hello');
+      await file.writeAsBytes(_archive());
       expect(await RegionalMapPackService.verifyFile(file, pack), isFalse);
     } finally {
       await folder.delete(recursive: true);
