@@ -30,7 +30,7 @@ The Map tab now has **More > Zones hors ligne / Offline map areas**.
 - `OfflineAreaPolicy` estimates slippy tile coverage and rejects large/out-of-bounds
   areas. The map engine is capped at **3,000 tiles**, **4 simultaneous requests**,
   and identifies ReadySafe with its own User-Agent. The progress callback removes
-  a download if the received byte count crosses **50 MiB**.
+  a download if the received byte count crosses **50 MB**.
 - This is **not** the promised offline Swiss map pack, does not include guaranteed
   hiking trails/relief or offline routing, and must not be marketed as Organic Maps
   functionality yet. It is an intentionally bounded step.
