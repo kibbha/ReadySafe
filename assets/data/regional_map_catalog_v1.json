@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "source_policy": "No regional map downloads enabled without a verified host, immutable object, size, SHA-256, licence review and local field test. No OpenFreeMap bulk scraping.",
+  "packs": [
+    {
+      "id": "ch-leman",
+      "name_fr": "Suisse — Arc lémanique",
+      "name_en": "Switzerland — Lake Geneva region",
+      "country": "CH",
+      "centre_lat": 46.48,
+      "centre_lon": 6.49,
+      "zoom": 9,
+      "version": "pilot-1",
+      "tile_schema": "protomaps-v4",
+      "source_label": "Fournisseur régional à sélectionner",
+      "license": "À vérifier avant diffusion",
+      "attribution": "© contributeurs OpenStreetMap · fournisseur à préciser",
+      "approved": false,
+      "download_url": null,
+      "byte_length": null,
+      "sha256": null
+    },
+    {
+      "id": "ch-alpes",
+      "name_fr": "Suisse — Alpes",
+      "name_en": "Switzerland — Alps",
+      "country": "CH",
+      "centre_lat": 46.62,
+      "centre_lon": 8.32,
+      "zoom": 8,
+      "version": "pilot-1",
+      "tile_schema": "protomaps-v4",
+      "source_label": "Fournisseur régional à sélectionner",
+      "license": "À vérifier avant diffusion",
+      "attribution": "© contributeurs OpenStreetMap · fournisseur à préciser",
+      "approved": false,
+      "download_url": null,
+      "byte_length": null,
+      "sha256": null
+    },
+    {
+      "id": "fr-alpes",
+      "name_fr": "France — Alpes françaises",
+      "name_en": "France — French Alps",
+      "country": "FR",
+      "centre_lat": 45.5,
+      "centre_lon": 6.15,
+      "zoom": 8,
+      "version": "pilot-1",
+      "tile_schema": "protomaps-v4",
+      "source_label": "Fournisseur régional à sélectionner",
+      "license": "À vérifier avant diffusion",
+      "attribution": "© contributeurs OpenStreetMap · fournisseur à préciser",
+      "approved": false,
+      "download_url": null,
+      "byte_length": null,
+      "sha256": null
+    }
+  ]
+}
