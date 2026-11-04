@@ -171,6 +171,14 @@ class _OfflineReadinessScreenState extends State<OfflineReadinessScreen> {
                   available: true,
                 ),
                 _Capability(
+                  icon: Icons.route_rounded,
+                  title: en ? 'Stored GPX routes' : 'Traces GPX enregistrées',
+                  subtitle: en
+                      ? 'Imported routes and waypoints remain on the device. A neutral offline canvas can show them without a downloaded basemap.'
+                      : 'Les traces et repères importés restent sur le téléphone. Un fond neutre permet de les afficher sans carte téléchargée.',
+                  available: true,
+                ),
+                _Capability(
                   icon: Icons.backpack_rounded,
                   title: en ? 'Kits & checklists' : 'Kits & check-lists',
                   subtitle: en ? 'Lists and progress are stored locally.' : 'Listes et progression stockées localement.',
