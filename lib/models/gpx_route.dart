@@ -243,9 +243,9 @@ class GpxCodec {
 
   static String encode(GpxRoute route) {
     final builder = XmlBuilder();
-    builder.processing('xml', 'version="1.0" encoding="UTF-8"');
+    builder.declaration(encoding: 'UTF-8');
     builder.element('gpx', namespaces: {
-      '': 'http://www.topografix.com/GPX/1/1',
+      'http://www.topografix.com/GPX/1/1': '',
     }, attributes: {
       'version': '1.1',
       'creator': 'ReadySafe',
