@@ -10,6 +10,7 @@ class RegionalTerrainStyle {
     required String basemapUri,
     required String attribution,
     String? contoursUri,
+    String? contoursAttribution,
   }) {
     void local(String url) {
       if (!url.startsWith('pmtiles://file:///') ||
@@ -19,7 +20,13 @@ class RegionalTerrainStyle {
     }
 
     local(basemapUri);
-    if (contoursUri != null) local(contoursUri);
+    if (contoursUri != null) {
+      local(contoursUri);
+      if (contoursAttribution == null ||
+          contoursAttribution.trim().isEmpty) {
+        throw const FormatException('Contour data needs separate attribution');
+      }
+    }
     if (attribution.trim().isEmpty) {
       throw const FormatException('Map attribution must be displayed');
     }
@@ -53,7 +60,7 @@ class RegionalTerrainStyle {
         'contours': {
           'type': 'vector',
           'url': contoursUri,
-          'attribution': '© swisstopo',
+          'attribution': contoursAttribution!,
         },
     };
 
