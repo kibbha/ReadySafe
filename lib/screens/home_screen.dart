@@ -8,6 +8,7 @@ import 'emergency_screen.dart';
 import 'family_documents_screen.dart';
 import 'first_aid_screen.dart';
 import 'field_guide_screen.dart';
+import 'field_navigation_screen.dart';
 import 'global_search_screen.dart';
 import 'guided_emergency_screen.dart';
 import 'online_maps_screen.dart';
@@ -95,6 +96,15 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
 
     final shortcuts = <_HomeAction>[
+      _HomeAction(
+        title: en ? 'Find my landmark' : 'Retrouver mon repère',
+        subtitle: en
+            ? 'Offline GPS distance and bearing to saved places.'
+            : 'Cap et distance GPS vers mes repères enregistrés, sans réseau.',
+        icon: Icons.explore_rounded,
+        color: scheme.primary,
+        page: const FieldNavigationScreen(),
+      ),
       _HomeAction(
         title: en ? 'Survival encyclopedia' : 'Encyclopédie de survie',
         subtitle: en
