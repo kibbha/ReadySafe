@@ -45,3 +45,5 @@ An APK should not be described as built or tested until the corresponding
 CI run is successful and an artifact is confirmed.
 
 Initial build trigger: ReadySafe V4 Android debug test, Flutter analyze and full test suite must pass.
+
+Second CI build: file_picker migrated to the v12 single-file API to resolve win32 constraint conflicts.
