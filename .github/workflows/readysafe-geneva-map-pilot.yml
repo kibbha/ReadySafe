@@ -20,15 +20,15 @@ jobs:
       - name: Prepare output folder
         run: mkdir -p out
 
-      - name: Extract one narrow, pinned Geneva/Meyrin map area
+      - name: Extract one narrow Geneva/Meyrin map area from the published OSM mirror
         run: |
           set -euo pipefail
-          # The image and Protomaps source are versioned. This extracts an OSM
+          # The CLI image is versioned. The upstream Source Cooperative mirror is mutable; exact artifact bytes are recorded by SHA-256. This extracts an OSM
           # regional archive, not tiles from the OpenFreeMap hosted API.
           docker run --rm --user "$(id -u):$(id -g)" \
             -v "$PWD/out:/out" \
             ghcr.io/protomaps/go-pmtiles:v1.31.2 \
-            extract https://build.protomaps.com/20261012.pmtiles \
+            extract https://data.source.coop/protomaps/openstreetmap/v4.pmtiles \
               /out/ReadySafe-Geneve-Meyrin-test.pmtiles \
               --bbox=5.95,46.10,6.26,46.31 \
               --maxzoom=14 --download-threads=4
@@ -77,7 +77,7 @@ jobs:
           manifest = {
               'title': 'Genève et Meyrin — fond cartographique pilote',
               'source': 'Protomaps Basemap v4, OpenStreetMap Produced Work',
-              'source_url': 'https://build.protomaps.com/20261012.pmtiles',
+              'source_url': 'https://data.source.coop/protomaps/openstreetmap/v4.pmtiles',
               'bbox': [5.95, 46.10, 6.26, 46.31],
               'max_zoom': 14,
               'size_bytes': size,
@@ -101,7 +101,7 @@ jobs:
 
           Fichier: ReadySafe-Geneve-Meyrin-test.pmtiles
           Format: PMTiles v3, Protomaps Basemap v4 (OpenStreetMap).
-          Source: https://build.protomaps.com/20261012.pmtiles
+          Source: https://data.source.coop/protomaps/openstreetmap/v4.pmtiles
           Attribution: (c) OpenStreetMap contributors - Protomaps
 
           1. Copiez le fichier .pmtiles sur votre telephone Android.
