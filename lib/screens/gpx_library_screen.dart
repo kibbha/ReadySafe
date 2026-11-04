@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:cross_file/cross_file.dart';
 import 'package:file_picker/file_picker.dart';
@@ -118,7 +119,7 @@ class _GpxLibraryScreenState extends State<GpxLibraryScreen> {
         ShareParams(
           files: [
             XFile.fromData(
-              data,
+              Uint8List.fromList(data),
               mimeType: 'application/gpx+xml',
               name: '${route.id}.gpx',
             ),
