@@ -135,7 +135,7 @@ void main() {
   test('checks offsets and caps input before allocating huge memory', () async {
     final temp = await Directory.systemTemp.createTemp('rs-header-pm-');
     try {
-      final file = File(temp.path + '/fixture.pmtiles');
+      final file = File('${temp.path}/fixture.pmtiles');
       await file.writeAsBytes(fixture(gzipMetadata: false));
       final extent = await ProtomapsV4Inspector.inspect(file);
       expect(extent.latitude, closeTo(46.2, 0.00001));
