@@ -59,3 +59,19 @@ Aucun transfert des cartes utilisateur vers un serveur n'est effectué.
 8. Supprimer la copie ReadySafe et vérifier que l'original n'est pas supprimé.
 
 Aucune validation terrain ne peut être supposée à partir des seuls tests unitaires.
+
+## Carte pilote Genève–Meyrin, fabrication automatisée
+
+Le workflow `.github/workflows/readysafe-geneva-map-pilot.yml` prépare sur GitHub
+Actions un extrait **vérifiable** du fond Protomaps v4, zone
+`5.95,46.10,6.26,46.31`, zoom maximum 14.
+
+La source de départ est volontairement datée :
+`https://build.protomaps.com/20261012.pmtiles`. Ce serveur peut retirer
+l'archive : l'extraction échoue alors sans publier de carte fictive.
+
+L'artefact contient le fichier `.pmtiles`, son SHA-256, la provenance et
+un mode d'emploi. Une fois l'APK V4 installée, il suffit de copier cet
+extrait sur Android et de l'importer dans le nouvel écran local.
+Il ne comprend **pas** de relief, ne certifie pas les sentiers et ne
+constitue pas encore le grand pack Arc lémanique prévu.
