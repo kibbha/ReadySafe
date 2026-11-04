@@ -6,16 +6,18 @@ import 'package:xml/xml.dart';
 import 'field_navigation.dart';
 
 class GpxPoint {
-  const GpxPoint(this.latitude, this.longitude, {this.elevation});
+  const GpxPoint(this.latitude, this.longitude, {this.elevation, this.label = ''});
 
   final double latitude;
   final double longitude;
   final double? elevation;
+  final String label;
 
   Map<String, dynamic> toJson() => {
     'lat': latitude,
     'lon': longitude,
     if (elevation != null) 'ele': elevation,
+    if (label.isNotEmpty) 'name': label,
   };
 
   factory GpxPoint.fromJson(Map<String, dynamic> json) {
@@ -28,7 +30,12 @@ class GpxPoint {
         (ele != null && (!ele.isFinite || ele < -15000 || ele > 15000))) {
       throw const FormatException('Invalid GPX coordinates or elevation');
     }
-    return GpxPoint(lat, lon, elevation: ele);
+    final rawLabel = json['name'];
+    final label = rawLabel is String
+        ? rawLabel.replaceAll(RegExp(r'[\\x00-\\x1f\\x7f]'), ' ').trim()
+        : '';
+    return GpxPoint(lat, lon, elevation: ele,
+        label: label.length > 80 ? label.substring(0, 80) : label);
   }
 }
 
@@ -184,6 +191,7 @@ class GpxCodec {
         'lat': lat,
         'lon': lon,
         if (e.isNotEmpty) 'ele': double.tryParse(e),
+        if (element.name.local == 'wpt') 'name': text(element, 'name'),
       });
     }
 
@@ -274,6 +282,9 @@ class GpxCodec {
         }, nest: () {
           if (waypoint.elevation != null) {
             builder.element('ele', nest: waypoint.elevation!.toStringAsFixed(1));
+          }
+          if (waypoint.label.isNotEmpty) {
+            builder.element('name', nest: waypoint.label);
           }
         });
       }
