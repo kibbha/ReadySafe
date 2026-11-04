@@ -67,12 +67,12 @@ class OfflineAreaPolicy {
     for (var zoom = minZoom; zoom <= maxZoom; zoom++) {
       final n = 1 << zoom;
       int x(double lon) => ((lon + 180) / 360 * n)
-          .floor().clamp(0, n - 1);
+          .floor().clamp(0, n - 1).toInt();
       int y(double lat) {
         final radians = lat * math.pi / 180;
         return ((1 - math.log(math.tan(radians) +
                     1 / math.cos(radians)) / math.pi) / 2 * n)
-            .floor().clamp(0, n - 1);
+            .floor().clamp(0, n - 1).toInt();
       }
 
       final across = x(east) - x(west) + 1;
