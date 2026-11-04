@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:crypto/crypto.dart';
@@ -7,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../models/regional_map_pack.dart';
+import 'regional_terrain_style.dart';
 
 /// Stores immutable, publisher-approved PMTiles archives in app-support storage.
 /// No arbitrary URL input is accepted from the user.
@@ -180,73 +180,6 @@ class RegionalMapPackService {
     }
     final file = await fileFor(pack);
     final url = 'pmtiles://${file.uri.toString()}';
-    return _styleForLocalProtomaps(url, pack.attribution);
+    return RegionalTerrainStyle.build(
+      basemapUri: url,
   }
-
-  static String _styleForLocalProtomaps(String source, String attribution) {
-    // No glyph/sprite URLs: local PMTiles is the sole data source.
-    // Escaping is handled by jsonEncode rather than interpolated JSON text.
-    final layers = <Map<String, dynamic>>[
-      {
-        'id': 'background',
-        'type': 'background',
-        'paint': {'background-color': '#f3f1e6'},
-      },
-      {
-        'id': 'landuse',
-        'type': 'fill',
-        'source': 'regional',
-        'source-layer': 'landuse',
-        'paint': {'fill-color': '#d6e6c7', 'fill-opacity': 0.55},
-      },
-      {
-        'id': 'water',
-        'type': 'fill',
-        'source': 'regional',
-        'source-layer': 'water',
-        'paint': {'fill-color': '#a5d5e4'},
-      },
-      {
-        'id': 'buildings',
-        'type': 'fill',
-        'source': 'regional',
-        'source-layer': 'buildings',
-        'minzoom': 13,
-        'paint': {'fill-color': '#ded5c1'},
-      },
-      {
-        'id': 'roads-outline',
-        'type': 'line',
-        'source': 'regional',
-        'source-layer': 'roads',
-        'paint': {
-          'line-color': '#a88e71',
-          'line-width': ['interpolate', ['linear'], ['zoom'], 8, 0.1, 14, 3.2],
-        },
-      },
-      {
-        'id': 'roads',
-        'type': 'line',
-        'source': 'regional',
-        'source-layer': 'roads',
-        'paint': {
-          'line-color': '#ffffff',
-          'line-width': ['interpolate', ['linear'], ['zoom'], 8, 0.1, 14, 2.3],
-        },
-      },
-    ];
-    return jsonEncode({
-      'version': 8,
-      'name': 'ReadySafe regional offline preview',
-      'sources': {
-        'regional': {
-          'type': 'vector',
-          'url': source,
-          'attribution': attribution,
-        },
-      },
-      'layers': layers,
-    });
-  }
-
-}
