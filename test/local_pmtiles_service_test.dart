@@ -140,7 +140,7 @@ void main() {
       () async {
     final temp = await Directory.systemTemp.createTemp('rs-header-z0-');
     try {
-      final file = File(temp.path + '/geneva.pmtiles');
+      final file = File('${temp.path}/geneva.pmtiles');
       await file.writeAsBytes(fixture(centreZoom: 0));
       final info = await ProtomapsV4Inspector.inspect(file);
       expect(info.zoom, greaterThan(8.5));
