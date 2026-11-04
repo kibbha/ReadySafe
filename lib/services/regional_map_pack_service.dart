@@ -141,8 +141,9 @@ class RegionalMapPackService {
         throw const FormatException('Regional map SHA-256 verification failed');
       }
 
-      // Do not destroy a previously installed verified pack on failure.
-      if (await destination.exists()) await destination.delete();
+      // Both files are on the same filesystem. Dart's File.rename replaces
+      // the destination; do not delete the old verified archive first.
+      // A failed verification or interrupted stream leaves it intact.
       return await partial.rename(destination.path);
     } finally {
       if (handle != null) await handle.close();
