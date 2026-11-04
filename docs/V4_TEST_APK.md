@@ -43,3 +43,5 @@ for most modern Android phones and tablets, along with other ABIs.
 
 An APK should not be described as built or tested until the corresponding
 CI run is successful and an artifact is confirmed.
+
+Initial build trigger: ReadySafe V4 Android debug test, Flutter analyze and full test suite must pass.
