@@ -11,8 +11,9 @@ import '../services/local_storage_service.dart';
 import '../services/device_location_service.dart';
 import '../services/map_poi_service.dart';
 import 'offline_map_areas_screen.dart';
+import 'regional_map_packs_screen.dart';
 
-enum _MapMenuAction { refresh, sources, markers, offlineAreas, recenter }
+enum _MapMenuAction { refresh, sources, markers, offlineAreas, regionalPacks, recenter }
 
 enum _PlaceKind {
   shelter,
@@ -1124,6 +1125,14 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                     CameraUpdate.newCameraPosition(_camera),
                   );
                   break;
+                case _MapMenuAction.regionalPacks:
+                  await Navigator.push<void>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const RegionalMapPacksScreen(),
+                    ),
+                  );
+                  break;
                 case _MapMenuAction.recenter:
                   final code =
                       AppScope.of(context).activeCountry?.isoCode ?? '';
@@ -1169,6 +1178,14 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                   contentPadding: EdgeInsets.zero,
                   leading: const Icon(Icons.offline_pin_rounded),
                   title: Text(en ? 'Offline map areas' : 'Zones hors ligne'),
+                ),
+              ),
+              PopupMenuItem(
+                value: _MapMenuAction.regionalPacks,
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.terrain_rounded),
+                  title: Text(en ? 'Regional offline atlas' : 'Atlas régional hors ligne'),
                 ),
               ),
               PopupMenuItem(
