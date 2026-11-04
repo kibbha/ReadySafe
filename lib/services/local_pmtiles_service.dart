@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
@@ -176,7 +177,18 @@ class ProtomapsV4Inspector {
           ? centreLat : (north + south) / 2;
       final lon = centreLon >= west && centreLon <= east
           ? centreLon : (west + east) / 2;
-      final zoom = bytes[118].toDouble()
+      // Many regional PMTiles extracts carry a center zoom of 0 even though
+      // their actual geographic coverage is tiny. Derive a usable zoom from
+      // the bbox rather than opening a Geneva map at world scale.
+      final span = math.max(east - west, north - south);
+      final suggestedZoom = span > 0
+          ? math.log(360.0 / span) / math.ln2 - 0.5
+          : bytes[101].toDouble();
+      final centreZoom = bytes[118].toDouble();
+      final effectiveZoom = centreZoom <= 1 && bytes[101] >= 8
+          ? suggestedZoom
+          : centreZoom;
+      final zoom = effectiveZoom
           .clamp(bytes[100].toDouble(), bytes[101].toDouble())
           .toDouble();
       return (latitude: lat, longitude: lon, zoom: zoom);
