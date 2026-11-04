@@ -256,7 +256,8 @@ class _RegionalMapPacksScreenState extends State<RegionalMapPacksScreen> {
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
-                              if (_activeId == item.pack.id) ...[
+                              if (_activeId == item.pack.id ||
+                                  _activeId == item.contour?.id) ...[
                                 const SizedBox(height: 10),
                                 LinearProgressIndicator(
                                   value: _total <= 0 ? null : (_received / _total).clamp(0.0, 1.0).toDouble(),
@@ -444,6 +445,54 @@ class _LocalMapPreviewState extends State<_LocalMapPreview> {
                         : 'HORS LIGNE · Pas de relief · Sentiers et GPX non vérifiés'),
                   textAlign: TextAlign.center,
                   style: const TextStyle(fontWeight: FontWeight.w800),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            left: 10,
+            right: 10,
+            bottom: 90,
+            child: IgnorePointer(
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 12,
+                  ),
+                  child: Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 12,
+                    runSpacing: 5,
+                    children: [
+                      Text(en ? '— Walking path' : '— Sentier',
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: Color(0xffbe773c),
+                            fontWeight: FontWeight.w800,
+                          )),
+                      Text(en ? '— Track' : '— Piste',
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: Color(0xffb28d64),
+                            fontWeight: FontWeight.w800,
+                          )),
+                      Text(en ? '● Shelter/camp*' : '● Abri/camp*',
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: Color(0xff805b47),
+                            fontWeight: FontWeight.w800,
+                          )),
+                      Text(en ? '● Water*' : '● Eau*',
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: Color(0xff2384ae),
+                            fontWeight: FontWeight.w800,
+                          )),
+                      Text(en ? '*Unverified OSM labels' : '*Données OSM non vérifiées',
+                          style: const TextStyle(fontSize: 10)),
+                    ],
+                  ),
                 ),
               ),
             ),
