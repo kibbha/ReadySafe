@@ -70,7 +70,7 @@ region, file_name, output_name, source_url, bbox = sys.argv[1:]
 source = pathlib.Path(file_name)
 with source.open('rb') as f:
     header = f.read(8)
-if header != b'PMTiles\\x03':
+if header != b'PMTiles\x03':
     raise SystemExit('ERROR: candidate lacks PMTiles v3 signature')
 
 sha = hashlib.sha256()
@@ -100,7 +100,7 @@ candidate = {
     ]
 }
 pathlib.Path(output_name).write_text(
-    json.dumps(candidate, indent=2, ensure_ascii=False) + '\\n',
+    json.dumps(candidate, indent=2, ensure_ascii=False) + '\n',
     encoding='utf-8',
 )
 print(json.dumps({'bytes': candidate['byte_length'], 'sha256': candidate['sha256']}, indent=2))
