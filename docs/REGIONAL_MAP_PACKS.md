@@ -41,8 +41,9 @@ archive is shipped yet. The code is not a replacement for Organic Maps today.
   regional files in persistent application-support storage; they are not
   assembled by bulk tile scraping from OpenFreeMap.
 - The preview is **not yet** a complete walking map: contour lines, reliable
-  hiking routes, labels, routing graph, offline search index, GPX and emergency
-  POI verification remain separate work.
+  hiking routes, labels, routing graph, offline search index and emergency
+  POI verification remain separate work. GPX overlays can now be displayed
+  on verified local packs, but they are not offline routing.
 
 ## Regional extract preparation (explicit operator action)
 
