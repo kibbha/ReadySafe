@@ -276,7 +276,7 @@ class _GpxLibraryScreenState extends State<GpxLibraryScreen> {
                                       return;
                                     }
                                   }
-                                  if (!mounted) return;
+                                  if (!context.mounted) return;
                                   final point = route.firstPoint!;
                                   Navigator.pop(
                                     context,
