@@ -172,15 +172,37 @@ class RegionalMapPackService {
     if (await file.exists()) await file.delete();
   }
 
-  /// Generate a deliberately self-contained minimal Protomaps-v4 style.
-  /// No glyph URLs, sprite URLs, web fonts or external tile providers.
-  /// Rich hiking/topographic styles will be a separate reviewed pack.
-  Future<String> localPreviewStyle(RegionalMapPack pack) async {
-    if (!await verifiedInstalled(pack)) {
-      throw StateError('Map archive missing or has failed integrity verification');
+  /// Render a basemap entirely from verified PMTiles on device. An optional
+  /// elevation pack is accepted only if it belongs to the same region and
+  /// independently passes integrity checks.
+  Future<String> localPreviewStyle(
+    RegionalMapPack pack, {
+    RegionalMapPack? contours,
+  }) async {
+    if (pack.tileSchema != 'protomaps-v4' ||
+        !await verifiedInstalled(pack)) {
+      throw StateError('Regional base map is missing or unverified');
     }
+
+    String? contoursUrl;
+    String? contoursAttribution;
+    if (contours != null) {
+      if (contours.parentMapId != pack.id ||
+          contours.tileSchema != 'readysafe-contours-v1' ||
+          !await verifiedInstalled(contours)) {
+        throw StateError('Contour overlay is missing or unverified');
+      }
+      final contourFile = await fileFor(contours);
+      contoursUrl = 'pmtiles://${contourFile.uri.toString()}';
+      contoursAttribution = contours.attribution;
+    }
+
     final file = await fileFor(pack);
-    final url = 'pmtiles://${file.uri.toString()}';
     return RegionalTerrainStyle.build(
-      basemapUri: url,
+      basemapUri: 'pmtiles://${file.uri.toString()}',
+      attribution: pack.attribution,
+      contoursUri: contoursUrl,
+      contoursAttribution: contoursAttribution,
+    );
   }
+}
