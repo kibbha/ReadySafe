@@ -1,0 +1,305 @@
+import 'dart:io';
+import 'dart:convert';
+
+import 'package:cross_file/cross_file.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:maplibre_gl/maplibre_gl.dart' show LatLng;
+import 'package:share_plus/share_plus.dart';
+
+import '../models/gpx_route.dart';
+import '../services/gpx_library_service.dart';
+
+/// Imports, saves, previews, exports and deletes routes without a server.
+/// Navigation to this page does not read current GPS coordinates.
+class GpxLibraryScreen extends StatefulWidget {
+  const GpxLibraryScreen({super.key});
+
+  @override
+  State<GpxLibraryScreen> createState() => _GpxLibraryScreenState();
+}
+
+class _GpxLibraryScreenState extends State<GpxLibraryScreen> {
+  final _library = const GpxLibraryService();
+  List<GpxRoute> _routes = const [];
+  String? _error;
+  bool _loading = true;
+  bool _busy = false;
+
+  bool get _english => Localizations.localeOf(context).languageCode == 'en';
+
+  @override
+  void initState() {
+    super.initState();
+    _refresh();
+  }
+
+  Future<void> _refresh() async {
+    try {
+      final items = await _library.list();
+      if (!mounted) return;
+      setState(() {
+        _routes = items;
+        _loading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _error = _english
+            ? 'Unable to read stored GPX traces.'
+            : 'Impossible de lire les traces GPX enregistrées.';
+      });
+    }
+  }
+
+  Future<void> _import() async {
+    if (_busy) return;
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      final result = await FilePicker.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['gpx'],
+        allowMultiple: false,
+        withData: false,
+      );
+      if (result == null || result.files.isEmpty) return;
+      final item = result.files.single;
+      final path = item.path;
+      if (path == null || !path.toLowerCase().endsWith('.gpx')) {
+        throw const FormatException('Unsupported GPX file location');
+      }
+      final file = File(path);
+      final size = await file.length();
+      if (size <= 0 || size > GpxRoute.maxBytes) {
+        throw const FormatException('The GPX file exceeds the 2 MiB limit');
+      }
+      final bytes = await file.readAsBytes();
+      await _library.importBytes(bytes, item.name);
+      await _refresh();
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _error = _english
+            ? 'Import failed. Choose a valid GPX file smaller than 2 MiB (max 12,000 points).'
+            : 'Import impossible. Choisissez un GPX valide de moins de 2 Mio (12 000 points maximum).';
+      });
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _visibility(GpxRoute route, bool visible) async {
+    if (_busy) return;
+    setState(() => _busy = true);
+    try {
+      await _library.setVisibility(route, visible);
+      await _refresh();
+    } catch (_) {
+      if (mounted) {
+        setState(() => _error = _english
+            ? 'Could not update route visibility.'
+            : 'Impossible de modifier l’affichage de la trace.');
+      }
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _export(GpxRoute route) async {
+    try {
+      final xml = GpxCodec.encode(route);
+      final data = utf8.encode(xml);
+      final box = context.findRenderObject() as RenderBox?;
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [
+            XFile.fromData(
+              data,
+              mimeType: 'application/gpx+xml',
+              name: '${route.id}.gpx',
+            ),
+          ],
+          fileNameOverrides: ['${route.id}.gpx'],
+          sharePositionOrigin: box == null
+              ? null
+              : box.localToGlobal(Offset.zero) & box.size,
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _error = _english
+          ? 'Sharing the GPX file was not possible.'
+          : 'Impossible de partager le fichier GPX.');
+    }
+  }
+
+  Future<void> _delete(GpxRoute route) async {
+    final en = _english;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialog) => AlertDialog(
+        title: Text(en ? 'Delete this GPX trace?' : 'Supprimer cette trace GPX ?'),
+        content: Text(en
+            ? 'The locally saved copy will be deleted from ReadySafe. The original imported file is not affected.'
+            : 'La copie locale sera supprimée de ReadySafe. Le fichier d’origine ne sera pas modifié.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialog, false),
+            child: Text(en ? 'Cancel' : 'Annuler'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialog, true),
+            child: Text(en ? 'Delete' : 'Supprimer'),
+          ),
+        ],
+      ),
+    );
+    if (!mounted || confirmed != true) return;
+    try {
+      await _library.delete(route);
+      await _refresh();
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _error = en
+          ? 'Could not delete the trace.'
+          : 'Impossible de supprimer la trace.');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final en = _english;
+    final scheme = Theme.of(context).colorScheme;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(en ? 'GPX routes and waypoints' : 'Traces et repères GPX'),
+      ),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 900),
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 32),
+            children: [
+              Text(en ? 'MY OFFLINE ROUTES' : 'MES TRACES HORS LIGNE',
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 22,
+                  color: scheme.primary,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(en
+                  ? 'Import GPX routes, tracks and waypoints from your device. '
+                    'They are saved locally, even when no network is available.'
+                  : 'Importez vos itinéraires, traces et repères GPX depuis le téléphone. '
+                    'Ils restent enregistrés localement, même sans réseau.'),
+              const SizedBox(height: 12),
+              Card(
+                color: scheme.tertiaryContainer,
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Text(en
+                      ? 'A GPX trace is not a verified safe trail. It can lead to cliffs, closed paths or dangerous terrain. '
+                        'Only follow routes you have independently checked.'
+                      : 'Une trace GPX ne garantit PAS un chemin praticable : elle peut traverser falaises, sentiers fermés ou terrains dangereux. '
+                        'Vérifiez chaque itinéraire indépendamment.',
+                    style: TextStyle(
+                      color: scheme.onTertiaryContainer,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              FilledButton.icon(
+                onPressed: _busy ? null : _import,
+                icon: _busy
+                    ? const SizedBox(width: 18, height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Icon(Icons.file_upload_outlined),
+                label: Text(en ? 'Import GPX file' : 'Importer un fichier GPX'),
+              ),
+              const SizedBox(height: 8),
+              Text(en
+                  ? 'Files are limited to 2 MiB, 12,000 trace points, and 500 waypoints. '
+                    'No account or background location tracking is used.'
+                  : 'Limites : 2 Mio, 12 000 points de trace et 500 repères. '
+                    'Aucun compte ni suivi GPS en arrière-plan.',
+                style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant)),
+              if (_error != null) ...[
+                const SizedBox(height: 12),
+                Text(_error!, style: TextStyle(color: scheme.error)),
+              ],
+              const SizedBox(height: 22),
+              Text(en ? 'My saved traces (${_routes.length})'
+                      : 'Mes traces enregistrées (${_routes.length})',
+                style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 19)),
+              const SizedBox(height: 10),
+              if (_loading)
+                const Center(child: CircularProgressIndicator())
+              else if (_routes.isEmpty)
+                Text(en
+                    ? 'No local GPX trace yet. Import a route or waypoints from a trusted source.'
+                    : 'Aucune trace GPX. Importez un itinéraire ou des repères d’une source fiable.')
+              else
+                for (final route in _routes)
+                  Card(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SwitchListTile(
+                            contentPadding: EdgeInsets.zero,
+                            value: route.visible,
+                            onChanged: _busy ? null : (v) => _visibility(route, v),
+                            title: Text(route.name,
+                              style: const TextStyle(fontWeight: FontWeight.w900)),
+                            subtitle: Text(en
+                                ? '${route.pointCount} route points · ${route.waypoints.length} waypoints · ${(route.lengthMeters / 1000).toStringAsFixed(2)} km'
+                                : '${route.pointCount} points · ${route.waypoints.length} repères · ${(route.lengthMeters / 1000).toStringAsFixed(2)} km'),
+                            secondary: Icon(Icons.route_rounded, color: scheme.primary),
+                          ),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 6,
+                            children: [
+                              OutlinedButton.icon(
+                                onPressed: route.firstPoint == null ? null : () {
+                                  final point = route.firstPoint!;
+                                  Navigator.pop(
+                                    context,
+                                    LatLng(point.latitude, point.longitude),
+                                  );
+                                },
+                                icon: const Icon(Icons.map_outlined),
+                                label: Text(en ? 'Show on map' : 'Voir sur la carte'),
+                              ),
+                              TextButton.icon(
+                                onPressed: () => _export(route),
+                                icon: const Icon(Icons.ios_share_rounded),
+                                label: Text(en ? 'Export' : 'Exporter'),
+                              ),
+                              TextButton.icon(
+                                onPressed: _busy ? null : () => _delete(route),
+                                icon: Icon(Icons.delete_outline_rounded, color: scheme.error),
+                                label: Text(en ? 'Delete' : 'Supprimer'),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
