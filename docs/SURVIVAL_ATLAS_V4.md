@@ -56,6 +56,13 @@ regional maps are available yet. See [REGIONAL_MAP_PACKS.md](REGIONAL_MAP_PACKS.
 for how to approve a real dataset, licensing/attribution, style compatibility,
 field testing and rollout gates.
 
+## GPX track handling and network-free fallback
+
+GPX import/export, a bounded local route library and an offline MapLibre
+neutral canvas are now implemented in source, pending Flutter and device tests.
+This is a geometry overlay and **not** topographic map coverage or offline
+route calculation. See [GPX_OFFLINE_V4.md](GPX_OFFLINE_V4.md).
+
 ## Map experience target (Organic Maps-inspired, not a fork)
 
 1. Full offline regional vector map packs for Switzerland first (cantonal/region granularity).
