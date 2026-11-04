@@ -6,7 +6,10 @@ import '../models/field_guide_entry.dart';
 
 /// Bundled field knowledge: everything on this screen works in airplane mode.
 class FieldGuideScreen extends StatefulWidget {
-  const FieldGuideScreen({super.key});
+  const FieldGuideScreen({super.key, this.entriesLoader});
+
+  /// Optional data loader for isolated widget tests; bundled assets by default.
+  final Future<List<FieldGuideEntry>> Function()? entriesLoader;
 
   @override
   State<FieldGuideScreen> createState() => _FieldGuideScreenState();
@@ -14,7 +17,8 @@ class FieldGuideScreen extends StatefulWidget {
 
 class _FieldGuideScreenState extends State<FieldGuideScreen> {
   final _search = TextEditingController();
-  late final Future<List<FieldGuideEntry>> _database = FieldGuideRepository.load();
+  late final Future<List<FieldGuideEntry>> _database =
+      (widget.entriesLoader ?? FieldGuideRepository.load)();
   FieldGuideCategory? _category;
 
   @override
