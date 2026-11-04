@@ -195,7 +195,7 @@ class _OfflineReadinessScreenState extends State<OfflineReadinessScreen> {
                 _Capability(
                   icon: Icons.map_rounded,
                   title: en ? 'Map background' : 'Fond de carte',
-                  subtitle: en ? 'Only individually downloaded areas are cached for offline use; elsewhere the map needs Internet.' : 'Seules les zones téléchargées sont disponibles hors ligne ; ailleurs, la carte nécessite Internet.',
+                  subtitle: en ? 'Only previously saved areas or verified regional packs work without Internet. Regional packs are not yet distributed.' : 'Seules les zones enregistrées ou les cartes régionales vérifiées fonctionnent hors réseau. Les packs régionaux ne sont pas encore diffusés.',
                   available: false,
                 ),
                 _Capability(
