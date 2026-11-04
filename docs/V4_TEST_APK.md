@@ -53,3 +53,5 @@ Third CI build: remove share_plus win32 conflict and export through native file_
 Fourth CI build: fix all six analyzer findings from prior run.
 
 Fifth CI build: upgrade image to 4.12.0 and repair two isolated widget test fixtures.
+
+Sixth CI build: align PDF 3.13.1 with image 4.12 and xml 7.0.1 to resolve Dart 3.13 archive dependency constraints.
