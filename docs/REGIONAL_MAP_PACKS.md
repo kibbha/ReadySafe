@@ -44,6 +44,36 @@ archive is shipped yet. The code is not a replacement for Organic Maps today.
   hiking routes, labels, routing graph, offline search index, GPX and emergency
   POI verification remain separate work.
 
+## Regional extract preparation (explicit operator action)
+
+A reproducible, **not automatically executed** helper is provided at
+`tools/prepare_regional_pmtiles.sh`.
+
+1. Select a versioned **Protomaps basemap v4** PMTiles source from
+   https://maps.protomaps.com/builds/ . Obtain the operator's permission
+   to extract that source rather than scraping public tiled map servers.
+2. Install `pmtiles` CLI from https://docs.protomaps.com/pmtiles/cli .
+3. Run locally (replace the placeholder with a real immutable source):
+
+   ```sh
+   PROTOMAPS_SOURCE_URL='https://build.protomaps.com/DATE.pmtiles' \
+      bash tools/prepare_regional_pmtiles.sh ch-leman
+   ```
+
+   Available identifiers: `ch-leman`, `ch-alpes`, `fr-alpes`.
+   The source date, review and bbox boundaries are chosen by the operator.
+   The script deliberately does not run GitHub Actions or upload anything.
+4. The CLI extracts `--bbox` at `--maxzoom=15`, calls `pmtiles verify`
+   and produces the exact extracted byte count plus a SHA-256 fingerprint.
+5. The accompanying `.candidate.json` is **not approved**, has no
+   `download_url`, and needs the full review described below.
+6. Protomaps base maps **do not automatically include contour lines**.
+   Verified elevation/contour datasets must be sourced and integrated
+   separately with their own licence and local rendering.
+
+Protomaps documents its global dataset as an ODbL Produced Work and requires
+OpenStreetMap attribution. See https://docs.protomaps.com/basemaps/downloads .
+
 ## Requirements before enabling a regional pack
 
 The exact archive must be legally distributable and compatible with
