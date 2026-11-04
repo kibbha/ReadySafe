@@ -15,7 +15,7 @@ class OfflineAreaPolicy {
   static const minZoom = 11;
   static const maxZoom = 15;
   static const maxTiles = 3000;
-  static const maxBytes = 50 * 1024 * 1024;
+  static const maxBytes = 50 * 1000 * 1000;
   static const maxConcurrentRequests = 4;
 
   static OfflineAreaDraft around(double latitude, double longitude) {
