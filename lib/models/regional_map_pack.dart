@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-/// A catalog entry is NOT a claim that a region is downloadable.
-/// Only a pinned source URL, byte count, SHA-256 and explicit approval unlock it.
+/// A catalog entry does NOT imply that its file has been approved or hosted.
+/// Independent PMTiles archives require exact size, HTTPS URL and SHA-256.
 class RegionalMapPack {
   const RegionalMapPack({
     required this.id,
@@ -23,14 +23,24 @@ class RegionalMapPack {
     this.parentMapId,
   });
 
-  final String id, nameFr, nameEn, country, tileSchema;
-  final String attribution, license, sourceLabel, version;
-  final double centreLat, centreLon, zoom;
+  final String id;
+  final String nameFr;
+  final String nameEn;
+  final String country;
+  final double centreLat;
+  final double centreLon;
+  final double zoom;
+  final String tileSchema;
+  final String attribution;
+  final String license;
+  final String sourceLabel;
+  final String version;
   final Uri? downloadUrl;
   final int? byteLength;
   final String? sha256Hex;
   final bool approved;
-  /// Non-null only for a separately reviewed contour PMTiles archive.
+
+  /// Only a `readysafe-contours-v1` archive has a parent map ID.
   final String? parentMapId;
 
   String name(bool english) => english ? nameEn : nameFr;
@@ -39,11 +49,12 @@ class RegionalMapPack {
       approved &&
       downloadUrl != null &&
       byteLength != null &&
-      byteLength! > 0 &&
+      byteLength! >= 127 &&
       sha256Hex != null &&
       RegExp(r'^[a-f0-9]{64}$').hasMatch(sha256Hex!) &&
       (tileSchema == 'protomaps-v4' ||
-          tileSchema == 'readysafe-contours-v1');
+          (tileSchema == 'readysafe-contours-v1' &&
+              parentMapId != null));
 
   String get filename => '$id-$version.pmtiles';
 
@@ -55,55 +66,73 @@ class RegionalMapPack {
       }
       return value.trim();
     }
-    double coord(String key, double min, double max) {
-      final value = json[key];
-      if (value is! num || !value.isFinite ||
-          value.toDouble() < min || value.toDouble() > max) {
-        throw FormatException('Invalid $key');
+
+    double coord(String key, double minimum, double maximum) {
+      final raw = json[key];
+      if (raw is! num || !raw.isFinite ||
+          raw.toDouble() < minimum || raw.toDouble() > maximum) {
+        throw FormatException('Invalid regional map coordinate: $key');
       }
-      return value.toDouble();
+      return raw.toDouble();
     }
 
     final id = string('id');
     final version = string('version');
-    if (!RegExp(r'^[a-z0-9][a-z0-9_-]{1,59}$').hasMatch(id) ||
+    const safeId = r'^[a-z0-9][a-z0-9_-]{1,59}$';
+    if (!RegExp(safeId).hasMatch(id) ||
         !RegExp(r'^[a-zA-Z0-9._-]{1,32}$').hasMatch(version)) {
-      throw const FormatException('Unsafe pack identifier/version');
+      throw const FormatException('Unsafe regional map filename');
     }
+
     final schema = string('tile_schema');
     if (schema != 'protomaps-v4' &&
         schema != 'readysafe-contours-v1') {
-      throw const FormatException('Unsupported map tile schema');
+      throw const FormatException('Unsupported regional map tile schema');
     }
+
     final rawParent = json['parent_map_id'];
     if (schema == 'readysafe-contours-v1') {
       if (rawParent is! String ||
-          !RegExp(r'^[a-z0-9][a-z0-9_-]{1,59}
+          !RegExp(safeId).hasMatch(rawParent)) {
+        throw const FormatException('Contour pack requires a base map ID');
+      }
+    } else if (rawParent != null) {
+      throw const FormatException('Base map cannot declare a contour parent');
+    }
 
-    final urlRaw = json['download_url'];
+    final rawUrl = json['download_url'];
     Uri? url;
-    if (urlRaw != null) {
-      if (urlRaw is! String) throw const FormatException('Invalid pack URL');
-      url = Uri.tryParse(urlRaw);
-      if (url == null || url.scheme != 'https' || !url.hasAuthority ||
-          url.userInfo.isNotEmpty || url.fragment.isNotEmpty ||
+    if (rawUrl != null) {
+      if (rawUrl is! String) {
+        throw const FormatException('Invalid regional map URL');
+      }
+      url = Uri.tryParse(rawUrl);
+      if (url == null ||
+          url.scheme != 'https' ||
+          !url.hasAuthority ||
+          url.userInfo.isNotEmpty ||
+          url.fragment.isNotEmpty ||
           !url.path.endsWith('.pmtiles')) {
-        throw const FormatException('Map pack URL must be a direct HTTPS PMTiles file');
+        throw const FormatException('Map archive must use a direct HTTPS PMTiles URL');
       }
     }
+
     final bytes = json['byte_length'];
-    if (bytes != null && (bytes is! int || bytes <= 0 ||
-        bytes > 2 * 1024 * 1024 * 1024)) {
-      throw const FormatException('Invalid or excessive map pack size');
+    if (bytes != null &&
+        (bytes is! int || bytes < 127 ||
+            bytes > 2 * 1024 * 1024 * 1024)) {
+      throw const FormatException('Invalid or excessive PMTiles archive size');
     }
     final hash = json['sha256'];
-    if (hash != null && (hash is! String ||
-        !RegExp(r'^[a-f0-9]{64}$').hasMatch(hash))) {
-      throw const FormatException('Invalid SHA-256 fingerprint');
+    if (hash != null &&
+        (hash is! String ||
+            !RegExp(r'^[a-f0-9]{64}$').hasMatch(hash))) {
+      throw const FormatException('Invalid PMTiles SHA-256 fingerprint');
     }
+
     final approved = json['approved'] == true;
     if (approved && (url == null || bytes == null || hash == null)) {
-      throw const FormatException('Approved map pack must pin source, bytes and SHA-256');
+      throw const FormatException('Approved pack needs URL, size and SHA-256');
     }
 
     return RegionalMapPack(
@@ -129,14 +158,17 @@ class RegionalMapPack {
 }
 
 class RegionalMapCatalog {
-  const RegionalMapCatalog(this.packs, {this.contourPacks = const []});
+  const RegionalMapCatalog(
+    this.packs, {
+    this.contourPacks = const [],
+  });
 
   final List<RegionalMapPack> packs;
   final List<RegionalMapPack> contourPacks;
 
   RegionalMapPack? contoursFor(String basemapId) {
-    for (final overlay in contourPacks) {
-      if (overlay.parentMapId == basemapId) return overlay;
+    for (final pack in contourPacks) {
+      if (pack.parentMapId == basemapId) return pack;
     }
     return null;
   }
@@ -148,6 +180,7 @@ class RegionalMapCatalog {
         decoded['packs'] is! List) {
       throw const FormatException('Invalid regional map catalog');
     }
+
     final ids = <String>{};
     final packs = <RegionalMapPack>[];
     for (final raw in decoded['packs'] as List) {
@@ -155,111 +188,36 @@ class RegionalMapCatalog {
         throw const FormatException('Invalid regional map entry');
       }
       final pack = RegionalMapPack.fromJson(raw);
-      if (!ids.add(pack.id)) throw FormatException('Duplicate regional map pack: ${pack.id}');
+      if (pack.tileSchema != 'protomaps-v4' || !ids.add(pack.id)) {
+        throw const FormatException('Invalid or duplicate base map');
+      }
       packs.add(pack);
     }
-    final contourPacks = <RegionalMapPack>[];
-    final parentIds = <String>{};
+
     final rawContours = decoded['contour_packs'];
     if (rawContours != null && rawContours is! List) {
-      throw const FormatException('Invalid contour archive catalog');
+      throw const FormatException('Invalid contour catalog');
     }
+
+    final contours = <RegionalMapPack>[];
+    final parents = <String>{};
     for (final raw in (rawContours as List? ?? const [])) {
       if (raw is! Map<String, dynamic>) {
-        throw const FormatException('Invalid contour pack');
+        throw const FormatException('Invalid contour record');
       }
-      final contour = RegionalMapPack.fromJson(raw);
-      if (contour.tileSchema != 'readysafe-contours-v1' ||
-          !ids.add(contour.id) ||
-          !packs.any((base) => base.id == contour.parentMapId) ||
-          !parentIds.add(contour.parentMapId!)) {
+      final pack = RegionalMapPack.fromJson(raw);
+      if (pack.tileSchema != 'readysafe-contours-v1' ||
+          !ids.add(pack.id) ||
+          !packs.any((base) => base.id == pack.parentMapId) ||
+          !parents.add(pack.parentMapId!)) {
         throw const FormatException('Contour pack has invalid or duplicate parent');
       }
-      contourPacks.add(contour);
+      contours.add(pack);
     }
 
     return RegionalMapCatalog(
       List.unmodifiable(packs),
-      contourPacks: List.unmodifiable(contourPacks),
+      contourPacks: List.unmodifiable(contours),
     );
-  }
-}
-).hasMatch(rawParent)) {
-        throw const FormatException('Contour pack requires a valid base map ID');
-      }
-    } else if (rawParent != null) {
-      throw const FormatException('A basemap cannot declare a contour parent');
-    }
-
-    final urlRaw = json['download_url'];
-    Uri? url;
-    if (urlRaw != null) {
-      if (urlRaw is! String) throw const FormatException('Invalid pack URL');
-      url = Uri.tryParse(urlRaw);
-      if (url == null || url.scheme != 'https' || !url.hasAuthority ||
-          url.userInfo.isNotEmpty || url.fragment.isNotEmpty ||
-          !url.path.endsWith('.pmtiles')) {
-        throw const FormatException('Map pack URL must be a direct HTTPS PMTiles file');
-      }
-    }
-    final bytes = json['byte_length'];
-    if (bytes != null && (bytes is! int || bytes <= 0 ||
-        bytes > 2 * 1024 * 1024 * 1024)) {
-      throw const FormatException('Invalid or excessive map pack size');
-    }
-    final hash = json['sha256'];
-    if (hash != null && (hash is! String ||
-        !RegExp(r'^[a-f0-9]{64}$').hasMatch(hash))) {
-      throw const FormatException('Invalid SHA-256 fingerprint');
-    }
-    final approved = json['approved'] == true;
-    if (approved && (url == null || bytes == null || hash == null)) {
-      throw const FormatException('Approved map pack must pin source, bytes and SHA-256');
-    }
-
-    return RegionalMapPack(
-      id: id,
-      nameFr: string('name_fr'),
-      nameEn: string('name_en'),
-      country: string('country'),
-      centreLat: coord('centre_lat', -85, 85),
-      centreLon: coord('centre_lon', -180, 180),
-      zoom: coord('zoom', 0, 22),
-      tileSchema: schema,
-      attribution: string('attribution'),
-      license: string('license'),
-      sourceLabel: string('source_label'),
-      version: version,
-      downloadUrl: url,
-      byteLength: bytes,
-      sha256Hex: hash,
-      approved: approved,
-    );
-  }
-}
-
-class RegionalMapCatalog {
-  const RegionalMapCatalog(this.packs);
-
-  final List<RegionalMapPack> packs;
-
-  factory RegionalMapCatalog.fromJson(String data) {
-    final decoded = jsonDecode(data);
-    if (decoded is! Map<String, dynamic> ||
-        decoded['schema_version'] != 1 ||
-        decoded['packs'] is! List) {
-      throw const FormatException('Invalid regional map catalog');
-    }
-    final ids = <String>{};
-    final packs = <RegionalMapPack>[];
-    for (final raw in decoded['packs'] as List) {
-      if (raw is! Map<String, dynamic>) {
-        throw const FormatException('Invalid regional map entry');
-      }
-      final pack = RegionalMapPack.fromJson(raw);
-      if (!ids.add(pack.id)) throw FormatException('Duplicate regional map pack: ${pack.id}');
-      packs.add(pack);
-    }
-    return RegionalMapCatalog(List.unmodifiable(packs));
   }
 }
