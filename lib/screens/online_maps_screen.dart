@@ -10,8 +10,9 @@ import '../models/map_poi.dart';
 import '../services/local_storage_service.dart';
 import '../services/device_location_service.dart';
 import '../services/map_poi_service.dart';
+import 'offline_map_areas_screen.dart';
 
-enum _MapMenuAction { refresh, sources, markers, recenter }
+enum _MapMenuAction { refresh, sources, markers, offlineAreas, recenter }
 
 enum _PlaceKind {
   shelter,
@@ -1110,6 +1111,19 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                 case _MapMenuAction.markers:
                   await _manageMarkers();
                   break;
+                case _MapMenuAction.offlineAreas:
+                  final centre = await Navigator.push<LatLng>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => OfflineMapAreasScreen(centre: _camera.target),
+                    ),
+                  );
+                  if (!mounted || centre == null) break;
+                  _camera = CameraPosition(target: centre, zoom: 14);
+                  await _map?.animateCamera(
+                    CameraUpdate.newCameraPosition(_camera),
+                  );
+                  break;
                 case _MapMenuAction.recenter:
                   final code =
                       AppScope.of(context).activeCountry?.isoCode ?? '';
@@ -1147,6 +1161,14 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                   contentPadding: EdgeInsets.zero,
                   leading: const Icon(Icons.bookmarks_outlined),
                   title: Text(en ? 'My landmarks' : 'Mes repères'),
+                ),
+              ),
+              PopupMenuItem(
+                value: _MapMenuAction.offlineAreas,
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.offline_pin_rounded),
+                  title: Text(en ? 'Offline map areas' : 'Zones hors ligne'),
                 ),
               ),
               PopupMenuItem(
