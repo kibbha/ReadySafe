@@ -44,7 +44,9 @@ class _FieldNavigationScreenState extends State<FieldNavigationScreen> {
       final lat = latitude.toDouble();
       final lon = longitude.toDouble();
       if (!lat.isFinite || !lon.isFinite ||
-          lat < -90 || lat > 90 || lon < -180 || lon > 180) continue;
+          lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+        continue;
+      }
       final name = (item['name']?.toString() ?? '').trim();
       final id = (item['id']?.toString() ?? '').trim();
       if (id.isEmpty || name.isEmpty) continue;
