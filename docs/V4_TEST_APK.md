@@ -65,3 +65,5 @@ ReadySafe 4.0.0-dev.2+20: local Protomaps PMTiles import with offline MapLibre r
 ReadySafe 4.0.0-dev.2 retry: strict Dart interpolation warnings corrected in local PMTiles importer. Full Flutter analyze, tests and Android debug APK.
 
 ReadySafe 4.0.0-dev.3+21: manually imported Protomaps region zoom fallback verified against Geneva pilot PMTiles header (center zoom 0), with regression test.
+
+Build corrected ReadySafe 4.0.0-dev.3+21 with Geneva map zoom fallback, full tests and Android APK.
