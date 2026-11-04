@@ -295,8 +295,9 @@ class GpxCodec {
   /// Avoid huge annotation batches on weak/offline phones. Endpoints are kept,
   /// and segment boundaries are never joined by a fictitious line.
   static List<List<GpxPoint>> renderSegments(
-    GpxRoute route, {int maximumVertices = 4000},
-  ) {
+    GpxRoute route, {
+    int maximumVertices = 4000,
+  }) {
     if (route.pointCount <= maximumVertices) {
       return route.segments.where((segment) => segment.length >= 2).toList();
     }
