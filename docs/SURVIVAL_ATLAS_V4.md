@@ -132,3 +132,13 @@ on-device airplane-mode verification.
 - CDC safe water: https://www.cdc.gov/water-emergency/about/
 
 - MapLibre 0.27.1 fixes iOS header throttling: https://github.com/maplibre/flutter-maplibre-gl/releases/tag/v0.27.1
+
+## Trail style and elevation contours (new V4 code)
+
+`RegionalTerrainStyle` now differentiates offline walking paths, tracks,
+roads, forests, wetlands, lakes and unverified camp/water POIs in a Protomaps
+v4 base archive. Optional 20 m contour overlays have an **independent**
+manifest, checksum, file and source attribution. They cannot be activated
+until real geographic data are sourced and validated. For official Swiss
+swissALTI3D terms, conversion commands and airplane-mode test gates, see
+[TERRAIN_CONTOURS_V4.md](TERRAIN_CONTOURS_V4.md).
