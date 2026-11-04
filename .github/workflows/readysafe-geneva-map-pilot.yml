@@ -1,0 +1,124 @@
+name: ReadySafe Geneva offline map pilot
+
+on:
+  push:
+    branches:
+      - feature/survival-atlas-offline-v4
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  extract-pilot:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      startsWith(github.event.head_commit.message, 'ci(atlas): extract')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Prepare output folder
+        run: mkdir -p out
+
+      - name: Extract one narrow, pinned Geneva/Meyrin map area
+        run: |
+          set -euo pipefail
+          # The image and Protomaps source are versioned. This extracts an OSM
+          # regional archive, not tiles from the OpenFreeMap hosted API.
+          docker run --rm --user "$(id -u):$(id -g)" \
+            -v "$PWD/out:/out" \
+            ghcr.io/protomaps/go-pmtiles:v1.31.2 \
+            extract https://build.protomaps.com/20261012.pmtiles \
+              /out/ReadySafe-Geneve-Meyrin-test.pmtiles \
+              --bbox=5.95,46.10,6.26,46.31 \
+              --maxzoom=14 --download-threads=4
+
+      - name: Verify the extracted PMTiles directory
+        run: |
+          set -euo pipefail
+          docker run --rm --user "$(id -u):$(id -g)" \
+            -v "$PWD/out:/out" \
+            ghcr.io/protomaps/go-pmtiles:v1.31.2 \
+            verify /out/ReadySafe-Geneve-Meyrin-test.pmtiles
+
+      - name: Verify v4 data layers and create reproducibility manifest
+        run: |
+          python3 - <<'PY'
+          import gzip
+          import hashlib
+          import json
+          import pathlib
+          import struct
+
+          path = pathlib.Path('out/ReadySafe-Geneve-Meyrin-test.pmtiles')
+          size = path.stat().st_size
+          if not (131 <= size <= 250 * 1024 * 1024):
+              raise SystemExit('Map is empty or exceeds ReadySafe local import limit')
+          with path.open('rb') as handle:
+              h = handle.read(127)
+              if h[:8] != b'PMTiles\x03' or h[99] != 1:
+                  raise SystemExit('Not a PMTiles-v3 MVT vector archive')
+              offset, length = struct.unpack_from('<QQ', h, 24)
+              if offset + length > size or length > 512 * 1024:
+                  raise SystemExit('Invalid metadata section')
+              handle.seek(offset)
+              raw = handle.read(length)
+          meta = gzip.decompress(raw) if h[97] == 2 else raw
+          if len(meta) > 1024 * 1024:
+              raise SystemExit('Excessive metadata')
+          layers = {
+              layer.get('id')
+              for layer in json.loads(meta).get('vector_layers', [])
+          }
+          needed = {'roads', 'water', 'landuse', 'pois'}
+          if not needed.issubset(layers):
+              raise SystemExit('Missing expected Protomaps v4 map layers')
+          checksum = hashlib.file_digest(path.open('rb'), 'sha256').hexdigest()
+          manifest = {
+              'title': 'Genève et Meyrin — fond cartographique pilote',
+              'source': 'Protomaps Basemap v4, OpenStreetMap Produced Work',
+              'source_url': 'https://build.protomaps.com/20261012.pmtiles',
+              'bbox': [5.95, 46.10, 6.26, 46.31],
+              'max_zoom': 14,
+              'size_bytes': size,
+              'sha256': checksum,
+              'attribution': '© OpenStreetMap contributors · Protomaps',
+              'approved_as_official_topographic_map': False,
+              'contours_present': False,
+              'for_test_use_only': True,
+          }
+          pathlib.Path('out/carte-manifest.json').write_text(
+              json.dumps(manifest, ensure_ascii=False, indent=2) + '\n',
+              encoding='utf-8',
+          )
+          print('Verified map SHA-256:', checksum, 'size:', size)
+          PY
+
+      - name: Prepare Android download instructions
+        run: |
+          cat > out/LISEZ-MOI.txt <<'EOF'
+          READYSAFE V4 - CARTE PILOTE GENEVE / MEYRIN
+
+          Fichier: ReadySafe-Geneve-Meyrin-test.pmtiles
+          Format: PMTiles v3, Protomaps Basemap v4 (OpenStreetMap).
+          Source: https://build.protomaps.com/20261012.pmtiles
+          Attribution: (c) OpenStreetMap contributors - Protomaps
+
+          1. Copiez le fichier .pmtiles sur votre telephone Android.
+          2. Ouvrez ReadySafe > Carte > Atlas regional hors ligne.
+          3. Touchez «Importer une carte PMTiles du telephone».
+          4. Selectionnez le fichier, puis ouvrez la carte locale.
+          5. Desactivez Wi-Fi et les donnees mobiles et verifiez le rendu.
+
+          Attention: ceci n'est pas une carte topographique homologuee.
+          Pas de courbes de niveau, itineraire securise ou etat des sentiers.
+          Verifiez la carte de reference et les droits des donnees avant usage.
+          EOF
+
+      - name: Upload test regional map
+        uses: actions/upload-artifact@v4
+        with:
+          name: ReadySafe_Carte_Geneve_Meyrin_PMtiles
+          path: out/
+          if-no-files-found: error
+          retention-days: 14
