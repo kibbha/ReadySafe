@@ -104,7 +104,7 @@ class _OfflineMapAreasScreenState extends State<OfflineMapAreasScreen> {
     Future<void> discardOversize() async {
       if (regionId == null) return;
       try {
-        await _service.delete(regionId!);
+        await _service.delete(regionId);
       } catch (_) {
         // A failed or already-removed region is not considered complete.
       }
