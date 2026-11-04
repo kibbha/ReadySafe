@@ -15,8 +15,8 @@ waypoints (`wpt`). The original input file remains untouched.
 - A GPX trail's original disconnected segments remain disconnected; ReadySafe
   must never draw a line across them.
 - Use the visibility toggle to show/hide a trace, **Voir sur la carte** to
-  recenter, and **Exporter** to share a newly created GPX document via a native
-  share sheet. The user must initiate any sharing.
+  recenter, and **Exporter** to share a newly created GPX document via the native
+  Save As dialog. The user must initiate any sharing.
 - Deleted traces are removed from ReadySafe's storage, not the original file.
 - Imported routes and named waypoints render on the normal MapLibre map,
   including previously cached small areas.
