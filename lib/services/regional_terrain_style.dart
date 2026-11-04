@@ -36,15 +36,22 @@ class RegionalTerrainStyle {
       Map<String, dynamic> paint, {
       Object? filter,
       int? minZoom,
-    }) => {
-      'id': id,
-      'type': type,
-      'source': 'regional',
-      'source-layer': sourceLayer,
-      if (minZoom != null) 'minzoom': minZoom,
-      if (filter != null) 'filter': filter,
-      'paint': paint,
-    };
+    }) {
+      final layer = <String, dynamic>{
+        'id': id,
+        'type': type,
+        'source': 'regional',
+        'source-layer': sourceLayer,
+        'paint': paint,
+      };
+      if (minZoom != null) {
+        layer['minzoom'] = minZoom;
+      }
+      if (filter != null) {
+        layer['filter'] = filter;
+      }
+      return layer;
+    }
 
     Object kind(String value) => ['==', ['get', 'kind'], value];
     Object kindDetail(String value) => ['==', ['get', 'kind_detail'], value];
