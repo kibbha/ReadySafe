@@ -145,4 +145,93 @@ void main() {
       await folder.delete(recursive: true);
     }
   });
+
+  test('verified streaming installs and preserves existing map after bad update',
+      () async {
+    final pack = RegionalMapPack.fromJson(_fixture());
+    final folder = await Directory.systemTemp.createTemp('readysafe-stream-');
+    final service = RegionalMapPackService(rootDirectory: folder);
+    try {
+      final installed = await service.installVerifiedFixture(
+        pack,
+        Stream<List<int>>.value(_archive()),
+      );
+      expect(await RegionalMapPackService.verifyFile(installed, pack), isTrue);
+      final original = await installed.readAsBytes();
+
+      final damaged = _archive()..[30] = 99;
+      await expectLater(
+        service.installVerifiedFixture(
+          pack,
+          Stream<List<int>>.value(damaged),
+        ),
+        throwsFormatException,
+      );
+      expect(await installed.readAsBytes(), original);
+      expect(await File('${installed.path}.partial').exists(), isFalse);
+
+      await expectLater(
+        service.installVerifiedFixture(
+          pack,
+          Stream<List<int>>.value([..._archive(), 1]),
+        ),
+        throwsFormatException,
+      );
+      expect(await installed.readAsBytes(), original);
+    } finally {
+      await folder.delete(recursive: true);
+    }
+  });
+
+  test('verified local contour archive appears only with matching parent',
+      () async {
+    final folder = await Directory.systemTemp.createTemp('readysafe-relief-');
+    final service = RegionalMapPackService(rootDirectory: folder);
+    try {
+      final base = RegionalMapPack.fromJson(_fixture());
+      final contourInput = _fixture()
+        ..['id'] = 'test-region-contours'
+        ..['tile_schema'] = 'readysafe-contours-v1'
+        ..['parent_map_id'] = 'test-region'
+        ..['attribution'] = '© swisstopo';
+      final contour = RegionalMapPack.fromJson(contourInput);
+      await service.installVerifiedFixture(
+        base, Stream<List<int>>.value(_archive()),
+      );
+      await service.installVerifiedFixture(
+        contour, Stream<List<int>>.value(_archive()),
+      );
+
+      final plain = jsonDecode(await service.localPreviewStyle(base))
+          as Map<String, dynamic>;
+      final plainSources = plain['sources'] as Map<String, dynamic>;
+      expect(plainSources.containsKey('contours'), isFalse);
+
+      final withRelief = jsonDecode(await service.localPreviewStyle(
+        base, contours: contour,
+      )) as Map<String, dynamic>;
+      final sources = withRelief['sources'] as Map<String, dynamic>;
+      expect((sources['contours'] as Map)['attribution'], '© swisstopo');
+      expect((sources['contours'] as Map)['url'].toString(),
+          startsWith('pmtiles://file:///'));
+
+      final wrong = RegionalMapPack.fromJson(
+        Map<String, dynamic>.from(contourInput)
+          ..['parent_map_id'] = 'unrelated-region',
+      );
+      await expectLater(
+        service.localPreviewStyle(base, contours: wrong),
+        throwsStateError,
+      );
+
+      await service.delete(contour);
+      await expectLater(
+        service.localPreviewStyle(base, contours: contour),
+        throwsStateError,
+      );
+      expect(await service.verifiedInstalled(base), isTrue);
+    } finally {
+      await folder.delete(recursive: true);
+    }
+  });
 }
