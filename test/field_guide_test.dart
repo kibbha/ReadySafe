@@ -7,6 +7,11 @@ import 'package:readysafe/screens/field_guide_screen.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  late List<FieldGuideEntry> bundledEntries;
+  setUpAll(() async {
+    bundledEntries = await FieldGuideRepository.load();
+  });
+
   test('bundled field guide parses and works without network services', () async {
     final entries = await FieldGuideRepository.load();
 
@@ -40,9 +45,8 @@ void main() {
   });
 
   testWidgets('field guide opens from local data and filters without network', (tester) async {
-    final entries = await FieldGuideRepository.load();
     await tester.pumpWidget(MaterialApp(
-      home: FieldGuideScreen(entriesLoader: () => Future.value(entries)),
+      home: FieldGuideScreen(entriesLoader: () => Future.value(bundledEntries)),
     ));
     await tester.pump();
     await tester.pumpAndSettle();
