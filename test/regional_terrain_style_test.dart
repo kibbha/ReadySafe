@@ -52,6 +52,7 @@ void main() {
       basemapUri: basemap,
       attribution: '© OSM · Protomaps',
       contoursUri: contours,
+      contoursAttribution: '© swisstopo',
     )) as Map<String, dynamic>;
     final sources = style['sources'] as Map<String, dynamic>;
     expect((sources['contours'] as Map)['url'], contours);
@@ -77,6 +78,7 @@ void main() {
       () => RegionalTerrainStyle.build(
         basemapUri: basemap,
         contoursUri: 'https://evil.invalid/terrain.pmtiles',
+        contoursAttribution: '© swisstopo',
         attribution: '© OSM',
       ),
       throwsFormatException,
@@ -85,6 +87,14 @@ void main() {
       () => RegionalTerrainStyle.build(
         basemapUri: basemap,
         attribution: '  ',
+      ),
+      throwsFormatException,
+    );
+    expect(
+      () => RegionalTerrainStyle.build(
+        basemapUri: basemap,
+        attribution: '© OSM',
+        contoursUri: contours,
       ),
       throwsFormatException,
     );
