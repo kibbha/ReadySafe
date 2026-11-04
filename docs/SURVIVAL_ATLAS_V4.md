@@ -42,6 +42,20 @@ The Map tab now has **More > Zones hors ligne / Offline map areas**.
   quotas, cache restoration after process restart and on-device storage/cleanup
   must all be verified. Do not describe this as production-ready.
 
+## Regional PMTiles pack manager (architecture implemented)
+
+The Map screen now also has **Atlas régional hors ligne / Regional offline atlas**,
+separate from the small-area cache. It offers a bundled catalog, controlled
+direct HTTPS streaming, exact byte count, SHA-256 and PMTiles v3 header checks,
+atomic local installation, deletion, and a strictly local MapLibre preview
+style using `pmtiles://file://`.
+
+The three Swiss/French demo region entries have **no approved hosting URLs**
+and intentionally cannot be downloaded. Do not claim that full Swiss/European
+regional maps are available yet. See [REGIONAL_MAP_PACKS.md](REGIONAL_MAP_PACKS.md)
+for how to approve a real dataset, licensing/attribution, style compatibility,
+field testing and rollout gates.
+
 ## Map experience target (Organic Maps-inspired, not a fork)
 
 1. Full offline regional vector map packs for Switzerland first (cantonal/region granularity).
