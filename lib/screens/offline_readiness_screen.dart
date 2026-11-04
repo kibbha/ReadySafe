@@ -155,6 +155,14 @@ class _OfflineReadinessScreenState extends State<OfflineReadinessScreen> {
                   available: true,
                 ),
                 _Capability(
+                  icon: Icons.auto_stories_rounded,
+                  title: en ? 'Survival encyclopedia' : 'Encyclopédie de survie',
+                  subtitle: en
+                      ? 'The starter plant, fungi and wilderness-technique guides are bundled for offline use.'
+                      : 'Les fiches pilotes plantes, champignons et techniques sont embarquées et accessibles hors ligne.',
+                  available: true,
+                ),
+                _Capability(
                   icon: Icons.backpack_rounded,
                   title: en ? 'Kits & checklists' : 'Kits & check-lists',
                   subtitle: en ? 'Lists and progress are stored locally.' : 'Listes et progression stockées localement.',
@@ -187,7 +195,7 @@ class _OfflineReadinessScreenState extends State<OfflineReadinessScreen> {
                 _Capability(
                   icon: Icons.map_rounded,
                   title: en ? 'Map background' : 'Fond de carte',
-                  subtitle: en ? 'Personal landmarks remain saved, but map tiles can require Internet access.' : 'Les repères personnels restent enregistrés, mais les tuiles cartographiques peuvent nécessiter Internet.',
+                  subtitle: en ? 'Only individually downloaded areas are cached for offline use; elsewhere the map needs Internet.' : 'Seules les zones téléchargées sont disponibles hors ligne ; ailleurs, la carte nécessite Internet.',
                   available: false,
                 ),
                 _Capability(
