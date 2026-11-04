@@ -12,8 +12,9 @@ import '../services/device_location_service.dart';
 import '../services/map_poi_service.dart';
 import 'offline_map_areas_screen.dart';
 import 'regional_map_packs_screen.dart';
+import 'field_navigation_screen.dart';
 
-enum _MapMenuAction { refresh, sources, markers, offlineAreas, regionalPacks, recenter }
+enum _MapMenuAction { refresh, sources, markers, offlineAreas, regionalPacks, fieldNavigation, recenter }
 
 enum _PlaceKind {
   shelter,
@@ -1133,6 +1134,15 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                     ),
                   );
                   break;
+                case _MapMenuAction.fieldNavigation:
+                  await Navigator.push<void>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const FieldNavigationScreen(),
+                    ),
+                  );
+                  if (mounted) await _loadPersonalMarkers();
+                  break;
                 case _MapMenuAction.recenter:
                   final code =
                       AppScope.of(context).activeCountry?.isoCode ?? '';
@@ -1186,6 +1196,14 @@ class _OnlineMapsScreenState extends State<OnlineMapsScreen> {
                   contentPadding: EdgeInsets.zero,
                   leading: const Icon(Icons.terrain_rounded),
                   title: Text(en ? 'Regional offline atlas' : 'Atlas régional hors ligne'),
+                ),
+              ),
+              PopupMenuItem(
+                value: _MapMenuAction.fieldNavigation,
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.explore_rounded),
+                  title: Text(en ? 'Navigate to landmark' : 'Retrouver un repère'),
                 ),
               ),
               PopupMenuItem(
