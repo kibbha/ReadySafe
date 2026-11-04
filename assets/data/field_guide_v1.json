@@ -1,0 +1,368 @@
+{
+  "schema_version": 1,
+  "language_codes": [
+    "fr",
+    "en"
+  ],
+  "regions": [
+    "CH",
+    "FR",
+    "EU"
+  ],
+  "review_state": "draft_requires_specialist_review",
+  "safety_policy": "No entry can certify edibility, mushroom identification or medicinal efficacy. Foraged mushrooms require expert inspection; seek poison-center help for suspected ingestion.",
+  "entries": [
+    {
+      "id": "urtica-dioica",
+      "category": "plants",
+      "title_fr": "Ortie dioïque",
+      "title_en": "Stinging nettle",
+      "scientific_name": "Urtica dioica",
+      "summary_fr": "Plante à feuilles opposées, souvent présente dans les sols riches. Les poils urticants irritent la peau.",
+      "summary_en": "Opposite-leaved plant often found on nutrient-rich ground. Its stinging hairs irritate skin.",
+      "warning_fr": "Ne pas déduire la comestibilité ou une indication médicale de cette fiche. Éviter tout prélèvement en cas de doute.",
+      "warning_en": "Do not infer edibility or medical use from this guide. Do not harvest if uncertain.",
+      "steps_fr": [
+        "Observer la plante sans la toucher à mains nues.",
+        "Noter les caractères visibles, l'habitat et la saison.",
+        "Consulter une flore régionale et un spécialiste pour confirmer l'identification."
+      ],
+      "steps_en": [
+        "Observe without touching the plant with bare hands.",
+        "Note visible features, habitat and season.",
+        "Use a regional flora and an expert for identification."
+      ],
+      "source_label": "Info Flora (répertoire botanique)",
+      "source_url": "https://www.infoflora.ch/fr/",
+      "editorial_status": "draft_requires_specialist_review"
+    },
+    {
+      "id": "plantago-lanceolata",
+      "category": "plants",
+      "title_fr": "Plantain lancéolé",
+      "title_en": "Ribwort plantain",
+      "scientific_name": "Plantago lanceolata",
+      "summary_fr": "Feuilles généralement étroites disposées en rosette, avec nervures longitudinales marquées. Espèce fréquente en prairie.",
+      "summary_en": "Narrow leaves in a basal rosette with pronounced lengthwise veins; common in grasslands.",
+      "warning_fr": "Les usages traditionnels ne prouvent pas l'efficacité médicale. Ne pas préparer de traitement maison à partir d'une identification incertaine.",
+      "warning_en": "Traditional uses are not proof of medical efficacy. Never prepare home remedies from an uncertain identification.",
+      "steps_fr": [
+        "Observer les feuilles, les nervures et l'inflorescence.",
+        "Comparer avec plusieurs descriptions botaniques indépendantes.",
+        "Consigner les observations sans consommer ni appliquer la plante."
+      ],
+      "steps_en": [
+        "Check leaf shape, veins and flower spike.",
+        "Compare several independent botanical references.",
+        "Record observations without eating or applying the plant."
+      ],
+      "source_label": "Info Flora (répertoire botanique)",
+      "source_url": "https://www.infoflora.ch/fr/",
+      "editorial_status": "draft_requires_specialist_review"
+    },
+    {
+      "id": "allium-ursinum",
+      "category": "plants",
+      "title_fr": "Ail des ours",
+      "title_en": "Wild garlic",
+      "scientific_name": "Allium ursinum",
+      "summary_fr": "Plante forestière à feuilles vertes, parfois récoltée au printemps. Les confusions avec d'autres plantes sont potentiellement graves.",
+      "summary_en": "Woodland spring plant with green leaves. Confusion with other species can be serious.",
+      "warning_fr": "Risque de confusion avec le muguet et le colchique, notamment. L'odeur ne suffit pas à confirmer l'espèce. Ne pas consommer sur cette base.",
+      "warning_en": "Can be confused with lily-of-the-valley or autumn crocus. Smell alone does not confirm identity; never eat based on this entry.",
+      "steps_fr": [
+        "Ne jamais tester une plante en la goûtant.",
+        "Examiner plusieurs critères avec un botaniste qualifié.",
+        "En cas d'ingestion douteuse, contacter immédiatement un centre antipoison."
+      ],
+      "steps_en": [
+        "Never taste a plant to identify it.",
+        "Compare multiple features with a qualified botanist.",
+        "If a suspicious plant was eaten, contact a poison centre immediately."
+      ],
+      "source_label": "Tox Info Suisse (prévention)",
+      "source_url": "https://www.toxinfo.ch/",
+      "editorial_status": "draft_requires_specialist_review"
+    },
+    {
+      "id": "colchicum-autumnale",
+      "category": "plants",
+      "title_fr": "Colchique d'automne",
+      "title_en": "Autumn crocus",
+      "scientific_name": "Colchicum autumnale",
+      "summary_fr": "Plante toxique dont les feuilles peuvent prêter à confusion lors de cueillettes printanières.",
+      "summary_en": "Poisonous plant whose leaves may be confused during spring foraging.",
+      "warning_fr": "PLANTE TOXIQUE. Ne pas ingérer et ne pas utiliser pour une préparation médicinale. Suspicion d'ingestion : centre antipoison/urgences.",
+      "warning_en": "POISONOUS PLANT. Do not ingest or use for homemade medicine. Suspected ingestion: contact a poison centre/emergency services.",
+      "steps_fr": [
+        "Éviter toute cueillette d'espèces ressemblantes sans identification certaine par un spécialiste.",
+        "Tenir les enfants et les animaux éloignés de la plante.",
+        "Conserver des informations sur la plante si un professionnel de santé les demande."
+      ],
+      "steps_en": [
+        "Do not harvest resembling species without expert confirmation.",
+        "Keep children and pets away.",
+        "Keep identifying information if requested by medical professionals."
+      ],
+      "source_label": "Tox Info Suisse (prévention)",
+      "source_url": "https://www.toxinfo.ch/",
+      "editorial_status": "draft_requires_specialist_review"
+    },
+    {
+      "id": "amanita-phalloides",
+      "category": "mushrooms",
+      "title_fr": "Amanite phalloïde",
+      "title_en": "Death cap",
+      "scientific_name": "Amanita phalloides",
+      "summary_fr": "Champignon responsable d'intoxications potentiellement mortelles. Son apparence varie selon les individus.",
+      "summary_en": "Mushroom associated with potentially fatal poisoning. Its appearance varies.",
+      "warning_fr": "MORTEL POTENTIELLEMENT. Ni photo ni description ne permettent de valider une récolte. En Suisse, faire contrôler tous les champignons.",
+      "warning_en": "POTENTIALLY FATAL. Photos and text cannot verify a harvest. In Switzerland, all foraged mushrooms must be inspected.",
+      "steps_fr": [
+        "Ne jamais consommer un champignon identifié uniquement avec cette application.",
+        "Éviter de mélanger les champignons inconnus avec d'autres récoltes.",
+        "En cas d'ingestion suspecte, contacter immédiatement les urgences ou le centre antipoison, même sans symptômes."
+      ],
+      "steps_en": [
+        "Never eat mushrooms identified solely using this app.",
+        "Keep unknown mushrooms separate from any harvest.",
+        "After suspected ingestion, contact emergency or poison services immediately, even without symptoms."
+      ],
+      "source_label": "OSAV — contrôle des champignons",
+      "source_url": "https://www.blv.admin.ch/fr/champignons-comestibles",
+      "editorial_status": "draft_requires_specialist_review"
+    },
+    {
+      "id": "galerina-marginata",
+      "category": "mushrooms",
+      "title_fr": "Galère marginée",
+      "title_en": "Funeral bell",
+      "scientific_name": "Galerina marginata",
+      "summary_fr": "Petit champignon lignicole contenant des toxines très dangereuses. Peut être confondu avec des espèces récoltées pour l'alimentation.",
+      "summary_en": "Small wood-growing mushroom containing dangerous toxins; may be mistaken for foraged species.",
+      "warning_fr": "RISQUE MORTEL. Ne pas se fier à une photo, à une application ou à un test empirique de comestibilité.",
+      "warning_en": "POTENTIALLY FATAL. Do not rely on photos, apps or folk tests for edibility.",
+      "steps_fr": [
+        "Ne pas goûter les spécimens inconnus.",
+        "Photographier l'habitat sans supposer qu'il suffit à identifier l'espèce.",
+        "Faire examiner toute cueillette destinée à l'alimentation par un contrôleur compétent."
+      ],
+      "steps_en": [
+        "Never taste unknown specimens.",
+        "Document habitat without treating it as conclusive evidence.",
+        "Have all collected mushrooms intended for food checked by an expert."
+      ],
+      "source_label": "OSAV — contrôle des champignons",
+      "source_url": "https://www.blv.admin.ch/fr/champignons-comestibles",
+      "editorial_status": "draft_requires_specialist_review"
+    },
+    {
+      "id": "amanita-muscaria",
+      "category": "mushrooms",
+      "title_fr": "Amanite tue-mouches",
+      "title_en": "Fly agaric",
+      "scientific_name": "Amanita muscaria",
+      "summary_fr": "Amanite souvent reconnaissable à son chapeau rouge ponctué de blanc, mais l'aspect peut varier.",
+      "summary_en": "Amanita often known for a red cap with white flecks, though appearance can vary.",
+      "warning_fr": "TOXIQUE. Ne jamais utiliser comme aliment ou remède. Son aspect seul n'est pas une preuve d'identification.",
+      "warning_en": "TOXIC. Never use as food or a remedy. Appearance alone is not definitive identification.",
+      "steps_fr": [
+        "Ne pas consommer ni expérimenter de préparation.",
+        "Ne pas supposer que tous les spécimens ont le même aspect.",
+        "Contacter un centre antipoison si une ingestion est suspectée."
+      ],
+      "steps_en": [
+        "Do not ingest or attempt homemade preparations.",
+        "Do not assume every specimen looks the same.",
+        "Contact a poison centre after suspected ingestion."
+      ],
+      "source_label": "OSAV — contrôle des champignons",
+      "source_url": "https://www.blv.admin.ch/fr/champignons-comestibles",
+      "editorial_status": "draft_requires_specialist_review"
+    },
+    {
+      "id": "boletus-edulis",
+      "category": "mushrooms",
+      "title_fr": "Cèpe de Bordeaux",
+      "title_en": "Porcini mushroom",
+      "scientific_name": "Boletus edulis",
+      "summary_fr": "Espèce connue en mycologie européenne, présentée ici uniquement à des fins d'apprentissage taxonomique.",
+      "summary_en": "A familiar European mushroom species, shown here for taxonomic learning only.",
+      "warning_fr": "Cette fiche NE certifie PAS la comestibilité d'un spécimen. D'autres bolets ressemblants existent : contrôle expert obligatoire avant toute consommation.",
+      "warning_en": "This entry does NOT certify any specimen as edible. Lookalike boletes exist: expert inspection is required before eating.",
+      "steps_fr": [
+        "Observer plusieurs caractères et l'habitat sans récolter pour manger.",
+        "Consulter une clé de détermination spécialisée.",
+        "Soumettre toute récolte au contrôle mycologique local."
+      ],
+      "steps_en": [
+        "Observe multiple features and habitat without collecting for consumption.",
+        "Use a specialist identification key.",
+        "Have every foraged mushroom inspected locally."
+      ],
+      "source_label": "OSAV — contrôle des champignons",
+      "source_url": "https://www.blv.admin.ch/fr/champignons-comestibles",
+      "editorial_status": "draft_requires_specialist_review"
+    },
+    {
+      "id": "emergency-shelter",
+      "category": "skills",
+      "title_fr": "Abri provisoire",
+      "title_en": "Emergency shelter",
+      "scientific_name": "",
+      "summary_fr": "Priorité : se protéger du vent, des précipitations et du contact direct avec le sol.",
+      "summary_en": "Priority: protect from wind, precipitation and direct contact with the ground.",
+      "warning_fr": "Ne pas s'abriter sous des branches mortes, au pied de pentes instables ou dans un lit de rivière. Ne jamais utiliser de feu dans un abri clos.",
+      "warning_en": "Avoid dead branches, unstable slopes and stream beds. Never light a fire inside an enclosed shelter.",
+      "steps_fr": [
+        "Choisir un terrain stable, hors zone inondable et hors couloir de chute de pierres.",
+        "Utiliser une bâche ou un équipement existant avant de couper des végétaux.",
+        "Tendre le toit vers l'extérieur pour évacuer la pluie, en laissant un accès d'air.",
+        "S'isoler du sol avec un matelas ou des couches sèches; vérifier que l'abri reste stable."
+      ],
+      "steps_en": [
+        "Choose stable ground away from flood zones and rockfall paths.",
+        "Prefer a tarp or existing equipment rather than cutting vegetation.",
+        "Slope the roof outward to shed rain, while retaining ventilation.",
+        "Insulate from the ground with a sleeping mat or dry layers; check stability."
+      ],
+      "source_label": "Leave No Trace — outdoor principles",
+      "source_url": "https://lnt.org/why/7-principles/",
+      "editorial_status": "draft_requires_specialist_review"
+    },
+    {
+      "id": "cold-ground",
+      "category": "skills",
+      "title_fr": "Isolation et hypothermie",
+      "title_en": "Insulation and hypothermia",
+      "scientific_name": "",
+      "summary_fr": "Dans le froid, limiter les pertes de chaleur et garder les vêtements secs est prioritaire.",
+      "summary_en": "In cold conditions, reducing heat loss and keeping clothing dry is critical.",
+      "warning_fr": "Confusion, somnolence ou frissons qui cessent chez une personne exposée au froid : risque d'hypothermie grave, appeler les secours.",
+      "warning_en": "Confusion, drowsiness or shivering that stops in an exposed person may indicate severe hypothermia: call emergency services.",
+      "steps_fr": [
+        "Quitter le vent et l'humidité si possible.",
+        "Remplacer les vêtements mouillés si cela peut se faire sans aggraver la situation.",
+        "Isoler tête, tronc et sol avec des couches sèches.",
+        "Demander de l'aide sans attendre en présence de signes inquiétants."
+      ],
+      "steps_en": [
+        "Get away from wind and wet conditions when possible.",
+        "Change wet clothing when safe.",
+        "Insulate head, torso and ground with dry layers.",
+        "Call for help promptly if serious signs appear."
+      ],
+      "source_label": "Ready.gov — preparedness",
+      "source_url": "https://www.ready.gov/kit",
+      "editorial_status": "draft_requires_specialist_review"
+    },
+    {
+      "id": "fire-ferrocerium",
+      "category": "skills",
+      "title_fr": "Allumer un feu avec un firesteel",
+      "title_en": "Starting a fire with a ferro rod",
+      "scientific_name": "",
+      "summary_fr": "Le firesteel projette des étincelles sur un amadou sec. L'usage n'est approprié que si le feu est autorisé et peut être maîtrisé.",
+      "summary_en": "A ferro rod throws sparks onto dry tinder. Use only where fires are allowed and can be contained.",
+      "warning_fr": "Ne jamais allumer de feu en période d'interdiction, par vent fort, en zone inflammable ou dans un abri. Le feu n'est jamais une solution sûre en intérieur.",
+      "warning_en": "Never light fires during bans, high winds, near dry vegetation, or inside shelters. Open flames are unsafe indoors.",
+      "steps_fr": [
+        "Vérifier les règles locales et privilégier un réchaud homologué si permis.",
+        "Préparer un emplacement autorisé, dégagé et un moyen d'extinction.",
+        "Placer de l'amadou bien sec et de petites brindilles à portée.",
+        "Projeter les étincelles vers l'amadou, puis ajouter progressivement du combustible.",
+        "Surveiller constamment et éteindre totalement, jusqu'à ce que les cendres soient froides."
+      ],
+      "steps_en": [
+        "Check local regulations and prefer an approved stove where permitted.",
+        "Prepare a permitted clear site and a way to extinguish the fire.",
+        "Keep dry tinder and small twigs ready.",
+        "Direct sparks onto tinder and gradually add small fuel.",
+        "Never leave unattended; fully extinguish until ashes are cold."
+      ],
+      "source_label": "Leave No Trace — outdoor principles",
+      "source_url": "https://lnt.org/why/7-principles/",
+      "editorial_status": "draft_requires_specialist_review"
+    },
+    {
+      "id": "water-treatment",
+      "category": "skills",
+      "title_fr": "Eau potable en terrain isolé",
+      "title_en": "Safe drinking water outdoors",
+      "scientific_name": "",
+      "summary_fr": "En situation d'urgence, une eau apparemment claire peut contenir des microbes. Le traitement doit être adapté au risque.",
+      "summary_en": "Clear-looking water can still contain germs. Treatment must match the suspected hazard.",
+      "warning_fr": "L'ébullition et la désinfection ne retirent pas les produits chimiques, carburants ou radioéléments. Choisir une autre source en cas de suspicion.",
+      "warning_en": "Boiling and disinfecting do not remove chemicals, fuel, or radioactive contaminants. Use another source when suspected.",
+      "steps_fr": [
+        "Privilégier une réserve scellée ou une source reconnue potable.",
+        "Si l'eau est trouble, la laisser décanter et la préfiltrer.",
+        "Pour un risque microbien : porter l'eau claire à ébullition franche pendant 1 minute; au-dessus d'environ 2 000 m, 3 minutes.",
+        "Laisser refroidir et conserver dans un contenant propre et fermé.",
+        "Si une contamination chimique est suspectée, ne pas tenter de la rendre potable par simple ébullition."
+      ],
+      "steps_en": [
+        "Prefer sealed water or an officially safe supply.",
+        "If cloudy, allow settling and pre-filter.",
+        "For microbial risk: bring clear water to a rolling boil for 1 minute; above about 2,000 m, use 3 minutes.",
+        "Let cool and store in a clean, closed container.",
+        "If chemicals are suspected, do not rely on boiling."
+      ],
+      "source_label": "CDC — water emergency",
+      "source_url": "https://www.cdc.gov/water-emergency/about/",
+      "editorial_status": "draft_requires_specialist_review"
+    },
+    {
+      "id": "map-compass",
+      "category": "skills",
+      "title_fr": "S'orienter avec carte et boussole",
+      "title_en": "Map and compass basics",
+      "scientific_name": "",
+      "summary_fr": "Une carte déjà téléchargée, une boussole et une position connue permettent de limiter les erreurs d'orientation.",
+      "summary_en": "A downloaded map, a compass and a known position help reduce navigation errors.",
+      "warning_fr": "Ne pas improviser un itinéraire en terrain escarpé ou dangereux. Le GPS n'est pas une garantie de sécurité.",
+      "warning_en": "Do not improvise routes through hazardous or steep terrain. GPS does not guarantee safety.",
+      "steps_fr": [
+        "Identifier sa position et un point de destination sûr.",
+        "Orienter la carte vers le nord et lire les chemins, courbes de niveau et obstacles.",
+        "Privilégier les sentiers connus plutôt que les raccourcis.",
+        "Faire des points de contrôle réguliers et préserver la batterie du téléphone."
+      ],
+      "steps_en": [
+        "Identify your position and a safe destination.",
+        "Orient the map north and review paths, contours and hazards.",
+        "Prefer established trails over shortcuts.",
+        "Recheck landmarks regularly and conserve phone battery."
+      ],
+      "source_label": "Leave No Trace — plan ahead",
+      "source_url": "https://lnt.org/why/7-principles/",
+      "editorial_status": "draft_requires_specialist_review"
+    },
+    {
+      "id": "signal-for-help",
+      "category": "skills",
+      "title_fr": "Signaler sa position aux secours",
+      "title_en": "Signalling for rescue",
+      "scientific_name": "",
+      "summary_fr": "Être repérable et transmettre des coordonnées précises peut faciliter l'intervention des secours.",
+      "summary_en": "Being visible and sharing precise coordinates can help rescuers.",
+      "warning_fr": "Ne pas se déplacer vers un endroit dangereux uniquement pour obtenir du réseau. En danger immédiat, contacter les secours dès que possible.",
+      "warning_en": "Do not enter hazardous terrain simply to find signal. Call emergency services as soon as safe.",
+      "steps_fr": [
+        "Se mettre en sécurité avant de signaler sa position.",
+        "Essayer l'appel d'urgence et communiquer les coordonnées, les blessures et la météo.",
+        "Utiliser lampe, sifflet ou tissu contrasté si cela n'attire pas un danger.",
+        "Rester à un lieu sûr et suivre les consignes reçues."
+      ],
+      "steps_en": [
+        "Get to a safe place first.",
+        "Attempt an emergency call and share coordinates, injuries and conditions.",
+        "Use a flashlight, whistle or high-contrast cloth when safe.",
+        "Remain somewhere safe and follow rescue instructions."
+      ],
+      "source_label": "Ready.gov — preparedness",
+      "source_url": "https://www.ready.gov/kit",
+      "editorial_status": "draft_requires_specialist_review"
+    }
+  ]
+}
