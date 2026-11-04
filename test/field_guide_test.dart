@@ -39,17 +39,21 @@ void main() {
     );
   });
 
-  testWidgets('field guide opens from bundled data and filters locally', (tester) async {
-    await tester.pumpWidget(const MaterialApp(home: FieldGuideScreen()));
+  testWidgets('field guide opens from local data and filters without network', (tester) async {
+    final entries = await FieldGuideRepository.load();
+    await tester.pumpWidget(MaterialApp(
+      home: FieldGuideScreen(entriesLoader: () => Future.value(entries)),
+    ));
+    await tester.pump();
     await tester.pumpAndSettle();
 
-    expect(find.text('Encyclopédie de survie'), findsOneWidget);
-    expect(find.textContaining('14 fiches hors ligne'), findsOneWidget);
+    expect(find.text('Survival field guide'), findsOneWidget);
+    expect(find.textContaining('14 offline entries'), findsOneWidget);
 
     await tester.enterText(find.byType(TextField), 'galere');
     await tester.pumpAndSettle();
 
-    expect(find.text('Galère marginée'), findsOneWidget);
-    expect(find.text('Amanite phalloïde'), findsNothing);
+    expect(find.text('Funeral bell'), findsOneWidget);
+    expect(find.text('Death cap'), findsNothing);
   });
 }
