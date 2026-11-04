@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 
 import '../models/regional_map_pack.dart';
+import '../models/gpx_route.dart';
 import '../services/regional_map_pack_service.dart';
+import '../services/gpx_library_service.dart';
 
 /// Regional PMTiles catalog. Nothing downloads without an approved pinned pack.
 class RegionalMapPacksScreen extends StatefulWidget {
@@ -295,25 +297,73 @@ class _PackStatus {
   final bool installed;
 }
 
-class _LocalMapPreview extends StatelessWidget {
+class _LocalMapPreview extends StatefulWidget {
   const _LocalMapPreview({required this.pack, required this.style});
 
   final RegionalMapPack pack;
   final String style;
 
   @override
+  State<_LocalMapPreview> createState() => _LocalMapPreviewState();
+}
+
+class _LocalMapPreviewState extends State<_LocalMapPreview> {
+  MapLibreMapController? _map;
+
+  Future<void> _drawSavedGpx() async {
+    final map = _map;
+    if (map == null) return;
+    try {
+      final traces = await const GpxLibraryService().list();
+      if (!mounted) return;
+      for (final trace in traces.where((r) => r.visible).take(8)) {
+        for (final segment in GpxCodec.renderSegments(
+          trace, maximumVertices: 1000,
+        )) {
+          await map.addLine(
+            LineOptions(
+              geometry: [
+                for (final point in segment)
+                  LatLng(point.latitude, point.longitude),
+              ],
+              lineColor: '#f97316',
+              lineWidth: 4,
+              lineOpacity: 0.9,
+            ),
+          );
+        }
+        for (final point in trace.waypoints.take(80)) {
+          await map.addCircle(
+            CircleOptions(
+              geometry: LatLng(point.latitude, point.longitude),
+              circleColor: '#f97316',
+              circleRadius: 7,
+              circleStrokeColor: '#ffffff',
+              circleStrokeWidth: 2,
+            ),
+          );
+        }
+      }
+    } catch (_) {
+      // Corrupt traces must not block rendering of verified offline map packs.
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final en = Localizations.localeOf(context).languageCode == 'en';
     return Scaffold(
-      appBar: AppBar(title: Text(pack.name(en))),
+      appBar: AppBar(title: Text(widget.pack.name(en))),
       body: Stack(
         children: [
           MapLibreMap(
-            styleString: style,
+            styleString: widget.style,
             initialCameraPosition: CameraPosition(
-              target: LatLng(pack.centreLat, pack.centreLon),
-              zoom: pack.zoom,
+              target: LatLng(widget.pack.centreLat, widget.pack.centreLon),
+              zoom: widget.pack.zoom,
             ),
+            onMapCreated: (controller) => _map = controller,
+            onStyleLoadedCallback: _drawSavedGpx,
             compassEnabled: true,
             rotateGesturesEnabled: true,
           ),
@@ -325,8 +375,8 @@ class _LocalMapPreview extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(10),
                 child: Text(en
-                    ? 'OFFLINE PREVIEW · paths and terrain contour layers not yet verified'
-                    : 'APERÇU HORS LIGNE · sentiers et relief non encore validés',
+                    ? 'OFFLINE PREVIEW · GPX overlays are reference tracks, not verified hiking routes'
+                    : 'APERÇU HORS LIGNE · Les traces GPX ne sont pas des itinéraires de randonnée vérifiés',
                   textAlign: TextAlign.center,
                   style: const TextStyle(fontWeight: FontWeight.w800),
                 ),
@@ -340,7 +390,7 @@ class _LocalMapPreview extends StatelessWidget {
             child: Card(
               child: Padding(
                 padding: const EdgeInsets.all(8),
-                child: Text(pack.attribution, textAlign: TextAlign.center),
+                child: Text(widget.pack.attribution, textAlign: TextAlign.center),
               ),
             ),
           ),
