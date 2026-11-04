@@ -163,6 +163,14 @@ class _OfflineReadinessScreenState extends State<OfflineReadinessScreen> {
                   available: true,
                 ),
                 _Capability(
+                  icon: Icons.explore_rounded,
+                  title: en ? 'GPS landmark bearing' : 'Cap GPS vers un repère',
+                  subtitle: en
+                      ? 'Saved personal markers, distance and true-north bearing are calculated locally after manual GPS refresh.'
+                      : 'Repères personnels, distance et cap géographique calculés localement après actualisation manuelle du GPS.',
+                  available: true,
+                ),
+                _Capability(
                   icon: Icons.backpack_rounded,
                   title: en ? 'Kits & checklists' : 'Kits & check-lists',
                   subtitle: en ? 'Lists and progress are stored locally.' : 'Listes et progression stockées localement.',
