@@ -84,13 +84,13 @@ void main() {
     });
 
     await tester.pumpWidget(
-      const MaterialApp(locale: Locale('fr'), home: FieldNavigationScreen()),
+      const MaterialApp(home: FieldNavigationScreen()),
     );
     await tester.pumpAndSettle();
 
     expect(find.text('Campement'), findsWidgets);
     expect(find.text('Invalid'), findsNothing);
-    expect(find.text('Actualiser ma position'), findsOneWidget);
-    expect(find.textContaining('cap n’est PAS un itinéraire'), findsOneWidget);
+    expect(find.text('Refresh my GPS'), findsOneWidget);
+    expect(find.textContaining('bearing is not a walkable route'), findsOneWidget);
   });
 }
