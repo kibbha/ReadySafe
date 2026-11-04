@@ -19,6 +19,17 @@ class MainShell extends StatefulWidget {
 class _MainShellState extends State<MainShell> {
   int index = 0;
 
+  // Do not initialize expensive platform views (notably MapLibre) until the
+  // user explicitly opens the tab. Keep visited tabs mounted afterward.
+  final Set<int> _visitedTabs = {0};
+
+  void _selectTab(int value) {
+    setState(() {
+      index = value;
+      _visitedTabs.add(value);
+    });
+  }
+
   final pages = const [
     HomeScreen(),
     GuidedEmergencyScreen(),
@@ -58,7 +69,15 @@ class _MainShellState extends State<MainShell> {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final content = IndexedStack(index: index, children: pages);
+        final content = IndexedStack(
+          index: index,
+          children: [
+            for (var tab = 0; tab < pages.length; tab++)
+              _visitedTabs.contains(tab)
+                  ? pages[tab]
+                  : const SizedBox.shrink(),
+          ],
+        );
         final useRail = constraints.maxWidth >= 700;
         final extendedRail = constraints.maxWidth >= 980;
 
@@ -69,7 +88,7 @@ class _MainShellState extends State<MainShell> {
             floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
             bottomNavigationBar: NavigationBar(
               selectedIndex: index,
-              onDestinationSelected: (value) => setState(() => index = value),
+              onDestinationSelected: _selectTab,
               destinations: [
                 for (final item in destinations)
                   NavigationDestination(
@@ -89,7 +108,7 @@ class _MainShellState extends State<MainShell> {
               children: [
                 NavigationRail(
                   selectedIndex: index,
-                  onDestinationSelected: (value) => setState(() => index = value),
+                  onDestinationSelected: _selectTab,
                   extended: extendedRail,
                   minWidth: 82,
                   minExtendedWidth: 220,
